@@ -15,17 +15,5 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: swift build -c release
-    - name: Compile LLVM IR
-      shell: bash
-      run: |
-        cd Swift-C++-IR-Comparison
-        ./createIR.sh
-    - name: Create Tar
-      run: tar -cf llvm_ir.tar $(find . -name "*.ll")
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: llvm-ir
-        path: llvm_ir.tar
 #     - name: Execute build
 #       run: ./.build/release/swift-llvm-statistics-comparison
