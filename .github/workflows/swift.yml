@@ -23,5 +23,5 @@ jobs:
       with:
         name: LLVM IR
         path: Swift-C++-IR-Comparison/*/*.ll
-    - name: Execute build
-      run: ./.build/release/swift-llvm-statistics-comparison
+#     - name: Execute build
+#       run: ./.build/release/swift-llvm-statistics-comparison
