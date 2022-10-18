@@ -15,5 +15,5 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: swift build -c release
-    - name: Run tests
-      run: swift test -v
+    - name: Execute build
+      run: ./.build/release/swift-llvm-statistics-comparison
