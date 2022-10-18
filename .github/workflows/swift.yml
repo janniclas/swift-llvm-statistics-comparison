@@ -20,10 +20,12 @@ jobs:
       run: |
         cd Swift-C++-IR-Comparison
         ./createIR.sh
-    - name: Upload LLVM IR
+    - name: Create Tar
+      run: tar -czvf llvmIr.tar.gz **/*.ll
+    - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: LLVM IR
-        path: ~/Swift-C++-IR-Comparison/**/*/*.ll
+        name: llvm-ir
+        path: llvmIr.tar.gz
 #     - name: Execute build
 #       run: ./.build/release/swift-llvm-statistics-comparison
