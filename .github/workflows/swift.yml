@@ -24,6 +24,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: LLVM IR
-        path: Swift-C++-IR-Comparison/*/*.ll
+        path: /**/*/*.ll
 #     - name: Execute build
 #       run: ./.build/release/swift-llvm-statistics-comparison
