@@ -17,7 +17,9 @@ jobs:
       run: swift build -c release
     - name: Compile LLVM IR
       shell: bash
-      run: ./Swift-C++-IR-Comparison/createIR.sh
+      run: |
+        cd Swift-C++-IR-Comparison
+        ./createIR.sh
     - name: Upload LLVM IR
       uses: actions/upload-artifact@v3
       with:
