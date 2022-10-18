@@ -24,6 +24,6 @@ function generate_IR {
 #        docker run --mount type=bind,source=$(PWD)/$workingdirectory,target=/usr/data/ phasar -m /usr/data/$fileName -S -L --emit-statistic-as-json --project-id $fileName-results --out /usr/data
 }
 
-for FILE in $(find src -name '*.swift' -or -name '*.cpp');
+for FILE in $(find test -name '*.swift' -or -name '*.cpp');
     do generate_IR $FILE;
 done
