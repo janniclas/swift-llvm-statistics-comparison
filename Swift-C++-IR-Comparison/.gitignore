@@ -1,0 +1,13 @@
+*.silgen   
+*.sil   
+*.silgenopt   
+*.sildebug   
+*.llgen  
+*.ll  
+*.final
+default-phasar-project-*
+.DS_Store
+.vscode
+*.out
+psr-IrStatistics.json
+diffs
