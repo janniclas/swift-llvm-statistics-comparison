@@ -1,26 +1,46 @@
 import Foundation
+import ArgumentParser
+import System
 
+
+@available(macOS 11.0, *)
+struct Path: ExpressibleByArgument {
+    var filePath: FilePath
+
+    init?(argument: String) {
+        self.filePath = FilePath(argument)
+    }
+}
+
+@available(macOS 12.0, *)
 @main
-public struct swift_llvm_statistics_comparison {
+struct swift_llvm_statistics_comparison: ParsableCommand {
 
-    public static func main() {
-        let statistics = gatherStatisticsFiles(path: "/Users/struewer/git/swift-analysis-benchmark/src/linearConstantPropagation/swift")
-        print(statistics)
+    
+    @Option(help: "Directory path to scan for statistics files.")
+    var path: Path
+    
+    mutating func run() throws {
+        print("Search statistics at path: \(path)")
+        let statistics = gatherStatisticsFiles(path: path.filePath)
+        print("successfully retrieved \(statistics.count) statistics.")
         
         // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
         var diffs: [String: Diff] = [:]
         for stat in statistics {
 
-            if let normalizedModuleName = try? getNormalized(moduleName: stat.moduleName) {
+            if var normalizedModuleName = try? getNormalized(moduleName: stat.moduleName) {
                 
-                if diffs[normalizedModuleName] == nil {
-                    diffs[normalizedModuleName] = Diff()
-                }
-                
-                // TODO: check how and if changes to diff are propagated inside the dictionary
-                var diff = diffs[normalizedModuleName]!
 
-                if let fileType: BaseLanguage = try? getBaseLanguage(moduleName: stat.moduleName) {
+
+                if let fileType: BaseLanguage = try? getBaseLanguage(moduleName: &normalizedModuleName) {
+                    
+                    if diffs[normalizedModuleName] == nil {
+                        diffs[normalizedModuleName] = Diff()
+                    }
+                    
+                    let diff = diffs[normalizedModuleName]!
+                    
                     switch fileType {
                     case .swift:
                         if diff.swift == nil {
@@ -35,17 +55,34 @@ public struct swift_llvm_statistics_comparison {
                             print("Duplicate entry found for \(stat.moduleName)")
                         }
                     }
+                    
+                    if diff.swift != nil && diff.cpp != nil {
+                        diff.diff = calculateDiff(first: diff.swift!, second: diff.cpp!)
+                    }
                 }
                 
-                if diff.swift != nil && diff.cpp != nil {
-                    diff.diff = calculateDiff(first: diff.swift!, second: diff.cpp!)
-                }
+
             }
         }
-        let sortedDiffs = diffs.sorted(by: { $0.value.diff! < $1.value.diff! })
-        for sDiff in sortedDiffs {
-            print(sDiff)
+
+        let onlyCompleteDiffs = diffs.filter({$0.value.diff != nil})
+        let sortedDiffs = onlyCompleteDiffs.sorted(by: { $0.value.diff! < $1.value.diff! })
+
+        var outputPath = path.filePath
+        outputPath.append("diffs")
+
+        if(!FileManager.default.fileExists(atPath: outputPath.string)) {
+            try FileManager.default.createDirectory(atPath: outputPath.string, withIntermediateDirectories: false)
         }
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        for sDiff in sortedDiffs {
+            var fileOutput = outputPath
+            fileOutput.append(sDiff.key+".json")
+            print(outputPath.string)
+            FileManager.default.createFile(atPath: fileOutput.string, contents: try encoder.encode(sDiff.value))
+        }
+        print("Diffs were saved to \(outputPath.string)")
     }
 }
 
@@ -71,46 +108,46 @@ func singleDiff(a: Int, b: Int)-> Int {
     return diff
 }
 
-///  expected input pattern testName_cpp.ll for C++ and testName_swift.ll for Swift
-///  expected output testName
+///  expected input pattern testName.cpp.ll for C++ and testName.swift.ll for Swift
+///  expected output testName.cpp or testName.swift
 /// - Parameters:
 ///   - moduleName: The value to be normalized.
+@available(macOS 12.0, *)
 func getNormalized(moduleName: String) throws -> String {
-    var res: Substring = Substring(moduleName)
-    if let lastSlashIdx = moduleName.lastIndex(of: "/") {
-        res = moduleName.suffix(from: lastSlashIdx)
-        res.removeFirst()
-        print(res)
+
+    if let fileName = FilePath(moduleName).lastComponent {
+        return fileName.stem
     }
-    if let firstUnderscoreIdx = moduleName.firstIndex(of: "_") {
-        res = res.prefix(upTo: firstUnderscoreIdx)
-        print(res)
-        return String(res)
-    }
+    
     throw ModuleNameFormatError.normalizationFailed(moduleName: moduleName)
 }
 
-func getBaseLanguage(moduleName: String) throws -> BaseLanguage {
-    if moduleName.contains("_swift.ll") {
+func getBaseLanguage( moduleName: inout String) throws -> BaseLanguage {
+    if moduleName.contains(".swift") {
+        moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
         return BaseLanguage.swift
-    } else if moduleName.contains("_cpp.ll") {
+    } else if moduleName.contains(".cpp") {
+        moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
         return BaseLanguage.cpp
     }
 
     throw ModuleNameFormatError.noBaseLanguage(moduleName: moduleName)
 }
 
-func gatherStatisticsFiles(path: String) -> [PhasarStatistics] {
+@available(macOS 12.0, *)
+func gatherStatisticsFiles(path: FilePath) -> [PhasarStatistics] {
     var statistics: [PhasarStatistics] = []
-    let enumerator = FileManager.default.enumerator(atPath: path)
-    
+    let enumerator = FileManager.default.enumerator(atPath: path.string)
+
        while let element = enumerator?.nextObject() as? String {
-           print(element)
 
            if let fType = enumerator?.fileAttributes?[FileAttributeKey.type] as? FileAttributeType {
-               if (fType == .typeRegular && element.hasSuffix("psr-statistics.json")) {
-                   print("a file")
-                   if let stats = readContent(path: element) {
+               // we need to check the suffix, because element is the complete path to the file
+               // thus the suffix is the filename
+               if (fType == .typeRegular && element.hasSuffix("psr-IrStatistics.json")) {
+                   var cPath = path
+                   cPath.append(element)
+                   if let stats = readContent(path: cPath) {
                        statistics.append(stats)
                    }
                }
@@ -119,15 +156,17 @@ func gatherStatisticsFiles(path: String) -> [PhasarStatistics] {
     return statistics
 }
 
-func readContent(path: String)-> PhasarStatistics? {
-    if let content = FileManager.default.contents(atPath: path) {
+@available(macOS 12.0, *)
+func readContent(path: FilePath)-> PhasarStatistics? {
+
+    if let content = FileManager.default.contents(atPath: path.string) {
         if let statistics: PhasarStatistics = try? JSONDecoder().decode(PhasarStatistics.self, from: content) { return statistics}
     }
-    print("Expected statistics at path \(path)")
+    print("Expected statistics at path \(path) was not found.")
     return nil
 }
 
-struct Diff: Codable {
+class Diff: Codable {
     var diff: Int?
     var cpp: PhasarStatistics?, swift: PhasarStatistics?
 }
