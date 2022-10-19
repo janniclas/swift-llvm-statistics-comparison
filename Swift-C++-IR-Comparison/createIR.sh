@@ -21,7 +21,7 @@ function generate_IR {
         fileName=${fileName%.cpp}.cpp.ll
     fi
     echo $fileName
-      docker run --mount type=bind,source=$(PWD)/$workingdirectory,target=/usr/data/ ghcr.io/secure-software-engineering/phasar:pr-524 -m /usr/data/$fileName -S -L --emit-statistic-as-json --project-id $fileName-results --out /usr/data
+      docker run --mount type=bind,source=${PWD}/$workingdirectory,target=/usr/data/ ghcr.io/secure-software-engineering/phasar:pr-524 -m /usr/data/$fileName -S -L --emit-statistic-as-json --project-id $fileName-results --out /usr/data
 }
 
 for FILE in $(find test -name '*.swift' -or -name '*.cpp');
