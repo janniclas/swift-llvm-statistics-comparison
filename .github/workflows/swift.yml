@@ -65,13 +65,15 @@ jobs:
     needs: analysis
     runs-on: macos-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
           name: llvm-ir-statistics
-      - shell: bash
-        run: tar -xvf llvm_ir_statistics.tar -C "Swift-C++-IR-Comparison"
-      - uses: actions/checkout@v3
+      - name: Extract Analysis Results
+        run: |
+         find .
+         tar -xvf llvm_ir_statistics.tar -C "Swift-C++-IR-Comparison"
       - name: Build
         run: swift build -c release
       - name: Execute comparison
