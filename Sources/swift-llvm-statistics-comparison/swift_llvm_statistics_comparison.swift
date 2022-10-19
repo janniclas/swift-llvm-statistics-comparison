@@ -78,7 +78,7 @@ struct swift_llvm_statistics_comparison: ParsableCommand {
         encoder.outputFormatting = .prettyPrinted
         for sDiff in sortedDiffs {
             var fileOutput = outputPath
-            fileOutput.append(sDiff.key+".json")
+            fileOutput.append(sDiff.key+"-comparison.json")
             print(outputPath.string)
             FileManager.default.createFile(atPath: fileOutput.string, contents: try encoder.encode(sDiff.value))
         }
