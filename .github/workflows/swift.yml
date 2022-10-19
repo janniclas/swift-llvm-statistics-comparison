@@ -7,23 +7,25 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # ir:
-  #   runs-on: macos-latest
+  ir:
+    runs-on: macos-latest
 
-  #   steps:
+    steps:
+    - uses: actions/checkout@v3
+    - name: Compile LLVM IR
+      shell: bash
+      run: |
+        cd Swift-C++-IR-Comparison/scripts
+        ./createIR.sh
+        cd ..
+    - name: Create Tar
+      run: tar -cf llvm_ir.tar $(find . -name "*.ll")
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: llvm-ir
+        path: llvm_ir.tar
 
-  #   - name: Compile LLVM IR
-  #     shell: bash
-  #     run: |
-  #       cd Swift-C++-IR-Comparison
-  #       ./createIR.sh
-  #   - name: Create Tar
-  #     run: tar -cf llvm_ir.tar $(find . -name "*.ll")
-  #   - name: Upload Artifact
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: llvm-ir
-  #       path: llvm_ir.tar
   analysis:
     runs-on: ubuntu-latest
 
@@ -37,18 +39,18 @@ jobs:
             password: ${{ secrets.dockerlogin }}
       - name: Download Docker Image
         run: docker pull ghcr.io/secure-software-engineering/phasar:pr-524
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: llvm-ir
+      - shell: bash
+        run:
+          tar -xf llvm_ir.tar -C Swift-C++-IR-Comparison/test
       - name: Create IR and Run Analysis
         shell: bash
         run: |
-          cd Swift-C++-IR-Comparison
-          ./createIR.sh
-      - name: Create Tar
-        run: tar -cf llvm_ir.tar $(find . -name "*.ll" -or -name "psr-IrStatistics.json")
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: llvm-ir
-          path: llvm_ir.tar
+          cd Swift-C++-IR-Comparison/scripts
+          ./runDocker.sh
 
   # build:
   #   runs-on: macos-latest
