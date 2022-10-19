@@ -52,7 +52,9 @@ jobs:
           find .
           ./runDocker.sh
       - name: Create Statistics Tar
-        run: tar -cf llvm_ir_statistics.tar $(find . -name "psr-IrStatistics.json")
+        run: |
+          find .
+          tar -cf llvm_ir_statistics.tar $(find . -name "psr-IrStatistics.json")
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
