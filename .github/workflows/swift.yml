@@ -45,10 +45,11 @@ jobs:
         with:
           name: llvm-ir
       - name: Extract IR
-        run: tar -xf llvm_ir.tar -C Swift-C++-IR-Comparison
+        run: tar -xvf llvm_ir.tar -C "Swift-C++-IR-Comparison"
       - name: Run Analysis
         run: |
           cd Swift-C++-IR-Comparison/scripts
+          find .
           ./runDocker.sh
 
   # build:
