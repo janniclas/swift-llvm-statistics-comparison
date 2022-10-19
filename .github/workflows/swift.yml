@@ -7,13 +7,47 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  ir:
     runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build
-      run: swift build -c release
+    - name: Compile LLVM IR
+      shell: bash
+      run: |
+        cd Swift-C++-IR-Comparison
+        ./createIR.sh
+    - name: Create Tar
+      run: tar -cf llvm_ir.tar $(find . -name "*.ll")
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: llvm-ir
+        path: llvm_ir.tar
+  analysis:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/secure-software-engineering/phasar:pr-524
+      credentials:
+         username: ${{ github.actor }}
+         password: ${{ secrets.github_token }}
+
+    steps:
+    - name: Test
+      run: ls && ls /build/tools/phasar-llvm/
+    - name: Download IR
+      uses: actions/download-artifact@v3
+      with:
+        name: llvm-ir
+    - shell: bash
+      run: |
+        mkdir IR
+        tar -xf llvm_ir.tar -C $(pwd)/IR
+  # build:
+  #   runs-on: macos-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Build
+  #     run: swift build -c release
 #     - name: Execute build
 #       run: ./.build/release/swift-llvm-statistics-comparison
