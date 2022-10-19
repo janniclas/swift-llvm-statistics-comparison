@@ -7,6 +7,7 @@ function runDocker {
 }
 cd ..
 echo ${PWD}
+find .
 for FILE in $(find test -name '*.swift.noOpt.ll' -or -name '*.cpp.ll');
     do runDocker "$FILE";
 done
