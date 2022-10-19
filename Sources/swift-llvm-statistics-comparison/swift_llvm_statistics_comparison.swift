@@ -3,87 +3,94 @@ import ArgumentParser
 import System
 
 
-@available(macOS 11.0, *)
-struct Path: ExpressibleByArgument {
-    var filePath: FilePath
 
-    init?(argument: String) {
-        self.filePath = FilePath(argument)
-    }
-}
 
-@available(macOS 12.0, *)
 @main
 struct swift_llvm_statistics_comparison: ParsableCommand {
 
     
     @Option(help: "Directory path to scan for statistics files.")
-    var path: Path
+    var path: String
     
     mutating func run() throws {
-        print("Search statistics at path: \(path)")
-        let statistics = gatherStatisticsFiles(path: path.filePath)
-        print("successfully retrieved \(statistics.count) statistics.")
+        if #available(macOS 12.0, *) {
+            let filePath = FilePath(path)
+            print("Search statistics at path: \(path)")
+            let statistics = gatherStatisticsFiles(path: filePath)
+            print("successfully retrieved \(statistics.count) statistics.")
+            
+            // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
+            let diffs: [String: Diff] = calculateAllDiffs(statistics: statistics)
+            
+            let onlyCompleteDiffs = diffs.filter({$0.value.diff != nil})
+            let sortedDiffs = onlyCompleteDiffs.sorted(by: { $0.value.diff! < $1.value.diff! })
+            
+            try storeDiffs(diffs: sortedDiffs, basePath: filePath)
+            
+        } else {
+            print("The required macOS version is to low. We require version 12.0 or newer.")
+        }
+    }
+}
+
+@available(macOS 12.0, *)
+func storeDiffs(diffs: [Dictionary<String, Diff>.Element], basePath: FilePath) throws{
+    var outputPath = basePath
+    outputPath.append("diffs")
+    
+    if(!FileManager.default.fileExists(atPath: outputPath.string)) {
+        try FileManager.default.createDirectory(atPath: outputPath.string, withIntermediateDirectories: false)
+    }
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = .prettyPrinted
+    for diff in diffs {
+        var fileOutput = outputPath
+        fileOutput.append(diff.key+"-comparison.json")
+        print(outputPath.string)
+        FileManager.default.createFile(atPath: fileOutput.string, contents: try encoder.encode(diff.value))
+    }
+    print("Diffs were saved to \(outputPath.string)")
+}
+
+@available(macOS 12.0, *)
+func calculateAllDiffs(statistics: [PhasarStatistics] ) -> Dictionary<String, Diff> {
+    // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
+    var diffs: [String: Diff] = [:]
+    for stat in statistics {
         
-        // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
-        var diffs: [String: Diff] = [:]
-        for stat in statistics {
-
-            if var normalizedModuleName = try? getNormalized(moduleName: stat.moduleName) {
+        if var normalizedModuleName = try? getNormalized(moduleName: stat.moduleName) {
+            
+            
+            if let fileType: BaseLanguage = try? getBaseLanguage(moduleName: &normalizedModuleName) {
                 
-
-
-                if let fileType: BaseLanguage = try? getBaseLanguage(moduleName: &normalizedModuleName) {
-                    
-                    if diffs[normalizedModuleName] == nil {
-                        diffs[normalizedModuleName] = Diff()
+                if diffs[normalizedModuleName] == nil {
+                    diffs[normalizedModuleName] = Diff()
+                }
+                
+                let diff = diffs[normalizedModuleName]!
+                
+                switch fileType {
+                case .swift:
+                    if diff.swift == nil {
+                        diff.swift = stat
+                    } else {
+                        print("Duplicate entry found for \(stat.moduleName)")
                     }
-                    
-                    let diff = diffs[normalizedModuleName]!
-                    
-                    switch fileType {
-                    case .swift:
-                        if diff.swift == nil {
-                            diff.swift = stat
-                        } else {
-                            print("Duplicate entry found for \(stat.moduleName)")
-                        }
-                    case .cpp:
-                        if diff.cpp == nil {
-                            diff.cpp = stat
-                        } else {
-                            print("Duplicate entry found for \(stat.moduleName)")
-                        }
-                    }
-                    
-                    if diff.swift != nil && diff.cpp != nil {
-                        diff.diff = calculateDiff(first: diff.swift!, second: diff.cpp!)
+                case .cpp:
+                    if diff.cpp == nil {
+                        diff.cpp = stat
+                    } else {
+                        print("Duplicate entry found for \(stat.moduleName)")
                     }
                 }
                 
-
+                if diff.swift != nil && diff.cpp != nil {
+                    diff.diff = calculateDiff(first: diff.swift!, second: diff.cpp!)
+                }
             }
         }
-
-        let onlyCompleteDiffs = diffs.filter({$0.value.diff != nil})
-        let sortedDiffs = onlyCompleteDiffs.sorted(by: { $0.value.diff! < $1.value.diff! })
-
-        var outputPath = path.filePath
-        outputPath.append("diffs")
-
-        if(!FileManager.default.fileExists(atPath: outputPath.string)) {
-            try FileManager.default.createDirectory(atPath: outputPath.string, withIntermediateDirectories: false)
-        }
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        for sDiff in sortedDiffs {
-            var fileOutput = outputPath
-            fileOutput.append(sDiff.key+"-comparison.json")
-            print(outputPath.string)
-            FileManager.default.createFile(atPath: fileOutput.string, contents: try encoder.encode(sDiff.value))
-        }
-        print("Diffs were saved to \(outputPath.string)")
     }
+    return diffs
 }
 
 func calculateDiff(first: PhasarStatistics, second: PhasarStatistics) -> Int {
