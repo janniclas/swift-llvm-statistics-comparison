@@ -60,6 +60,7 @@ jobs:
           path: llvm_ir_statistics.tar
 
   differences:
+    needs: analysis
     runs-on: macos-latest
     steps:
       - name: Download Artifact
