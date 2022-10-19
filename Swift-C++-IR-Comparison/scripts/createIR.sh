@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -euxo pipefail
 function generate_IR {
     workingdirectory=${1%/*}
     if grep -qE '.swift$' <<< "$1"; then
@@ -22,6 +22,7 @@ function generate_IR {
     fi
 }
 cd ..
+mapfile -t files
 for FILE in $(find test -name '*.swift' -or -name '*.cpp');
     do generate_IR $FILE;
 done
