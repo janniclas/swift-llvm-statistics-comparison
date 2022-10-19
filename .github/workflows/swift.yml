@@ -3,8 +3,6 @@ name: Swift
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   ir:
@@ -80,4 +78,14 @@ jobs:
         run: |
           find .
           ./.build/release/swift-llvm-statistics-comparison --path $HOME
-
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: llvm-ir
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            llvm_ir_statistics.tar
+            llvm_ir.tar
