@@ -18,7 +18,7 @@ jobs:
         cd Swift-C++-IR-Comparison/scripts
         ./createIR.sh
         cd ..
-    - name: Create Tar
+    - name: Create IR Tar
       run: tar -cf llvm_ir.tar $(find . -name "*.ll")
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
@@ -46,25 +46,30 @@ jobs:
           name: llvm-ir
       - name: Extract IR
         run: tar -xvf llvm_ir.tar -C "Swift-C++-IR-Comparison"
-      - name: Run Analysis
+      - name: Run Statistics Analysis
         run: |
           cd Swift-C++-IR-Comparison/scripts
           find .
           ./runDocker.sh
+      - name: Create Statistics Tar
+        run: tar -cf llvm_ir_statistics.tar $(find . -name "psr-IrStatistics.json")
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: llvm-ir-statistics
+          path: llvm_ir_statistics.tar
 
-  # build:
-  #   runs-on: macos-latest
-  #   steps:
-    #   - name: Download Artifact
-    #   uses: actions/download-artifact@v3
-    #   with:
-    #     name: llvm-ir
-    # - shell: bash
-    #   run: |
-    #     mkdir IR
-    #     tar -xf llvm_ir.tar -C $(pwd)/IR
-  #   - uses: actions/checkout@v3
-  #   - name: Build
-  #     run: swift build -c release
-#     - name: Execute build
-#       run: ./.build/release/swift-llvm-statistics-comparison
+  differences:
+    runs-on: macos-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: llvm-ir-statistics
+      - shell: bash
+        run: tar -xvf llvm_ir_statistics.tar -C "Swift-C++-IR-Comparison"
+      - uses: actions/checkout@v3
+      - name: Build
+        run: swift build -c release
+      - name: Execute comparison
+        run: ./.build/release/swift-llvm-statistics-comparison --path {$HOME}
