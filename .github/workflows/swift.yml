@@ -7,45 +7,60 @@ on:
     branches: [ "main" ]
 
 jobs:
-  ir:
-    runs-on: macos-latest
+  # ir:
+  #   runs-on: macos-latest
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Compile LLVM IR
-      shell: bash
-      run: |
-        cd Swift-C++-IR-Comparison
-        ./createIR.sh
-    - name: Create Tar
-      run: tar -cf llvm_ir.tar $(find . -name "*.ll")
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: llvm-ir
-        path: llvm_ir.tar
+  #   steps:
+
+  #   - name: Compile LLVM IR
+  #     shell: bash
+  #     run: |
+  #       cd Swift-C++-IR-Comparison
+  #       ./createIR.sh
+  #   - name: Create Tar
+  #     run: tar -cf llvm_ir.tar $(find . -name "*.ll")
+  #   - name: Upload Artifact
+  #     uses: actions/upload-artifact@v3
+  #     with:
+  #       name: llvm-ir
+  #       path: llvm_ir.tar
   analysis:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/secure-software-engineering/phasar:pr-524
-      credentials:
-         username: ${{ github.actor }}
-         password: ${{ secrets.dockerlogin}}
 
     steps:
-    - name: Test
-      run: ls && ls /build/tools/phasar-llvm/
-    - name: Download IR
-      uses: actions/download-artifact@v3
-      with:
-        name: llvm-ir
-    - shell: bash
-      run: |
-        mkdir IR
-        tar -xf llvm_ir.tar -C $(pwd)/IR
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.dockerlogin }}
+      - name: Download Docker Image
+        run: docker pull ghcr.io/secure-software-engineering/phasar:pr-524
+      - name: Create IR and Run Analysis
+      - uses: actions/checkout@v3
+        shell: bash
+        run: |
+          cd Swift-C++-IR-Comparison
+          ./createIR.sh
+      - name: Create Tar
+        run: tar -cf llvm_ir.tar $(find . -name "*.ll" -or -name "psr-IrStatistics.json")
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: llvm-ir
+          path: llvm_ir.tar
+
   # build:
   #   runs-on: macos-latest
   #   steps:
+    #   - name: Download Artifact
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: llvm-ir
+    # - shell: bash
+    #   run: |
+    #     mkdir IR
+    #     tar -xf llvm_ir.tar -C $(pwd)/IR
   #   - uses: actions/checkout@v3
   #   - name: Build
   #     run: swift build -c release
