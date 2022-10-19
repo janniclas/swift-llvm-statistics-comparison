@@ -7,7 +7,7 @@ import System
 
 @main
 struct swift_llvm_statistics_comparison: ParsableCommand {
-
+    
     
     @Option(help: "Directory path to scan for statistics files.")
     var path: String
@@ -98,7 +98,7 @@ func calculateDiff(first: PhasarStatistics, second: PhasarStatistics) -> Int {
     // it could make sense to weigh the different categories
     // also this method produces a positive diff for every single value
     // maybe we should just make the sum positive and let some negative and
-    // some positive values weigh each other? 
+    // some positive values weigh each other?
     let insDiff = singleDiff(a: first.instructions, b: second.instructions)
     let allocaDiff = singleDiff(a: first.allocaInstructions, b: second.allocaInstructions)
     let callSiteDiff = singleDiff(a: first.callSites, b: second.callSites)
@@ -121,7 +121,7 @@ func singleDiff(a: Int, b: Int)-> Int {
 ///   - moduleName: The value to be normalized.
 @available(macOS 12.0, *)
 func getNormalized(moduleName: String) throws -> String {
-
+    
     if let fileName = FilePath(moduleName).lastComponent {
         return fileName.stem
     }
@@ -137,7 +137,7 @@ func getBaseLanguage( moduleName: inout String) throws -> BaseLanguage {
         moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
         return BaseLanguage.cpp
     }
-
+    
     throw ModuleNameFormatError.noBaseLanguage(moduleName: moduleName)
 }
 
@@ -145,27 +145,27 @@ func getBaseLanguage( moduleName: inout String) throws -> BaseLanguage {
 func gatherStatisticsFiles(path: FilePath) -> [PhasarStatistics] {
     var statistics: [PhasarStatistics] = []
     let enumerator = FileManager.default.enumerator(atPath: path.string)
-
-       while let element = enumerator?.nextObject() as? String {
-
-           if let fType = enumerator?.fileAttributes?[FileAttributeKey.type] as? FileAttributeType {
-               // we need to check the suffix, because element is the complete path to the file
-               // thus the suffix is the filename
-               if (fType == .typeRegular && element.hasSuffix("psr-IrStatistics.json")) {
-                   var cPath = path
-                   cPath.append(element)
-                   if let stats = readContent(path: cPath) {
-                       statistics.append(stats)
-                   }
-               }
-           }
-       }
+    
+    while let element = enumerator?.nextObject() as? String {
+        
+        if let fType = enumerator?.fileAttributes?[FileAttributeKey.type] as? FileAttributeType {
+            // we need to check the suffix, because element is the complete path to the file
+            // thus the suffix is the filename
+            if (fType == .typeRegular && element.hasSuffix("psr-IrStatistics.json")) {
+                var cPath = path
+                cPath.append(element)
+                if let stats = readContent(path: cPath) {
+                    statistics.append(stats)
+                }
+            }
+        }
+    }
     return statistics
 }
 
 @available(macOS 12.0, *)
 func readContent(path: FilePath)-> PhasarStatistics? {
-
+    
     if let content = FileManager.default.contents(atPath: path.string) {
         if let statistics: PhasarStatistics = try? JSONDecoder().decode(PhasarStatistics.self, from: content) { return statistics}
     }
@@ -182,7 +182,7 @@ struct PhasarStatistics: Codable {
     let allocaInstructions, callSites, functions, globalVariables: Int
     let instructions: Int
     let moduleName: String
-
+    
     enum CodingKeys: String, CodingKey {
         case allocaInstructions = "AllocaInstructions"
         case callSites = "CallSites"
