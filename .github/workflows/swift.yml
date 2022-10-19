@@ -27,6 +27,7 @@ jobs:
         path: llvm_ir.tar
 
   analysis:
+    needs: ir
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +46,7 @@ jobs:
           name: llvm-ir
       - shell: bash
         run:
-          tar -xf llvm_ir.tar -C Swift-C++-IR-Comparison/test
+          tar -xf llvm_ir.tar -C Swift-C++-IR-Comparison
       - name: Create IR and Run Analysis
         shell: bash
         run: |
