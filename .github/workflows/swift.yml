@@ -30,7 +30,7 @@ jobs:
       image: ghcr.io/secure-software-engineering/phasar:pr-524
       credentials:
          username: ${{ github.actor }}
-         password: ${{ secrets.github_token }}
+         password: ${{ secrets.dockerlogin}}
 
     steps:
     - name: Test
