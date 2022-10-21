@@ -1,0 +1,8 @@
+{
+    "AllocaInstructions": 4,
+    "CallSites": 12,
+    "Functions": 12,
+    "GlobalVariables": 12,
+    "Instructions": 40,
+    "ModuleName": "/usr/data/CompoundAssignmentAdd.swift.noOpt.ll"
+}

@@ -13,46 +13,80 @@ struct swift_llvm_statistics_comparison: ParsableCommand {
     var path: String
     
     mutating func run() throws {
-        if #available(macOS 12.0, *) {
-            let filePath = FilePath(path)
-            print("Search statistics at path: \(path)")
-            let statistics = gatherStatisticsFiles(path: filePath)
-            print("successfully retrieved \(statistics.count) statistics.")
+
+        print("Search statistics at path: \(path)")
+        let statistics = gatherStatisticsFiles(path: path)
+        print("successfully retrieved \(statistics.count) statistics.")
+        
+        // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
+        let diffs: [String: Diff] = calculateAllDiffs(statistics: statistics)
+        
+        let onlyCompleteDiffs = diffs.filter({$0.value.diff != nil})
+        let sortedDiffs = onlyCompleteDiffs.sorted(by: { $0.value.diff! < $1.value.diff! })
+        
+        try storeDiffs(diffs: sortedDiffs, basePath: path)
             
-            // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
-            let diffs: [String: Diff] = calculateAllDiffs(statistics: statistics)
-            
-            let onlyCompleteDiffs = diffs.filter({$0.value.diff != nil})
-            let sortedDiffs = onlyCompleteDiffs.sorted(by: { $0.value.diff! < $1.value.diff! })
-            
-            try storeDiffs(diffs: sortedDiffs, basePath: filePath)
-            
-        } else {
-            print("The required macOS version is to low. We require version 12.0 or newer.")
-        }
     }
 }
 
-@available(macOS 12.0, *)
-func storeDiffs(diffs: [Dictionary<String, Diff>.Element], basePath: FilePath) throws{
-    var outputPath = basePath
-    outputPath.append("diffs")
+struct FileHelper {
+    /// If append fails or missbehaves it returns basePath.
+    static func appendToPath(basePath: String, components: String...) -> String {
+        if #available(macOS 12.0, *) {
+            var fp = FilePath(basePath)
+            for component in components {
+                fp.append(component)
+            }
+            return fp.string
+        } else {
+            var url = URL(string: basePath)
+            if (url != nil) {
+                for component in components {
+                    url = url?.appendingPathExtension(component)
+                }
+                return url!.path
+            }
+        }
+        return basePath
+    }
     
-    if(!FileManager.default.fileExists(atPath: outputPath.string)) {
-        try FileManager.default.createDirectory(atPath: outputPath.string, withIntermediateDirectories: false)
+    static func getFileName(path: String) throws -> String {
+        if #available(macOS 12.0, *) {
+            if let fileName = FilePath(path).lastComponent {
+                return fileName.stem
+            }
+        } else {
+            let url = URL(string: path)
+            if (url != nil && url!.isFileURL) {
+                return url!.lastPathComponent
+            }
+        }
+        throw FileHelperError.getFileNameFailed(path: path)
+    }
+    
+    enum FileHelperError: Error {
+        case getFileNameFailed(path: String)
+    }
+}
+
+
+func storeDiffs(diffs: [Dictionary<String, Diff>.Element], basePath: String) throws {
+    var outputPath = FileHelper.appendToPath(basePath: basePath, components: "diffs")
+    
+    if(!FileManager.default.fileExists(atPath: outputPath)) {
+        try FileManager.default.createDirectory(atPath: outputPath, withIntermediateDirectories: false)
     }
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
     for diff in diffs {
-        var fileOutput = outputPath
-        fileOutput.append(diff.key+"-comparison.json")
-        print(outputPath.string)
-        FileManager.default.createFile(atPath: fileOutput.string, contents: try encoder.encode(diff.value))
+        var fileOutput = FileHelper.appendToPath(basePath: outputPath, components: diff.key+"-comparison.json")
+        print(fileOutput)
+        FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(diff.value))
     }
-    print("Diffs were saved to \(outputPath.string)")
+    print("Diffs were saved to \(outputPath)")
 }
 
-@available(macOS 12.0, *)
+
 func calculateAllDiffs(statistics: [PhasarStatistics] ) -> Dictionary<String, Diff> {
     // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
     var diffs: [String: Diff] = [:]
@@ -119,14 +153,10 @@ func singleDiff(a: Int, b: Int)-> Int {
 ///  expected output testName.cpp or testName.swift
 /// - Parameters:
 ///   - moduleName: The value to be normalized.
-@available(macOS 12.0, *)
 func getNormalized(moduleName: String) throws -> String {
     
-    if let fileName = FilePath(moduleName).lastComponent {
-        return fileName.stem
-    }
-    
-    throw ModuleNameFormatError.normalizationFailed(moduleName: moduleName)
+    let result = try FileHelper.getFileName(path: moduleName)
+    return result
 }
 
 func getBaseLanguage( moduleName: inout String) throws -> BaseLanguage {
@@ -141,10 +171,9 @@ func getBaseLanguage( moduleName: inout String) throws -> BaseLanguage {
     throw ModuleNameFormatError.noBaseLanguage(moduleName: moduleName)
 }
 
-@available(macOS 12.0, *)
-func gatherStatisticsFiles(path: FilePath) -> [PhasarStatistics] {
+func gatherStatisticsFiles(path: String) -> [PhasarStatistics] {
     var statistics: [PhasarStatistics] = []
-    let enumerator = FileManager.default.enumerator(atPath: path.string)
+    let enumerator = FileManager.default.enumerator(atPath: path)
     
     while let element = enumerator?.nextObject() as? String {
         
@@ -152,8 +181,7 @@ func gatherStatisticsFiles(path: FilePath) -> [PhasarStatistics] {
             // we need to check the suffix, because element is the complete path to the file
             // thus the suffix is the filename
             if (fType == .typeRegular && element.hasSuffix("psr-IrStatistics.json")) {
-                var cPath = path
-                cPath.append(element)
+                var cPath = FileHelper.appendToPath(basePath: path, components: element)
                 if let stats = readContent(path: cPath) {
                     statistics.append(stats)
                 }
@@ -163,10 +191,10 @@ func gatherStatisticsFiles(path: FilePath) -> [PhasarStatistics] {
     return statistics
 }
 
-@available(macOS 12.0, *)
-func readContent(path: FilePath)-> PhasarStatistics? {
+
+func readContent(path: String)-> PhasarStatistics? {
     
-    if let content = FileManager.default.contents(atPath: path.string) {
+    if let content = FileManager.default.contents(atPath: path) {
         if let statistics: PhasarStatistics = try? JSONDecoder().decode(PhasarStatistics.self, from: content) { return statistics}
     }
     print("Expected statistics at path \(path) was not found.")
