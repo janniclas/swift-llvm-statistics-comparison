@@ -71,7 +71,7 @@ struct FileHelper {
 
 
 func storeDiffs(diffs: [Dictionary<String, Diff>.Element], basePath: String) throws {
-    var outputPath = FileHelper.appendToPath(basePath: basePath, components: "diffs")
+    let outputPath = FileHelper.appendToPath(basePath: basePath, components: "diffs")
     
     if(!FileManager.default.fileExists(atPath: outputPath)) {
         try FileManager.default.createDirectory(atPath: outputPath, withIntermediateDirectories: false)
@@ -79,7 +79,7 @@ func storeDiffs(diffs: [Dictionary<String, Diff>.Element], basePath: String) thr
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
     for diff in diffs {
-        var fileOutput = FileHelper.appendToPath(basePath: outputPath, components: diff.key+"-comparison.json")
+        let fileOutput = FileHelper.appendToPath(basePath: outputPath, components: diff.key+"-comparison.json")
         print(fileOutput)
         FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(diff.value))
     }
@@ -181,7 +181,7 @@ func gatherStatisticsFiles(path: String) -> [PhasarStatistics] {
             // we need to check the suffix, because element is the complete path to the file
             // thus the suffix is the filename
             if (fType == .typeRegular && element.hasSuffix("psr-IrStatistics.json")) {
-                var cPath = FileHelper.appendToPath(basePath: path, components: element)
+                let cPath = FileHelper.appendToPath(basePath: path, components: element)
                 if let stats = readContent(path: cPath) {
                     statistics.append(stats)
                 }
