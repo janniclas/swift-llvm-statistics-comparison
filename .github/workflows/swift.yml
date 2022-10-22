@@ -79,7 +79,7 @@ jobs:
       - name: Create Comparison Tar
         run: |
           find .
-          tar -cvf llvm_ir_statistics_comparison.tar $(find . -name "*-comparison.json")
+          tar -cvf llvm_ir_statistics_comparison.tar $(find /Users/runner/diffs -name "*-comparison.json")
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
