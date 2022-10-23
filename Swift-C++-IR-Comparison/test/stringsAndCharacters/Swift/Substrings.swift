@@ -17,13 +17,13 @@
 @main
 struct MyMain {
 
-  static func main() {
-    let greeting = "Hello, world!"
-    let index = greeting.firstIndex(of: ",") ?? greeting.endIndex
-    let beginning = greeting[..<index]
-    // beginning is "Hello"
+    static func main() {
+        let greeting = "Hello, world!"
+        let index = greeting.firstIndex(of: ",") ?? greeting.endIndex
+        let beginning = greeting[..<index]
+        // beginning is "Hello"
 
-    // Convert the result to a String for long-term storage.
-    let newString = String(beginning)
-  }
+        // Convert the result to a String for long-term storage.
+        let newString = String(beginning)
+    }
 }

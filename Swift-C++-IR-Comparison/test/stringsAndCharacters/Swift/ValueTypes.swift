@@ -7,32 +7,32 @@
 @main
 struct MyMain {
 
-  static func main() {
-    // search builtinStringLiteral.* in swift repository
-    // sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC
-    let greeting = "Hello World!"
-    takeStringGiveString(input: greeting)
-    takeStringMutateGiveString(input: greeting)
-    identity(input: greeting)
+    static func main() {
+        // search builtinStringLiteral.* in swift repository
+        // sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC
+        let greeting = "Hello World!"
+        takeStringGiveString(input: greeting)
+        takeStringMutateGiveString(input: greeting)
+        identity(input: greeting)
 
-  }
+    }
 
-  // Behind the scenes, Swift’s compiler optimizes string usage so that actual
-  // copying takes place only when absolutely necessary. This means you always
-  // get great performance when working with strings as value types.
-  static func takeStringMutateGiveString(input: String) -> String {
-    var mutable = input
-    mutable += " Awesome Day."
-    return mutable
-  }
+    // Behind the scenes, Swift’s compiler optimizes string usage so that actual
+    // copying takes place only when absolutely necessary. This means you always
+    // get great performance when working with strings as value types.
+    static func takeStringMutateGiveString(input: String) -> String {
+        var mutable = input
+        mutable += " Awesome Day."
+        return mutable
+    }
 
-  static func takeStringGiveString(input: String) -> String {
-    let copied = input
-    return copied
-  }
+    static func takeStringGiveString(input: String) -> String {
+        let copied = input
+        return copied
+    }
 
-  static func identity(input: String) -> String {
-    return input
-  }
+    static func identity(input: String) -> String {
+        return input
+    }
 
 }
