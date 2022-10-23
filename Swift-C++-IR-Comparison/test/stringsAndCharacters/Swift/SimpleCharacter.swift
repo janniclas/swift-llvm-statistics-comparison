@@ -1,8 +1,7 @@
-
 @main
 struct MyMain {
 
-    static func main() {
-        let exclamationMark: Character = "!"
-    }
+  static func main() {
+    let exclamationMark: Character = "!"
+  }
 }
