@@ -1,8 +1,7 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jan-Niclas Strüwer on 24.10.22.
-//
+@main
+struct MyMain {
 
-import Foundation
+    static func main() {
+        var namesOfIntegers: [Int: Int] = [5: 32, 4: 42]
+    }
+}

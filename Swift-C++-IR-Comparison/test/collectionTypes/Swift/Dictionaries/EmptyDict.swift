@@ -1,8 +1,7 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jan-Niclas Strüwer on 24.10.22.
-//
+@main
+struct MyMain {
 
-import Foundation
+    static func main() {
+        var empty: [Int: Int] = [;]
+    }
+}
