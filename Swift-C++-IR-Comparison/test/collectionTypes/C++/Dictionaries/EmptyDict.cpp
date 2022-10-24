@@ -1,8 +1,6 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jan-Niclas Strüwer on 24.10.22.
-//
 
-import Foundation
+#include <map>
+int main()
+{
+    std::map<int, int> namesOfIntegers;
+}

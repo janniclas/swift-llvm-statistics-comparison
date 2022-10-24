@@ -1,8 +1,8 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jan-Niclas Strüwer on 24.10.22.
-//
-
-import Foundation
+#include <map>
+int main()
+{
+    std::map<int, int> namesOfIntegers = {{5,32}, {4,42}};
+    auto it = namesOfIntegers.begin();
+    it++;
+    namesOfIntegers.erase(it);
+}
