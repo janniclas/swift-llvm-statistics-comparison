@@ -1,9 +1,10 @@
-@main
-struct MyMain {
+// @main
+// struct MyMain {
 
-    static func main() {
-        let oddDigits: Set = [1, 3, 5, 7, 9]
-        let singleDigitPrimeNumbers: Set = [2, 3, 5, 7]
-        oddDigits.symmetricDifference(singleDigitPrimeNumbers)
-    }
-}
+//     static func main() {
+//         let oddDigits: Set = [1, 3, 5, 7, 9]
+//         let singleDigitPrimeNumbers: Set = [2, 3, 5, 7]
+//         oddDigits.symmetricDifference(singleDigitPrimeNumbers)
+//     }
+// }
+//TODO: I don't see an equivalent right now
