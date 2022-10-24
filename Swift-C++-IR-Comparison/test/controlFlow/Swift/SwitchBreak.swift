@@ -10,7 +10,7 @@ struct MyMain {
         var max = 7
         switch input {
         case (let x, 0):
-            break;
+            break
         case (0, let y):
             counter = -y
         case let (x, y):
