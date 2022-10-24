@@ -1,10 +1,10 @@
 @main
 struct MyMain {
-    
+
     static func main() {
         let res = switchMe(input: 1)
     }
-    
+
     static func switchMe(input: Int) -> Int {
         var counter = 0
         var max = 7

@@ -2,6 +2,6 @@
 struct MyMain {
 
     static func main() {
-        var empty: [Int: Int] = [;]
+        var empty: [Int: Int] = [:]
     }
 }
