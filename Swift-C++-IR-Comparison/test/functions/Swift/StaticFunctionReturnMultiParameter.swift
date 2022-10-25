@@ -2,7 +2,7 @@
 struct MyMain {
 
     static func main() {
-        let myRes = identity(x: 42)
+        let myRes = identity(x: 42, t: true)
     }
     static func identity(x: Int, t: Bool)-> Int {
         if(t) {
