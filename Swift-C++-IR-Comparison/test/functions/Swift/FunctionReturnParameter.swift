@@ -7,6 +7,6 @@ struct MyMain {
 
 }
 
-func identity(x: Int)-> Int {
+func identity(x: Int) -> Int {
     return x
 }

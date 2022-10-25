@@ -10,5 +10,5 @@ struct MyMain {
 func paramNoReturn(x: Int) {
     let a = 5
     let b = 10
-    let c = a+b+x
+    let c = a + b + x
 }

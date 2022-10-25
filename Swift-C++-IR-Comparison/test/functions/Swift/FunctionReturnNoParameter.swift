@@ -7,9 +7,9 @@ struct MyMain {
 
 }
 
-func noParamWithReturn()-> Int {
+func noParamWithReturn() -> Int {
     let a = 5
     let b = 10
-    let c = a+b
+    let c = a + b
     return c
 }

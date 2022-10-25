@@ -8,7 +8,6 @@ struct MyMain {
     static func paramNoReturn(x: Int, y: Int) {
         let a = 5
         let b = 10
-        let c = a+b+x+y
+        let c = a + b + x + y
     }
 }
-

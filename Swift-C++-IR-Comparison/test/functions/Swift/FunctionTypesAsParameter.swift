@@ -2,7 +2,7 @@
 struct MyMain {
 
     static func main() {
-        var mathFunction: (Int, Int) -> Int = addTwoInts    
+        var mathFunction: (Int, Int) -> Int = addTwoInts
         var result = takeMathFunction(mathFunction, 42, 44)
     }
 

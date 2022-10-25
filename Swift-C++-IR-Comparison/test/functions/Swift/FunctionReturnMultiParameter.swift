@@ -7,8 +7,8 @@ struct MyMain {
 
 }
 
-func identity(x: Int, t: Bool)-> Int {
-    if(t) {
+func identity(x: Int, t: Bool) -> Int {
+    if t {
         return x
     } else {
         return -x
