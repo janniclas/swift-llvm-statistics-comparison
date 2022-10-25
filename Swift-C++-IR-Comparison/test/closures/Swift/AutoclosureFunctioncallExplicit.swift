@@ -17,4 +17,3 @@ struct MyMain {
         serve(customer: customersInLine.remove(at: 0))
     }
 }
-

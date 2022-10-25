@@ -15,4 +15,3 @@ struct MyMain {
         let next = customerProvider()
     }
 }
-
