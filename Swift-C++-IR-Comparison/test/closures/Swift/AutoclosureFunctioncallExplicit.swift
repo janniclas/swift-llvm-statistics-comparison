@@ -9,18 +9,12 @@
 struct MyMain {
 
     static func main() {
-        let incrementByTen = makeIncrementer(forIncrement: 10)
-        incrementByTen()
-        incrementByTen()
-    }
+        var customersInLine = [1, 2, 3, 4, 5, 6, 42]
 
+        func serve(customer customerProvider: @autoclosure () -> Int) {
+            let tmp = customerProvider()
+        }
+        serve(customer: customersInLine.remove(at: 0))
+    }
 }
 
-func makeIncrementer(forIncrement amount: Int) -> () -> Int {
-    var runningTotal = 0
-    func incrementer() -> Int {
-        runningTotal += amount
-        return runningTotal
-    }
-    return incrementer
-}

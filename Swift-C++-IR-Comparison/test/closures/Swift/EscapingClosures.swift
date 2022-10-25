@@ -9,18 +9,15 @@
 struct MyMain {
 
     static func main() {
-        let incrementByTen = makeIncrementer(forIncrement: 10)
-        incrementByTen()
-        incrementByTen()
+        var completionHandlers: [() -> Void] = []
+        func someFunctionWithEscapingClosure(completionHandler: @escaping () -> Void) {
+            completionHandlers.append(completionHandler)
+        }
+        for h in completionHandlers {
+            h()
+        }
     }
 
 }
 
-func makeIncrementer(forIncrement amount: Int) -> () -> Int {
-    var runningTotal = 0
-    func incrementer() -> Int {
-        runningTotal += amount
-        return runningTotal
-    }
-    return incrementer
-}
+

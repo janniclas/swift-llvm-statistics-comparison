@@ -9,18 +9,10 @@
 struct MyMain {
 
     static func main() {
-        let incrementByTen = makeIncrementer(forIncrement: 10)
-        incrementByTen()
-        incrementByTen()
-    }
+        var customersInLine = [1, 2, 3, 4, 5, 6, 42]
 
+        let customerProvider = { customersInLine.remove(at: 0) }
+        let next = customerProvider()
+    }
 }
 
-func makeIncrementer(forIncrement amount: Int) -> () -> Int {
-    var runningTotal = 0
-    func incrementer() -> Int {
-        runningTotal += amount
-        return runningTotal
-    }
-    return incrementer
-}
