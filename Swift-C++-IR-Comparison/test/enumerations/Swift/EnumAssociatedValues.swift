@@ -1,7 +1,7 @@
 // You can define Swift enumerations to store associated
 // values of any given type, and the value types can be
-// different for each case of the enumeration if needed. 
-// Enumerations similar to these are known as discriminated 
+// different for each case of the enumeration if needed.
+// Enumerations similar to these are known as discriminated
 // unions, tagged unions, or variants in other programming languages.
 
 enum Barcode {

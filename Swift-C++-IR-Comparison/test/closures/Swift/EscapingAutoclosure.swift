@@ -15,6 +15,7 @@ struct MyMain {
         func collectProvider(_ customerProvider: @autoclosure @escaping () -> Int) {
             customerProviders.append(customerProvider)
         }
+
         collectProvider(customersInLine.remove(at: 0))
         collectProvider(customersInLine.remove(at: 0))
 
