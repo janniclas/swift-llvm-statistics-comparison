@@ -1,4 +1,3 @@
-
 @main
 struct MyMain {
 
@@ -43,4 +42,3 @@ class Player {
         playerName = name
     }
 }
-
