@@ -7,8 +7,9 @@
 struct MyMain {
 
     static func main() {
-        var square = Rect(origin: Point(x: 0.0, y: 0.0),
-                          size: Size(width: 10.0, height: 10.0))
+        var square = Rect(
+            origin: Point(x: 0.0, y: 0.0),
+            size: Size(width: 10.0, height: 10.0))
         let initialSquareCenter = square.center
         // initialSquareCenter is at (5.0, 5.0)
         square.center = Point(x: 15.0, y: 15.0)
@@ -35,4 +36,3 @@ struct Rect {
         }
     }
 }
-

@@ -18,7 +18,7 @@ class StepCounter {
             print("About to set totalSteps to \(newTotalSteps)")
         }
         didSet {
-            if totalSteps > oldValue  {
+            if totalSteps > oldValue {
                 print("Added \(totalSteps - oldValue) steps")
             }
         }
