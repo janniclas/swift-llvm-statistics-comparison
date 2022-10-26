@@ -1,3 +1,6 @@
+//TODO: Learning - it makes a huge difference in the generated IR, wether
+// the pointer 'copied' is defined as a let constant or a variable!
+
 @main
 struct MyMain {
 
