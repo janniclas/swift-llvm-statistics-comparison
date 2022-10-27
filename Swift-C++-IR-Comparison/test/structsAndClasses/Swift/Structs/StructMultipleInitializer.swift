@@ -3,8 +3,9 @@ struct MyMain {
 
     static func main() {
         let basicRect = Rect()
-        let originRect = Rect(origin: Point(x: 2.0, y: 2.0),
-                              size: Size(width: 5.0, height: 5.0))
+        let originRect = Rect(
+            origin: Point(x: 2.0, y: 2.0),
+            size: Size(width: 5.0, height: 5.0))
     }
 }
 struct Rect {
