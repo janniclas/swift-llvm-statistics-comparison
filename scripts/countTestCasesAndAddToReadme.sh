@@ -2,13 +2,13 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR/..
 
 counterSwift=0
-for FILE in $(find . -name '*.swift');
+for FILE in $(find Swift-C++-Testsuite -name '*.swift');
 do let counterSwift=counterSwift+1
 done
 echo Number Swift Tests $counterSwift
 
 counterCpp=0
-for FILE in $(find . -name '*.cpp');
+for FILE in $(find Swift-C++-Testsuite -name '*.cpp');
 do let counterCpp=counterCpp+1
 done
 echo Number Swift Tests $counterCpp
