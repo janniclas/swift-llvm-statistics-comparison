@@ -21,7 +21,8 @@ function generate_IR {
         fileName=${fileName%.cpp}.cpp.ll
     fi
 }
-cd ..
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd $SCRIPT_DIR/..
 for FILE in $(find test -name '*.swift' -or -name '*.cpp');
     do generate_IR $FILE;
 done
