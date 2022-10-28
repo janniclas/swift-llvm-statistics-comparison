@@ -15,7 +15,7 @@ jobs:
     - name: Compile LLVM IR
       shell: bash
       run: |
-        cd Swift-C++-IR-Comparison/scripts
+        cd Swift-C++-Testsuite/scripts
         ./createIR.sh
         cd ..
     - name: Create IR Tar
@@ -45,10 +45,10 @@ jobs:
         with:
           name: llvm-ir
       - name: Extract IR
-        run: tar -xvf llvm_ir.tar -C "Swift-C++-IR-Comparison"
+        run: tar -xvf llvm_ir.tar -C "Swift-C++-Testsuite"
       - name: Run Statistics Analysis
         run: |
-          cd Swift-C++-IR-Comparison/scripts
+          cd Swift-C++-Testsuite/scripts
           ./runDocker.sh
       - name: Create Statistics Tar
         run: |
@@ -70,11 +70,14 @@ jobs:
           name: llvm-ir-statistics
       - name: Extract Analysis Results
         run: |
-         tar -xvf llvm_ir_statistics.tar -C "Swift-C++-IR-Comparison"
+         tar -xvf llvm_ir_statistics.tar -C "Swift-C++-Testsuite"
       - name: Build
-        run: swift build -c release
+        run: |
+          cd ComparisonTool 
+          swift build -c release
       - name: Execute comparison
         run: |
+          cd ComparisonTool 
           ./.build/release/swift-llvm-statistics-comparison --path $HOME
       - name: Create Comparison Tar
         run: |
