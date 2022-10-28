@@ -8,7 +8,7 @@ done
 echo Number Swift Tests $counterSwift
 
 counterCpp=0
-for FILE in $(find . -name '*.swift');
+for FILE in $(find . -name '*.cpp');
 do let counterCpp=counterCpp+1
 done
 echo Number Swift Tests $counterCpp
