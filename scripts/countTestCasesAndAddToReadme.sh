@@ -2,7 +2,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR/..
 
 counterSwift=0
-for FILE in $(find Swift-C++-Testsuite -name '*.swift');
+for FILE in $(find Swift-C++-Testsuite -name '*.swift' -not -path "*/.build/*" -not -path "*/Tests/*");
 do let counterSwift=counterSwift+1
 done
 echo Number Swift Tests $counterSwift
