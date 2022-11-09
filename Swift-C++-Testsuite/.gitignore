@@ -11,3 +11,4 @@ default-phasar-project-*
 *.out
 psr-IrStatistics.json
 diffs
+psr-report.txt
