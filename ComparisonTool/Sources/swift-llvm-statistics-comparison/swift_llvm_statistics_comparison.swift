@@ -4,10 +4,8 @@ import Foundation
 @main
 @available(macOS 10.15, *)
 struct swift_llvm_statistics_comparison: AsyncParsableCommand {
-
     @Option(help: "Directory path to scan for files.")
     var path: String
-
 }
 
 @available(macOS 10.15, *)

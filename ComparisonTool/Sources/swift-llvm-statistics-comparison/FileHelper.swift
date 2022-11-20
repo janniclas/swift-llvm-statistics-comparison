@@ -21,12 +21,11 @@ func appendToPath(basePath: String, components: String...) -> String {
         }
         return fp.string
     } else {
-        var url = URL(string: basePath)
-        if url != nil {
+        if var url = URL(string: basePath) {
             for component in components {
-                url = url?.appendingPathExtension(component)
+                url = url.appendingPathExtension(component)
             }
-            return url!.path
+            return url.path
         }
     }
     return basePath
@@ -38,9 +37,10 @@ func getFileName(path: String) throws -> String {
             return fileName.stem
         }
     } else {
-        let url = URL(string: path)
-        if url != nil && url!.isFileURL {
-            return url!.lastPathComponent
+        if let url = URL(string: path) {
+            if url.isFileURL {
+                return url.lastPathComponent
+            }
         }
     }
     throw FileHelperError.getFileNameFailed(path: path)

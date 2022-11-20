@@ -72,9 +72,8 @@ struct DiffCalculator {
                             print("Duplicate entry found for \(stat.moduleName)")
                         }
                     }
-
-                    if diff.swift != nil && diff.cpp != nil {
-                        diff.diff = calculateDiff(first: diff.swift!, second: diff.cpp!)
+                    if let ds = diff.swift, let dc = diff.cpp {
+                        diff.diff = calculateDiff(ds, dc)
                     }
                 }
             }
@@ -82,21 +81,21 @@ struct DiffCalculator {
         return diffs
     }
 
-    private func calculateDiff(first: PhasarStatistics, second: PhasarStatistics) -> Int {
+    private func calculateDiff(_ first: PhasarStatistics, _ second: PhasarStatistics) -> Int {
         // TODO: figure out if this makes sense
         // it could make sense to weigh the different categories
         // also this method produces a positive diff for every single value
         // maybe we should just make the sum positive and let some negative and
         // some positive values weigh each other?
-        let insDiff = singleDiff(a: first.instructions, b: second.instructions)
-        let allocaDiff = singleDiff(a: first.allocaInstructions, b: second.allocaInstructions)
-        let callSiteDiff = singleDiff(a: first.callSites, b: second.callSites)
-        let functionsDiff = singleDiff(a: first.functions, b: second.functions)
-        let globalDiff = singleDiff(a: first.globalVariables, b: second.globalVariables)
+        let insDiff = singleDiff(first.instructions, second.instructions)
+        let allocaDiff = singleDiff(first.allocaInstructions, second.allocaInstructions)
+        let callSiteDiff = singleDiff(first.callSites, second.callSites)
+        let functionsDiff = singleDiff(first.functions, second.functions)
+        let globalDiff = singleDiff(first.globalVariables, second.globalVariables)
         return insDiff + allocaDiff + callSiteDiff + functionsDiff + globalDiff
     }
 
-    private func singleDiff(a: Int, b: Int) -> Int {
+    private func singleDiff(_ a: Int, _ b: Int) -> Int {
         var diff = a - b
         if diff < 0 {
             diff = diff * -1
