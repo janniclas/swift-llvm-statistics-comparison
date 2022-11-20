@@ -4,7 +4,7 @@
 // Enumerations similar to these are known as discriminated
 // unions, tagged unions, or variants in other programming languages.
 
-enum Barcode {
+enum Barcode {  //TODO: std::variants + tuples
     case upc(Int, Int, Int, Int)
     case qrCode(String)
 }
