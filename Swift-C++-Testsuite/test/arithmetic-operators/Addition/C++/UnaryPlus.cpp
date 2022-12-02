@@ -1,6 +1,7 @@
 
 int main() {
-    int x = -1;
-    int y = +x;
-    return y;
+    int a = -1;
+    // this is a no-op
+    int b = +a;
+    return b;
 }

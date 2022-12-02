@@ -138,10 +138,20 @@ struct DiffCalculator {
         enum CodingKeys: String, CodingKey {
             case allocaInstructions = "AllocaInstructions"
             case callSites = "CallSites"
-            case functions = "Functions"
-            case globalVariables = "GlobalVariables"
-            case instructions = "Instructions"
+            case functions = "Functions"  // together with callsites an indication of how distributed the code is. is function handling expensive?
+            case globalVariables = "GlobalVariables"  // have to be taken into account in every function --> increases analysis state
+            case instructions = "Instructions"  // size of the IR --> more to analyze
             case moduleName = "ModuleName"
+            // if / else statements (phi nodes) --> we need to overapproximate, which is not good for our precision
+            // switch, br, ... (terminator instructions) --> jumps in the control flow are most likely expensive
+            // ret statements
+            // arrays, vector, ... maybe? or in general data structures, because field sensitivity is still painful?
+            // loops
+            // everything which creates a basic block (jump targets)
+            // virtual method calls --> hard to derive?
+            // maybe just count field accesses
+            // getelementptr --> array or struct access
+            // aliases (count assignemt stmts for pointers)
         }
     }
 
