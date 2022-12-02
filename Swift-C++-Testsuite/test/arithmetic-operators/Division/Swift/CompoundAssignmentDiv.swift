@@ -2,14 +2,16 @@
 struct MyMain {
 
     static func main() {
-        let b = -1
-        let a = simplediv(x: b, y: 42)
+        let _ = compoundAssignment(x: 15)
     }
 
-    // We need to store, return, or use the result of the divition to keep
-    // the compiler to remove it during optimization.
-    static func simplediv(x: Int, y: Int) -> Int {
-        let tmp = x / y
-        return tmp
+    // Code is semantically equivalent to the normal add test.
+    // Slight difference, because it doesn't generate the llvm.lifetime
+    // operations, but this shouldn't have any implications to any static
+    // code analyses.
+    static func compoundAssignment(x: Int) -> Int {
+        var a = x
+        a /= 5
+        return a
     }
 }

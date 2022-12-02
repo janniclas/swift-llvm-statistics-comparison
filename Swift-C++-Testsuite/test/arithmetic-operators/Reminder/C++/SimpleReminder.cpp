@@ -1,7 +1,6 @@
 
 int main() {
-    int x = -1;
-    int y = 42;
-    int a = x % y;
-    return a;
+    int a = 43;
+    int b = a % 2;
+    return b;
 }

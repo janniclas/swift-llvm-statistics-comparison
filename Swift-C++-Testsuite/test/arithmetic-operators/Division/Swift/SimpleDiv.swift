@@ -2,19 +2,15 @@
 struct MyMain {
 
     static func main() {
-        let b = -1
-        // TODO: need to check wether the compiler also replaces the calculation
-        // here.
-        let a = compoundAssignmentdiv(x: b, y: 42)
+        // The code of this method can't be directly placed inside
+        // the main function or it would be removed by the compiler
+        // due to mandatory optimizations.
+        var _ = simpleDiv(x: 15)
     }
 
-    // Code is semantically equivalent to the normal div test.
-    // Slight difference, because it doesn't generate the llvm.lifetime
-    // operations, but this shouldn't have any implications to any static
-    // code analyses.
-    static func compoundAssignmentdiv(x: Int, y: Int) -> Int {
-        var tmp = x
-        tmp /= y
-        return tmp
+    static func simpleDiv(x: Int) -> Int {
+        var a = x
+        var b = a / 5
+        return b
     }
 }

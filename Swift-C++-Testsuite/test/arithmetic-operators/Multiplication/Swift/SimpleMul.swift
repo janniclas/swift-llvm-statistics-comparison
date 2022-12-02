@@ -5,14 +5,14 @@ struct MyMain {
         // The code of this method can't be directly placed inside
         // the main function or it would be removed by the compiler
         // and replaced by the result.
-        // TODO: need to check this
-        let a = simpleMul(x: 42, y: 42)
+        let _ = simpleMul(x: 21)
     }
 
     // We need to store, return, or use the result of the mulition to keep
     // the compiler to remove it during optimization.
-    static func simpleMul(x: Int, y: Int) -> Int {
-        let tmp = x * y
-        return tmp
+    static func simpleMul(x: Int) -> Int {
+        var a = x
+        var b = a * 2
+        return b
     }
 }
