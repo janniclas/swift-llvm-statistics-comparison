@@ -19,7 +19,7 @@ import Foundation
 #if os(Linux)
     @main
     struct swift_llvm_statistics_comparison {
-        func main() {
+        static func main() {
             print("We don't support linux right now but this might change soon.")
         }
     }
