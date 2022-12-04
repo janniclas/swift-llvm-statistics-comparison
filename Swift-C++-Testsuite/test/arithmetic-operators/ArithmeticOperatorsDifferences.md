@@ -11,7 +11,7 @@ Swift's operations don't overflow by default.
 
 ## Unary Operations
 * Behave identical (+x is a no-op, -x inverts the value)
-* 
+* For -x C++ and Swift both substract the value from 0. Swift uses the ssub.with.overflow function and C++ the sub nsw operator
 
 ## Division
 * Both use sdiv as operator
@@ -23,8 +23,8 @@ Swift's operations don't overflow by default.
     * %11 = phi i64 [ %0, %8 ], [ %0, %7 ] (this one is only there for compound operations TODO: check why)
 
 
-## Multiplication
-* mul vs smul.with.overflow (comparable to addition)
+## Multiplication and Substraction
+* Equivalent to Addition
 ## Reminder
-
-## Substraction
+* Both use srem for the actual calculation of the reminder
+* Swift does additional checks in regards of overflows --> for x % y it checks %9 = icmp eq i64 x, -9223372036854775808
