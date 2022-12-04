@@ -1,37 +1,43 @@
 @main
-struct MyMain {
+struct M42Main {
 
     static func main() {
-        let a = 1 == 1  // true because 1 is equal to 1
-        let b = 2 != 1  // true because 2 isn't equal to 1
-        let c = 2 > 1  // true because 2 is greater than 1
-        let d = 1 < 2  // true because 1 is less than 2
-        let e = 1 >= 1  // true because 1 is greater than or equal to 1
-        let f = 2 <= 1  // false because 2 isn't less than or equal to 1
+        var _ = numberEqual(x: 42)  // true
+        var _ = numberEqual(x: 41)  // false
+        var _ = numberNotEqual(x: 42)  // false
+        var _ = numberNotEqual(x: 41)  // true
+        var _ = numberLarger(x: 43)  // true
+        var _ = numberLarger(x: 41)  //false
+        var _ = numberSmaller(x: 41)  // true
+        var _ = numberSmaller(x: 43)  // false
+        var _ = numberLargerOrEqual(x: 42)  // true
+        var _ = numberLargerOrEqual(x: 41)  // false
+        var _ = numberSmallerOrEqual(x: 42)  // true
+        var _ = numberSmallerOrEqual(x: 43)  // false
     }
 
-    static func numberEqual(x: Int, y: Int) -> Bool {
-        let tmp = x == y
+    static func numberEqual(x: Int) -> Bool {
+        var tmp = x == 42
         return tmp
     }
-    static func numberNotEqual(x: Int, y: Int) -> Bool {
-        let tmp = x != y
+    static func numberNotEqual(x: Int) -> Bool {
+        var tmp = x != 42
         return tmp
     }
-    static func numberxLarger(x: Int, y: Int) -> Bool {
-        let tmp = x > y
+    static func numberLarger(x: Int) -> Bool {
+        var tmp = x > 42
         return tmp
     }
-    static func numberYLarger(x: Int, y: Int) -> Bool {
-        let tmp = x < y
+    static func numberSmaller(x: Int) -> Bool {
+        var tmp = x < 42
         return tmp
     }
-    static func numberXLargerOrEqual(x: Int, y: Int) -> Bool {
-        let tmp = x >= y
+    static func numberLargerOrEqual(x: Int) -> Bool {
+        var tmp = x >= 42
         return tmp
     }
-    static func numberYLargerOrEqual(x: Int, y: Int) -> Bool {
-        let tmp = x <= y
+    static func numberSmallerOrEqual(x: Int) -> Bool {
+        var tmp = x <= 42
         return tmp
     }
 }
