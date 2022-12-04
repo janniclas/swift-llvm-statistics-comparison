@@ -12,9 +12,12 @@ struct DiffCalculator {
 
     func run() throws {
         print("Search statistics at path: \(self.basePath)")
-        let statistics =
+        let statisticsRaw =
             getFileContents(path: self.basePath, elementSuffix: "psr-IrStatistics.json")
-            as [PhasarStatistics]
+            as [PhasarStatisticsJson]
+        let statistics = statisticsRaw.map { (json) -> PhasarStatistics in
+            return PhasarStatistics(from: json)
+        }
         print("successfully retrieved \(statistics.count) statistics.")
 
         // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
@@ -131,8 +134,27 @@ struct DiffCalculator {
     }
 
     struct PhasarStatistics: Codable {
-        let allocaInstructions, callSites, functions, globalVariables, instructions, branches, phiNodes, terminators,
+        let allocaInstructions, callSites, functions, globalVariables, instructions, branches, phiNodes, basicBlocks,
             getElementPtrs: Int
+        let moduleName: String
+        init(from: PhasarStatisticsJson) {
+            self.allocaInstructions = from.allocaInstructions ?? 0
+            self.callSites = from.callSites ?? 0
+            self.functions = from.functions ?? 0
+            self.globalVariables = from.globalVariables ?? 0
+            self.instructions = from.instructions ?? 0
+            self.branches = from.branches ?? 0
+            self.phiNodes = from.phiNodes ?? 0
+            self.basicBlocks = from.basicBlocks ?? 0
+            self.getElementPtrs = from.getElementPtrs ?? 0
+            self.moduleName = from.moduleName
+        }
+
+    }
+
+    struct PhasarStatisticsJson: Codable {
+        let allocaInstructions, callSites, functions, globalVariables, instructions, branches, phiNodes, basicBlocks,
+            getElementPtrs: Int?
         let moduleName: String
 
         enum CodingKeys: String, CodingKey {
@@ -144,7 +166,7 @@ struct DiffCalculator {
             case moduleName = "ModuleName"
             case branches = "Branches"
             case phiNodes = "PhiNodes"
-            case terminators = "Terminators"
+            case basicBlocks = "BasicBlocks"
             case getElementPtrs = "GetElementPtrs"
         }
     }
