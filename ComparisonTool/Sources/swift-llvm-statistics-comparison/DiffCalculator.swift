@@ -12,12 +12,10 @@ struct DiffCalculator {
 
     func run() throws {
         print("Search statistics at path: \(self.basePath)")
-        let statisticsRaw =
+        let statistics =
             getFileContents(path: self.basePath, elementSuffix: "psr-IrStatistics.json")
-            as [PhasarStatisticsJson]
-        let statistics = statisticsRaw.map { (json) -> PhasarStatistics in
-            return PhasarStatistics(from: json)
-        }
+            as [PhasarStatistics]
+
         print("successfully retrieved \(statistics.count) statistics.")
 
         // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
@@ -95,7 +93,12 @@ struct DiffCalculator {
         let callSiteDiff = singleDiff(first.callSites, second.callSites)
         let functionsDiff = singleDiff(first.functions, second.functions)
         let globalDiff = singleDiff(first.globalVariables, second.globalVariables)
-        return insDiff + allocaDiff + callSiteDiff + functionsDiff + globalDiff
+        let getElementPtrDiff = singleDiff(first.getElementPtrs, second.getElementPtrs)
+        let basicBlockDiff = singleDiff(first.basicBlocks, second.basicBlocks)
+        let branchesDiff = singleDiff(first.branches, second.branches)
+        let phiNodesDiff = singleDiff(first.phiNodes, second.phiNodes)
+        return insDiff + allocaDiff + callSiteDiff + functionsDiff + globalDiff + getElementPtrDiff + basicBlockDiff
+            + branchesDiff + phiNodesDiff
     }
 
     private func singleDiff(_ a: Int, _ b: Int) -> Int {
@@ -134,40 +137,32 @@ struct DiffCalculator {
     }
 
     struct PhasarStatistics: Codable {
-        let allocaInstructions, callSites, functions, globalVariables, instructions, branches, phiNodes, basicBlocks,
-            getElementPtrs: Int
+        let _allocaInstructions, _callSites, _functions, _globalVariables, _instructions, _branches, _phiNodes,
+            _basicBlocks,
+            _getElementPtrs: Int?
         let moduleName: String
-        init(from: PhasarStatisticsJson) {
-            self.allocaInstructions = from.allocaInstructions ?? 0
-            self.callSites = from.callSites ?? 0
-            self.functions = from.functions ?? 0
-            self.globalVariables = from.globalVariables ?? 0
-            self.instructions = from.instructions ?? 0
-            self.branches = from.branches ?? 0
-            self.phiNodes = from.phiNodes ?? 0
-            self.basicBlocks = from.basicBlocks ?? 0
-            self.getElementPtrs = from.getElementPtrs ?? 0
-            self.moduleName = from.moduleName
-        }
 
-    }
-
-    struct PhasarStatisticsJson: Codable {
-        let allocaInstructions, callSites, functions, globalVariables, instructions, branches, phiNodes, basicBlocks,
-            getElementPtrs: Int?
-        let moduleName: String
+        var allocaInstructions: Int { return _allocaInstructions ?? 0 }
+        var callSites: Int { return _callSites ?? 0 }
+        var functions: Int { return _functions ?? 0 }
+        var globalVariables: Int { return _globalVariables ?? 0 }
+        var instructions: Int { return _instructions ?? 0 }
+        var branches: Int { return _branches ?? 0 }
+        var phiNodes: Int { return _phiNodes ?? 0 }
+        var basicBlocks: Int { return _basicBlocks ?? 0 }
+        var getElementPtrs: Int { return _getElementPtrs ?? 0 }
 
         enum CodingKeys: String, CodingKey {
-            case allocaInstructions = "AllocaInstructions"
-            case callSites = "CallSites"
-            case functions = "Functions"  // together with callsites an indication of how distributed the code is. is function handling expensive?
-            case globalVariables = "GlobalVariables"  // have to be taken into account in every function --> increases analysis state
-            case instructions = "Instructions"  // size of the IR --> more to analyze
+            case _allocaInstructions = "AllocaInstructions"
+            case _callSites = "CallSites"
+            case _functions = "Functions"  // together with callsites an indication of how distributed the code is. is function handling expensive?
+            case _globalVariables = "GlobalVariables"  // have to be taken into account in every function --> increases analysis state
+            case _instructions = "Instructions"  // size of the IR --> more to analyze
             case moduleName = "ModuleName"
-            case branches = "Branches"
-            case phiNodes = "PhiNodes"
-            case basicBlocks = "BasicBlocks"
-            case getElementPtrs = "GetElementPtrs"
+            case _branches = "Branches"
+            case _phiNodes = "PhiNodes"
+            case _basicBlocks = "BasicBlocks"
+            case _getElementPtrs = "GetElementPtrs"
         }
     }
 
