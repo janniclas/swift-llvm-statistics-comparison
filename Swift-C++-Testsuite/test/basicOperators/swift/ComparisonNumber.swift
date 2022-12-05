@@ -1,5 +1,5 @@
 @main
-struct M42Main {
+struct MyMain {
 
     static func main() {
         var _ = numberEqual(x: 42)  // true
