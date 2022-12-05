@@ -6,5 +6,4 @@ struct simpleAssignment {
         var a = 5
         a = b
     }
-
 }
