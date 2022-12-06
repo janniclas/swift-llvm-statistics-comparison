@@ -39,7 +39,7 @@ jobs:
             username: ${{ github.actor }}
             password: ${{ secrets.dockerlogin }}
       - name: Download Docker Image
-        run: docker pull ghcr.io/secure-software-engineering/phasar:pr-524
+        run: docker pull ghcr.io/secure-software-engineering/phasar:development
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
