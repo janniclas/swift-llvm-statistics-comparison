@@ -1,3 +1,5 @@
+## General
+* Swift oftentimes hides the method implementation. This means more upfront work to model the method's behavior in the analysis, however we don't have to analyse the method itself, so it's more busy work. 
 ## Number Equality (==)
 * Use the same code
 
@@ -24,3 +26,6 @@
 * Comparable to Strings
 * Swift uses a generic function, with a protocol enforcing both elements of the tuple to be comparable/equatable
 * C++ compares tuples with custom function, however they generate the code for the comparison into the IR.
+
+## Assignments
+In Swift 
