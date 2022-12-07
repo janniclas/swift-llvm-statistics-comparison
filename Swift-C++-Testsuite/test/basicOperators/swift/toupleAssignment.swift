@@ -1,3 +1,9 @@
-let (x, y) = (1, 2)
-let v = 1
-let w = 2
+@main
+struct simpleAssignment {
+
+    static func main() {
+        var b = (1, 2)
+        var a = (2, 4)
+        a = b
+    }
+}

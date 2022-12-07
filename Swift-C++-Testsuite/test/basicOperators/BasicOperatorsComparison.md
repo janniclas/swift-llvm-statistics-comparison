@@ -28,4 +28,4 @@
 * C++ compares tuples with custom function, however they generate the code for the comparison into the IR.
 
 ## Assignments
-In Swift 
+* In Swift an Integer is defined as a struct, thus the access is done with a getElementPtr instruction
