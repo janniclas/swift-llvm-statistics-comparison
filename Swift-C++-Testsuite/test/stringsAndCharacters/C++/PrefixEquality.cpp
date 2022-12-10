@@ -1,14 +1,6 @@
-// @main
-// struct MyMain {
-
-//     static func main() {
-//         let greeting = "hello there"
-//         let t = greeting.hasPrefix("hello")
-//         let f = greeting.hasPrefix("there")
-//     }
-// }
 #include<string>
 #include <string_view>
+
 int main() {
     
     std::string_view greeting("Hello There");

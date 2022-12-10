@@ -1,8 +1,5 @@
 #include <string>
 
-// clang++ -std=c++20 Multiline.cpp
-// no idea why, but clang++ needs the c++ 20 flag
-// to compile this on a M1 MacBook.
 int main() {
     // A Raw string
     const char * vogon_poem = R"V0G0N(

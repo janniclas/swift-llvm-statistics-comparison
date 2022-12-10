@@ -18,9 +18,4 @@ int main() {
     greeting.insert(greeting.length()-1, "!");
 
     greeting.erase(greeting.length()-2, greeting.length()-1);
-
-    std::size_t found = greeting.find_first_of(",");
-
-
 }
-

@@ -1,6 +1,6 @@
 #include <string>
 int main() {
-  std::string str = "Hello World!";
-  std::string second("Hello There");
+  std::string greeting = "Hello World!";
+  // std::string second("Hello World");
   return 0;
 }

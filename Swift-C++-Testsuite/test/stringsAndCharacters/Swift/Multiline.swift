@@ -7,19 +7,16 @@ struct MyMain {
         // If you want to use line breaks to make your source code easier to
         // read, but you don’t want the line breaks to be part of the string’s
         // value, write a backslash (\) at the end of those lines:
-        let softWrappedQuotation = """
-            The White Rabbit put on his spectacles.  "Where shall I begin, \
-            please your Majesty?" he asked.
+        var vogon_poem = """
+            V0G0N(
+                            O freddled gruntbuggly thy micturations are to me
+                                As plured gabbleblochits on a lurgid bee.
+                            Groop, I implore thee my foonting turlingdromes.   
+                        And hooptiously drangle me with crinkly bindlewurdles,
+                Or I will rend thee in the gobberwarts with my blurlecruncheon, see if I don't.
 
-            "Begin at the beginning," the King said gravely, "and go on \
-            till you come to the end; then stop."
-            """
-
-        let lineBreaks = """
-
-            This string starts with a line break.
-            It also ends with a line break.
-
+                                (by Prostetnic Vogon Jeltz; see p. 56/57)
+                )V0G0N
             """
     }
 }

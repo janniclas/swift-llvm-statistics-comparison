@@ -2,8 +2,8 @@
 struct MyMain {
 
     static func main() {
-        var greeting = "Hello"
-        let greetingPartTwo = " World !"
-        greeting += greetingPartTwo
+        var greetingPartOne = "Hello"
+        let greetingPartTwo = " World!"
+        greetingPartOne += greetingPartTwo
     }
 }

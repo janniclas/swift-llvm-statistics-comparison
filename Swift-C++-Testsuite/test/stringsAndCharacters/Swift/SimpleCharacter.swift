@@ -2,6 +2,6 @@
 struct MyMain {
 
     static func main() {
-        let exclamationMark: Character = "!"
+        var c: Character = "!"
     }
 }

@@ -2,8 +2,8 @@
 struct MyMain {
 
     static func main() {
-        let greeting = "hello there"
-        let t = greeting.hasPrefix("hello")
-        let f = greeting.hasPrefix("there")
+        let greeting = "Hello There"
+        let notPrefix = greeting.hasPrefix("here")
+        let isPrefix = greeting.hasPrefix("Hello")
     }
 }
