@@ -18,12 +18,12 @@
 struct MyMain {
 
     static func main() {
-        let greeting = "Hello, world!"
-        let index = greeting.firstIndex(of: ",") ?? greeting.endIndex
-        let beginning = greeting[..<index]
+        var greeting = "Hello, world!"
+        var index = greeting.firstIndex(of: ",") ?? greeting.endIndex
+        var beginning = greeting[..<index]
         // beginning is "Hello"
 
         // Convert the result to a String for long-term storage.
-        let newString = String(beginning)
+        var newString = String(beginning)
     }
 }

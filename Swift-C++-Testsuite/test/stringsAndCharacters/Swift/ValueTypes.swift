@@ -11,9 +11,9 @@ struct MyMain {
         // search builtinStringLiteral.* in swift repository
         // sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC
         let greeting = "Hello World!"
-        takeStringGiveString(input: greeting)
-        takeStringMutateGiveString(input: greeting)
-        identity(input: greeting)
+        var a = takeStringGiveString(input: greeting)
+        var b = takeStringMutateGiveString(input: greeting)
+        var c = identity(input: greeting)
 
     }
 
