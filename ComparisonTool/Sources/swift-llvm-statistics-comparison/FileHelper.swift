@@ -6,7 +6,10 @@
 //
 
 import Foundation
-import System
+
+#if os(macOS)
+    import System
+#endif
 
 enum FileHelperError: Error {
     case getFileNameFailed(path: String)
