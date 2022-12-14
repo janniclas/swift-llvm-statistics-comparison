@@ -2,6 +2,6 @@
 struct MyMain {
 
     static func main() {
-        let myword: [Character] = ["H", "e", "l", "l", "o", "\0"]
+        var myword: [Character] = ["H", "e", "l", "l", "o"]
     }
 }

@@ -19,14 +19,33 @@ import Foundation
 #if os(Linux)
     @main
     struct swift_llvm_statistics_comparison {
-        static func main() {
-            print("We don't support linux right now but this might change soon.")
+        static func main() throws {
+            let path = getPath(args: CommandLine.arguments)
+            if path != "" {
+                try start(path: path)
+            } else {
+                print("Path Argument not found.")
+            }
         }
     }
+
+func getPath(args: [String]) -> String {
+    var p = ""
+    for index in 1..<args.count {
+        print(index)
+        let argument = args[index]
+        if argument == "--path" {
+            if index + 1 < args.count {
+                p = args[index + 1]
+                break
+            }
+        }
+    }
+    return p
+}
 #endif
 
 func start(path: String) throws {
-    print("path found \(path)")
     let diffCalc = DiffCalculator(basePath: path)
     try diffCalc.run()
 }

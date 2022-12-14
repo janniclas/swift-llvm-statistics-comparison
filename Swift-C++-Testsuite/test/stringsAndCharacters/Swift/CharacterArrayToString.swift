@@ -2,7 +2,7 @@
 struct MyMain {
 
     static func main() {
-        let myword: [Character] = ["H", "e", "l", "l", "o", "\0"]
-        let myWordString = String(myword)
+        var myword: [Character] = ["H", "e", "l", "l", "o", "\0"]
+        var myWordString = String(myword)
     }
 }

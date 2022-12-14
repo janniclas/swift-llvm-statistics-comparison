@@ -30,7 +30,7 @@
 #include <iostream>
 int main() {
     int multiplier = 3;
-     std::stringstream ss;
+    std::stringstream ss;
 
     ss << multiplier << "times 2.5 is " << multiplier*2.5;
     std::string message = ss.str();

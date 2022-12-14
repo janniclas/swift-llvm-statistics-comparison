@@ -7,7 +7,7 @@ This repository contains microbenchmarks written in Swift and C++. They are mean
 This microbenchmark can be used to verify that static analysis tools that can analyze Swift or C++ also work with the other language.
 
 ## Currently Available Tests
-[![SwiftTests](https://img.shields.io/badge/Swift_Test_Cases-207-orange?style=for-the-badge&logo=swift)](https://github.com/janniclas/swift-llvm-statistics-comparison/tree/main/Swift-C%2B%2B-Testsuite/test) [![CppTests](https://img.shields.io/badge/C++_Test_Cases-76-blue?style=for-the-badge&logo=c%2B%2B)](https://github.com/janniclas/swift-llvm-statistics-comparison/tree/main/Swift-C%2B%2B-Testsuite/test)
+[![SwiftTests](https://img.shields.io/badge/Swift_Test_Cases-206-orange?style=for-the-badge&logo=swift)](https://github.com/janniclas/swift-llvm-statistics-comparison/tree/main/Swift-C%2B%2B-Testsuite/test) [![CppTests](https://img.shields.io/badge/C++_Test_Cases-75-blue?style=for-the-badge&logo=c%2B%2B)](https://github.com/janniclas/swift-llvm-statistics-comparison/tree/main/Swift-C%2B%2B-Testsuite/test)
 
 ## Abstract
 Since Swift’s introduction in 2014, it has become the default programming language for Apple’s rich ecosystem. However, despite its high adoption, there are only limited tools to help developers build secure applications. Developers came to expect and rely on such tools due to their high availability in other languages. Thus, their absence can lead to developers having low confidence in the correctness of their code and may result in insecure applications.

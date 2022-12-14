@@ -21,9 +21,9 @@ struct MyMain {
     // copying takes place only when absolutely necessary. This means you always
     // get great performance when working with strings as value types.
     static func takeStringMutateGiveString(input: String) -> String {
-        var mutable = input
-        mutable += " Awesome Day."
-        return mutable
+        var m = input
+        m += " Awesome Day."
+        return m
     }
 
     static func takeStringGiveString(input: String) -> String {
