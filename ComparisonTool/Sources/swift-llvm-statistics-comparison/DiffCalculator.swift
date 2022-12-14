@@ -9,11 +9,12 @@ import Foundation
 
 struct DiffCalculator {
     let basePath: String
+    let fileHelper = FileHelperFactory.getFileHelper()
 
     func run() throws {
         print("Search statistics at path: \(self.basePath)")
         let statistics =
-            getFileContents(path: self.basePath, elementSuffix: "psr-IrStatistics.json")
+            fileHelper.getFileContents(path: self.basePath, elementSuffix: "psr-IrStatistics.json")
             as [PhasarStatistics]
 
         print("successfully retrieved \(statistics.count) statistics.")
@@ -28,7 +29,7 @@ struct DiffCalculator {
     }
 
     private func storeDiffs(diffs: [Dictionary<String, Diff>.Element]) throws {
-        let outputPath = appendToPath(basePath: self.basePath, components: "diffs")
+        let outputPath = fileHelper.appendToPath(basePath: self.basePath, components: "diffs")
 
         if !FileManager.default.fileExists(atPath: outputPath) {
             try FileManager.default.createDirectory(
@@ -37,7 +38,7 @@ struct DiffCalculator {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         for diff in diffs {
-            let fileOutput = appendToPath(basePath: outputPath, components: diff.key + "-comparison.json")
+            let fileOutput = fileHelper.appendToPath(basePath: outputPath, components: diff.key + "-comparison.json")
             print(fileOutput)
             FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(diff.value))
         }
@@ -115,7 +116,7 @@ struct DiffCalculator {
     ///   - moduleName: The value to be normalized.
     private func getNormalized(moduleName: String) throws -> String {
 
-        let result = try getFileName(path: moduleName)
+        let result = try fileHelper.getFileName(path: moduleName)
         return result
     }
 
