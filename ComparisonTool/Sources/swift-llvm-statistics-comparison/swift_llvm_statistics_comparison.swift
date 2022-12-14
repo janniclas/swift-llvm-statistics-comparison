@@ -29,20 +29,20 @@ import Foundation
         }
     }
 
-func getPath(args: [String]) -> String {
-    var p = ""
-    for index in 1..<args.count {
-        print(index)
-        let argument = args[index]
-        if argument == "--path" {
-            if index + 1 < args.count {
-                p = args[index + 1]
-                break
+    func getPath(args: [String]) -> String {
+        var p = ""
+        for index in 1..<args.count {
+            print(index)
+            let argument = args[index]
+            if argument == "--path" {
+                if index + 1 < args.count {
+                    p = args[index + 1]
+                    break
+                }
             }
         }
+        return p
     }
-    return p
-}
 #endif
 
 func start(path: String) throws {
