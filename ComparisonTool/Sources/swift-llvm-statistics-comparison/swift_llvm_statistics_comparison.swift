@@ -2,17 +2,48 @@ import ArgumentParser
 import Foundation
 
 #if os(macOS)
+    import System
+
     @main
-    @available(macOS 10.15, *)
+    @available(macOS 13.0, *)
     struct swift_llvm_statistics_comparison: AsyncParsableCommand {
         @Option(help: "Directory path to scan for files.")
         var path: String
     }
 
-    @available(macOS 10.15, *)
+    @available(macOS 13.0, *)
     extension swift_llvm_statistics_comparison {
         mutating func run() async throws {
-            try start(path: path)
+            // get all file paths for compilation (starting from provided base path)
+            // start compile
+            // start analysis
+            // await all (theoretically we can just await for a
+            // pair to compare, however this level of complexity might not be helpful)
+            // do comparison
+            let handle = Task {
+                let p = Process()
+                let fp = FilePath("/bin/ls")
+                p.executableURL = URL(filePath: fp)
+                p.arguments = ["-l"]
+                p.terminationHandler = { (process) in
+                    print("\ndidFinish: \(!process.isRunning)")
+                    print("end")
+
+                }
+
+                do {
+                    try p.run()
+                } catch {
+                    print("error occured")
+                }
+                p.waitUntilExit()
+                return "finished"
+            }
+
+            print("outside")
+            let res = await handle.value
+            print(res)
+            //            try start(path: path)
         }
     }
 #endif

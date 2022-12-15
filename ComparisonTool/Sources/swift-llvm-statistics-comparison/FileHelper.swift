@@ -19,7 +19,7 @@ protocol ProcessFile {
     func appendToPath(basePath: String, components: String...) -> String
     func getFileName(path: String) throws -> String
     func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T]
-    func readContent<T: Codable>(path: String) -> T?
+    func getFilePaths(path: String, elementSuffix: String) -> [String]
 }
 
 struct FileHelperFactory {
@@ -61,8 +61,8 @@ private class FileHelper: ProcessFile {
         throw FileHelperError.getFileNameFailed(path: path)
     }
 
-    func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T] {
-        var statistics: [T] = []
+    func getFilePaths(path: String, elementSuffix: String) -> [String] {
+        var paths: [String] = []
         let enumerator = FileManager.default.enumerator(atPath: path)
 
         while let element = enumerator?.nextObject() as? String {
@@ -72,10 +72,19 @@ private class FileHelper: ProcessFile {
                 // thus the suffix is the filename
                 if fType == .typeRegular && element.hasSuffix(elementSuffix) {
                     let cPath = appendToPath(basePath: path, components: element)
-                    if let stats = readContent(path: cPath) as T? {
-                        statistics.append(stats)
-                    }
+                    paths.append(cPath)
                 }
+            }
+        }
+        return paths
+    }
+
+    func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T] {
+        var statistics: [T] = []
+        let paths = getFilePaths(path: path, elementSuffix: elementSuffix)
+        for cPath in paths {
+            if let stats = readContent(path: cPath) as T? {
+                statistics.append(stats)
             }
         }
         return statistics
