@@ -6,10 +6,11 @@
 //
 
 import Foundation
+import System
 
 struct Statistics {}
 
-struct Program {
+class Program {
     enum PL {
         case swift
         case cpp
@@ -20,7 +21,14 @@ struct Program {
     let name: String
     let path: String
 
-    var irPath: String?
+    init(language: PL, name: String, path: String) {
+        self.language = language
+        self.name = name
+        self.path = path
+        self.irPath = "\(path).ir.ll"
+    }
+
+    var irPath: String
     var statistics: Statistics?
 }
 
@@ -63,30 +71,75 @@ struct Worker {
         self.workerNumber = workerNumber
         print("Initialized worker \(workerNumber)")
     }
-    static let maximumNumberOfTasks: UInt8 = 8
-    let workerNumber: UInt8
-    func work(_: (_: Program, _: Program?)) async {
-        print("worker no \(workerNumber) working")
-        //            let handle = Task {
-        //                let p = Process()
-        //                let fp = FilePath("/bin/ls")
-        //                p.executableURL = URL(filePath: fp)
-        //                p.arguments = ["-l"]
-        //                p.terminationHandler = { (process) in
-        //                    print("\ndidFinish: \(!process.isRunning)")
-        //                    print("end")
-        //
-        //                }
-        //
-        //                do {
-        //                    try p.run()
-        //                } catch {
-        //                    print("error occured")
-        //                }
-        //                p.waitUntilExit()
-        //                return "finished"
-        //            }
 
+    static let maximumNumberOfTasks: UInt8 = 8  //TODO: query number of physical cores - 1 and use this here
+    let workerNumber: UInt8
+    let compiler = Compiler()
+
+    struct Compiler {
+        let cppCompilerPath = FilePath("/usr/bin/clang++")
+        let cppArgs = ["-emit-llvm", "-g", "-S", "-fno-discard-value-names", "-std=c++20", "-o"]
+
+        let swiftcPath = FilePath("/usr/bin/swiftc")
+        let swiftArgs = [
+            "-emit-ir", "-g", "-parse-as-library", "-Onone", "-Xfrontend", "-disable-llvm-optzns", "-Xfrontend",
+            "-disable-swift-specific-llvm-optzns", "-module-name", "myModule", "-o",
+        ]
+
+        private func getCppArgs(_ program: Program) -> [String] {
+            var res = cppArgs
+            res.insert(program.path, at: 5)
+            res.append(program.irPath)
+            return res
+        }
+
+        private func getSwiftArgs(_ program: Program) -> [String] {
+            var res = swiftArgs
+            res.insert(program.path, at: 10)
+            res.append(program.irPath)
+
+            return res
+        }
+
+        private func getCompileConfig(_ program: Program) -> (filePath: FilePath, args: [String]) {
+
+            if program.language == .cpp {
+                return (cppCompilerPath, getCppArgs(program))
+            } else {
+                return (swiftcPath, getSwiftArgs(program))
+            }
+        }
+
+        func compileProgram(_ program: Program) async {
+            let config = getCompileConfig(program)
+            let p = Process()
+
+            p.executableURL = URL(filePath: config.filePath)
+            p.arguments = config.args
+
+            p.terminationHandler = { (process) in
+                print("\ndidFinish: \(!process.isRunning)")
+                print("end")
+            }
+
+            do {
+                try p.run()
+            } catch {
+                print("error occured")
+            }
+            p.waitUntilExit()
+        }
+    }
+
+    private func processProgram(_ program: Program) async {
+        await compiler.compileProgram(program)
+    }
+
+    func work(_ programs: (_: Program, _: Program?)) async {
+        await processProgram(programs.0)
+        if let p1 = programs.1 {
+            await processProgram(p1)
+        }
     }
 }
 

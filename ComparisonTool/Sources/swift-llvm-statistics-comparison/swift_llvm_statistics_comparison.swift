@@ -16,6 +16,8 @@ import Foundation
         mutating func run() async throws {
             // get all file paths for compilation (starting from provided base path)
             await generateIr(basePath: path)
+            //            let processInfo = ProcessInfo()
+            //            print(processInfo.activeProcessorCount)
             // start compile
             // start analysis
             // await all (theoretically we can just await for a
