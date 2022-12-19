@@ -20,6 +20,7 @@ protocol ProcessFile {
     func getFileName(path: String) throws -> String
     func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T]
     func getFilePaths(path: String, elementSuffix: String) -> [String]
+    func getFilePaths(path: String, elementSuffixes: [String]) -> [String: [String]]
 }
 
 struct FileHelperFactory {
@@ -62,7 +63,16 @@ private class FileHelper: ProcessFile {
     }
 
     func getFilePaths(path: String, elementSuffix: String) -> [String] {
-        var paths: [String] = []
+        let pathDict = getFilePaths(path: path, elementSuffixes: [elementSuffix])
+        if let paths = pathDict[elementSuffix] {
+            return paths
+        } else {
+            return []
+        }
+    }
+
+    func getFilePaths(path: String, elementSuffixes: [String]) -> [String: [String]] {
+        var pathsDict: [String: [String]] = [:]
         let enumerator = FileManager.default.enumerator(atPath: path)
 
         while let element = enumerator?.nextObject() as? String {
@@ -70,13 +80,24 @@ private class FileHelper: ProcessFile {
             if let fType = enumerator?.fileAttributes?[FileAttributeKey.type] as? FileAttributeType {
                 // we need to check the suffix, because element is the complete path to the file
                 // thus the suffix is the filename
-                if fType == .typeRegular && element.hasSuffix(elementSuffix) {
-                    let cPath = appendToPath(basePath: path, components: element)
-                    paths.append(cPath)
+                if fType == .typeRegular {
+                    for elementSuffix in elementSuffixes {
+                        if element.hasSuffix(elementSuffix) {
+                            let cPath = appendToPath(basePath: path, components: element)
+                            if var paths = pathsDict[elementSuffix] {
+                                paths.append(cPath)
+                                pathsDict.updateValue(paths, forKey: elementSuffix)
+                            } else {
+                                pathsDict[elementSuffix] = [cPath]
+                            }
+                            break
+                        }
+                    }
+
                 }
             }
         }
-        return paths
+        return pathsDict
     }
 
     func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T] {

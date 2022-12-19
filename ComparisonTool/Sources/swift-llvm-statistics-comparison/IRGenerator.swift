@@ -14,32 +14,22 @@ struct Program {
         case swift
         case cpp
     }
-    //    enum State {
-    //        case awaitIrGen
-    //        case irGenInProgress
-    //        case awaitAnalysis
-    //        case analysisInProgress
-    //        case awaitComparison
-    //        case comparisonInProgress
-    //        case finished
-    //    }
+
     let language: PL
 
     let name: String
     let path: String
 
-    var irPath: String
-    var statistics: Statistics
-
-    //    var state: State
-
+    var irPath: String?
+    var statistics: Statistics?
 }
 
+@available(macOS 12.0, *)
 actor FileWorklist {
 
     /// Program name -> Programs
-    let programs: [String: (swift: Program?, cpp: Program?)]
-    fileprivate var idx: Dictionary<String, (swift: Program?, cpp: Program?)>.Index
+    let programs: [String: (_: Program, _: Program?)]
+    fileprivate var idx: Dictionary<String, (_: Program, _: Program?)>.Index
 
     var isEmpty: Bool
 
@@ -47,13 +37,13 @@ actor FileWorklist {
         self.init(programs: [:])
     }
 
-    init(programs: [String: (swift: Program, cpp: Program)]) {
+    init(programs: [String: (_: Program, _: Program?)]) {
         self.programs = programs
         self.idx = self.programs.startIndex
         self.isEmpty = programs.isEmpty
     }
 
-    func next() -> (swift: Program?, cpp: Program?)? {
+    func next() -> (_: Program, _: Program?)? {
         if isEmpty {
             return nil
         }
@@ -66,7 +56,7 @@ actor FileWorklist {
     }
 
 }
-
+@available(macOS 13.0, *)
 struct Worker {
 
     init(workerNumber: UInt8) {
@@ -75,34 +65,54 @@ struct Worker {
     }
     static let maximumNumberOfTasks: UInt8 = 8
     let workerNumber: UInt8
-    func work(_: (swift: Program?, cpp: Program?)) async {
+    func work(_: (_: Program, _: Program?)) async {
         print("worker no \(workerNumber) working")
-        if #available(macOS 13.0, *) {
-            do { try await Task.sleep(until: .now + .seconds(5), clock: .continuous) } catch {}
-        } else {
-            // Fallback on earlier versions
-        }
+
+        let rand = Int.random(in: 1...20)
+        do { try await Task.sleep(until: .now + .seconds(rand), clock: .continuous) } catch {}
 
     }
 }
 
-func getPrograms(_ basePath: String) -> [String: (swift: Program, cpp: Program)] {
-    var programs: [String: (swift: Program, cpp: Program)] = [:]
-    for i in 1..<12 {
-        programs["testP\(i)"] = (
-            swift: Program(
-                language: Program.PL.swift, name: "Swift\(i)", path: "/tmp/test", irPath: "/tmp/testir",
-                statistics: Statistics()),
-            cpp: Program(
-                language: Program.PL.cpp, name: "Cpp\(i)", path: "/tmp/testcpp", irPath: "/tmp/testircpp",
-                statistics: Statistics())
-        )
+func getPrograms(_ basePath: String) -> [String: (_: Program, _: Program?)] {
+
+    var programs: [String: (_: Program, _: Program?)] = [:]
+    let fh = FileHelperFactory.getFileHelper()
+    let paths = fh.getFilePaths(path: basePath, elementSuffixes: [".swift", ".cpp"])
+    for p in paths {
+        print("key: \(p.key) path: \(p.value)")
+        let pl = p.key == ".swift" ? Program.PL.swift : Program.PL.cpp
+
+        for e in p.value {
+            let sProgram = getProgramFromPath(e, type: pl)
+            print(sProgram)
+            if var pe = programs[sProgram.name] {
+                pe.1 = sProgram
+                programs.updateValue(pe, forKey: sProgram.name)
+            } else {
+                programs[sProgram.name] = (sProgram, nil)
+            }
+
+        }
+
     }
 
     return programs
 }
 
-@available(macOS 10.15, *)
+func getProgramFromPath(_ path: String, type: Program.PL) -> Program {
+    let fh = FileHelperFactory.getFileHelper()
+    var fileName: String
+    do {
+        fileName = try fh.getFileName(path: path)
+    } catch {
+        fileName = "invalidName_\(path)"
+    }
+
+    return Program(language: type, name: fileName, path: path)
+}
+
+@available(macOS 13.0, *)
 func generateIr(basePath: String) async {
     // fill worklist
     let programs = getPrograms(basePath)
@@ -114,16 +124,15 @@ func generateIr(basePath: String) async {
                 let worker = Worker(workerNumber: i)
                 while let item = await workList.next() {
                     print(
-                        "Starting work on swift: \(item.swift?.name ?? "") and cpp: \(item.cpp?.name ?? "") with worker no \(i)"
+                        "Starting work on: \(item.0.name) and: \(item.1?.name ?? "") with worker no \(i)"
                     )
                     await worker.work(item)
                     print(
-                        "Finished work on swift: \(item.swift?.name ?? "") and cpp: \(item.cpp?.name ?? "") with worker no \(i)"
+                        "Finished work on swift: \(item.0.name) and cpp: \(item.1?.name ?? "") with worker no \(i)"
                     )
                 }
             }
         }
     }
     print("Task group finished")
-
 }
