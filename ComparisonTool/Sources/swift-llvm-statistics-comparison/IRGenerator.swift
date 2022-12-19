@@ -67,37 +67,53 @@ struct Worker {
     let workerNumber: UInt8
     func work(_: (_: Program, _: Program?)) async {
         print("worker no \(workerNumber) working")
-
-        let rand = Int.random(in: 1...20)
-        do { try await Task.sleep(until: .now + .seconds(rand), clock: .continuous) } catch {}
+        //            let handle = Task {
+        //                let p = Process()
+        //                let fp = FilePath("/bin/ls")
+        //                p.executableURL = URL(filePath: fp)
+        //                p.arguments = ["-l"]
+        //                p.terminationHandler = { (process) in
+        //                    print("\ndidFinish: \(!process.isRunning)")
+        //                    print("end")
+        //
+        //                }
+        //
+        //                do {
+        //                    try p.run()
+        //                } catch {
+        //                    print("error occured")
+        //                }
+        //                p.waitUntilExit()
+        //                return "finished"
+        //            }
 
     }
 }
 
 func getPrograms(_ basePath: String) -> [String: (_: Program, _: Program?)] {
 
-    var programs: [String: (_: Program, _: Program?)] = [:]
+    var programDictionary: [String: (_: Program, _: Program?)] = [:]
     let fh = FileHelperFactory.getFileHelper()
-    let paths = fh.getFilePaths(path: basePath, elementSuffixes: [".swift", ".cpp"])
-    for p in paths {
+    let pathDictionary = fh.getFilePaths(path: basePath, elementSuffixes: [".swift", ".cpp"])
+    for p in pathDictionary {
         print("key: \(p.key) path: \(p.value)")
         let pl = p.key == ".swift" ? Program.PL.swift : Program.PL.cpp
 
-        for e in p.value {
-            let sProgram = getProgramFromPath(e, type: pl)
-            print(sProgram)
-            if var pe = programs[sProgram.name] {
-                pe.1 = sProgram
-                programs.updateValue(pe, forKey: sProgram.name)
+        for path in p.value {
+            let program = getProgramFromPath(path, type: pl)
+            print(program)
+            if var programTuple = programDictionary[program.name] {
+                programTuple.1 = program
+                programDictionary.updateValue(programTuple, forKey: program.name)
             } else {
-                programs[sProgram.name] = (sProgram, nil)
+                programDictionary[program.name] = (program, nil)
             }
 
         }
 
     }
 
-    return programs
+    return programDictionary
 }
 
 func getProgramFromPath(_ path: String, type: Program.PL) -> Program {
