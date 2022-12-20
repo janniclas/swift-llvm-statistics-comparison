@@ -29,3 +29,7 @@
 
 ## Single Characters
 * C++ stores the related number, while Swift creates a string with a c"" prefix
+
+## String method calls
+* C++ returns void
+* Swift returns struct

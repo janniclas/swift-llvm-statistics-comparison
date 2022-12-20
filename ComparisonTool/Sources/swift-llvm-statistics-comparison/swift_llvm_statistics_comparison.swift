@@ -18,6 +18,16 @@ import Foundation
             await generateIr(basePath: path)
             //            let processInfo = ProcessInfo()
             //            print(processInfo.activeProcessorCount)
+// let logicalCoresCount = ProcessInfo.processInfo.processorCount
+//            func physicalCoresCount() -> UInt {
+//
+//                var size: size_t = MemoryLayout<UInt>.size
+//                var coresCount: UInt = 0
+//
+//                sysctlbyname("hw.physicalcpu", &coresCount, &size, nil, 0)
+//
+//                return coresCount
+//            }
             // start compile
             // start analysis
             // await all (theoretically we can just await for a
