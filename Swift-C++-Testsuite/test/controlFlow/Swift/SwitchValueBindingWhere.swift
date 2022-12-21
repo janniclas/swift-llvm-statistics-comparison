@@ -15,6 +15,8 @@ struct MyMain {
             counter = -y
         case let (x, y) where x == y:
             counter = -x
+        default:
+            counter = -1
         }
         return counter
     }

@@ -22,4 +22,9 @@ func testDI(cond: Bool) {
 
 }
 
-testDI(cond: Int.random(in: 1..<100) > 50)
+struct MyMain {
+
+    static func main() {
+        testDI(cond: Int.random(in: 1..<100) > 50)
+    }
+}
