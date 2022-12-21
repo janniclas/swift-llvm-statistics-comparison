@@ -2,7 +2,7 @@
 struct MyMain {
 
     static func main() {
-        var arr = [2, 42, 44]
-        arr.remove(at: 1)
+        var a = [2, 42, 44]
+        a.remove(at: 1)
     }
 }

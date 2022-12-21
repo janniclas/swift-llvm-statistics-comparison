@@ -5,10 +5,9 @@ struct MyMain {
         var emptyArrayNoType: [Any] = []
         var emptyArray: [Int] = []
 
-        var numberArrayNoType = [1, 2, 3, 4, 5]
-        var numberArrayExplicitType: [Int] = [1, 2, 3, 4, 5]
+        var numberArray = [1, 2, 3, 4, 5]
 
-        var stringArrayNoType = ["Test", "Input"]
-        var stringArrayExplicitType: [String] = ["Test", "Input"]
+        var stringArray = ["Test", "Input"]
+
     }
 }

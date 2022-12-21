@@ -1,5 +1,12 @@
-#include <array>
+#include <vector>
+#include <string>
 int main()
 {
-    int numberArrayNoFixedLength [] = { 16, 2, 77, 40, 12071 };
+        std::vector<void*> emptyArray;
+        std::vector<int> emptyArray;
+
+        std::vector<int> numberArray = {1, 2, 3, 4, 5};  
+        std::vector<int> numberArray = {1, 2, 3, 4, 5};  
+
+        std::vector<std::string> stringArray = {"Test", "Input"};  
 }

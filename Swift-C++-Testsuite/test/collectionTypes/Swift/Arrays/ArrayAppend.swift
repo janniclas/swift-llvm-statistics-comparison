@@ -2,7 +2,7 @@
 struct MyMain {
 
     static func main() {
-        var intArray: [Int] = []
-        intArray.append(3)
+        var a: [Int] = []
+        a.append(42)
     }
 }

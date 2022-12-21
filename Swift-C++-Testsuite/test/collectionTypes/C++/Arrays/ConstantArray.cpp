@@ -1,19 +1,12 @@
-//@main
-//struct MyMain {
-//
-//    static func main() {
-//        let emptyArrayNoType: [Any] = []
-//        let emptyArray: [Int] = []
-//
-//        let numberArrayNoType = [1, 2, 3, 4, 5]
-//        let numberArrayExplicitType: [Int] = [1, 2, 3, 4, 5]
-//
-//        let stringArrayNoType = ["Test", "Input"]
-//        let stringArrayExplicitType: [String] = ["Test", "Input"]
-//    }
-//}
+
 #include <array>
+#include <string>
 int main()
 {
-    const int numberArrayNoFixedLength [] = { 16, 2, 77, 40, 12071 };
+    std::array<void*, 0> emptyArrayNoType; // in Swift this is an Any type
+    std::array<int, 0> emptyArray;  
+
+    std::array<int, 5> intArray = {1, 2, 3, 4, 5};  // Create an array of integers with initial values
+
+    std::array<std::string, 2> stringArray = {"Test", "Input"};  // Create an array of strings with initial values
 }

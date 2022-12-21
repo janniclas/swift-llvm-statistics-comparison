@@ -2,6 +2,6 @@
 struct MyMain {
 
     static func main() {
-        var threeDoubles = Array(repeating: 0.0, count: 3)
+        var a = Array(repeating: 0, count: 3)
     }
 }

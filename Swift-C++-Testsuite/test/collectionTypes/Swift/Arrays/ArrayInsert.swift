@@ -2,7 +2,7 @@
 struct MyMain {
 
     static func main() {
-        var arr = [2]
-        arr.insert(32, at: 0)
+        var a = [2]
+        a.insert(42, at: 0)
     }
 }
