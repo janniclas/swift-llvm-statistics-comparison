@@ -16,35 +16,7 @@ import Logging
     extension swift_llvm_statistics_comparison {
 
         mutating func run() async throws {
-            let logger = Logger(label: "com.struewer.llvm.statistics")
-            // get all file paths for compilation (starting from provided base path)
-            logger.info("Run LLVM Statistics Comparison for path \(path)")
-            logger.info("\(Worker.maximumNumberOfTasks)")
-            //             fill worklist
-            let programs = getPrograms(path)
-            let workList = FileWorklist(programs: programs)
-            // work worklist
-            await withTaskGroup(of: Void.self) { taskGroup in
-                for i in 0..<Worker.maximumNumberOfTasks {
-                    taskGroup.addTask {
-                        let worker = Worker(workerNumber: i)
-                        while let item = await workList.next() {
-                            logger.info(
-                                "Starting work on: \(item.0.name) and: \(item.1?.name ?? "") with worker no \(i)"
-                            )
-                            do {
-                                try await worker.work(item)
-                                logger.info(
-                                    "Finished work on swift: \(item.0.name) and cpp: \(item.1?.name ?? "") with worker no \(i)"
-                                )
-                            } catch {
-                                logger.error("Worker failed for item \(item) failed with error \(error).")
-                            }
-                        }
-                    }
-                }
-            }
-            logger.info("Task group finished")
+            try await start(path: path)
         }
     }
 #endif
@@ -77,7 +49,34 @@ import Logging
     }
 #endif
 
-func start(path: String) throws {
-    let diffCalc = DiffCalculator(basePath: path)
-    try diffCalc.run()
+func start(path: String) async throws {
+    let logger = Logger(label: "com.struewer.llvm.statistics")
+    // get all file paths for compilation (starting from provided base path)
+    logger.info("Run LLVM Statistics Comparison for path \(path)")
+    logger.info("\(Worker.maximumNumberOfTasks)")
+    //             fill worklist
+    let programs = getPrograms(path)
+    let workList = FileWorklist(programs: programs)
+    // work worklist
+    await withTaskGroup(of: Void.self) { taskGroup in
+        for i in 0..<Worker.maximumNumberOfTasks {
+            taskGroup.addTask {
+                let worker = Worker(workerNumber: i)
+                while let item = await workList.next() {
+                    logger.info(
+                        "Starting work on: \(item.0.name) and: \(item.1?.name ?? "") with worker no \(i)"
+                    )
+                    do {
+                        try await worker.work(item)
+                        logger.info(
+                            "Finished work on swift: \(item.0.name) and cpp: \(item.1?.name ?? "") with worker no \(i)"
+                        )
+                    } catch {
+                        logger.error("Worker failed for item \(item) failed with error \(error).")
+                    }
+                }
+            }
+        }
+    }
+    logger.info("Task group finished")
 }
