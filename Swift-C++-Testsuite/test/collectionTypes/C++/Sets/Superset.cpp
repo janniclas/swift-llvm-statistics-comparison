@@ -1,11 +1,9 @@
-// @main
-// struct MyMain {
+#include <algorithm>
+#include <set>
 
-//     static func main() {
-//         let oddDigits: Set = [1, 3, 5, 7, 9]
-//         let evenDigits: Set = [0, 2, 4, 6, 8]
+int main() {
+        std::set<int> oddDigits = {1, 3, 5, 7, 9};  // Create a set of odd digits
+        std::set<int> evenDigits = {0, 2, 4, 6, 8};  // Create a set of even digits
 
-//         oddDigits.isSuperset(of: evenDigits)
-//     }
-// }
-//TODO: I don't see an equivalent right now
+        bool isSuperset = std::includes(oddDigits.begin(), oddDigits.end(), evenDigits.begin(), evenDigits.end());  // Check if oddDigits is a superset of evenDigits
+}

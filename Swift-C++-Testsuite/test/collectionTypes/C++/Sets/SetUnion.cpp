@@ -1,11 +1,10 @@
-// @main
-// struct MyMain {
+#include <set>
+#include <algorithm>
 
-//     static func main() {
-//         let oddDigits: Set = [1, 3, 5, 7, 9]
-//         let evenDigits: Set = [0, 2, 4, 6, 8]
+int main() {
+        std::set<int> oddDigits = {1, 3, 5, 7, 9};  // Create a set of odd digits
+        std::set<int> evenDigits = {0, 2, 4, 6, 8};  // Create a set of even digits
 
-//         oddDigits.union(evenDigits)
-//     }
-// }
-//TODO: I don't see an equivalent right now
+        std::set<int> unionSet;  // Create an empty set to store the union
+        std::set_union(oddDigits.begin(), oddDigits.end(), evenDigits.begin(), evenDigits.end(), std::inserter(unionSet, unionSet.begin()));  // Compute the union of the sets
+}
