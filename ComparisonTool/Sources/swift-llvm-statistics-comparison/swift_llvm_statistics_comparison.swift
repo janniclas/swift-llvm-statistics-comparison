@@ -54,7 +54,7 @@ func start(path: String) async throws {
     // get all file paths for compilation (starting from provided base path)
     logger.info("Run LLVM Statistics Comparison for path \(path)")
     logger.info("\(Worker.maximumNumberOfTasks)")
-    //             fill worklist
+    // fill worklist
     let programs = getPrograms(path)
     let workList = FileWorklist(programs: programs)
     // work worklist

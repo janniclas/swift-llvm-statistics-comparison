@@ -87,7 +87,7 @@ struct Worker {
     let compiler = CompilerFactory.getCompiler()
 
     private func processProgram(_ program: Program) async throws {
-        try await compiler.compileProgram(program)
+        try await compiler.compileToIR(program)
     }
 
     func work(_ programs: (_: Program, _: Program?)) async throws {

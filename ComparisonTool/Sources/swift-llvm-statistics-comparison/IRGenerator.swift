@@ -13,7 +13,7 @@ func getPrograms(_ basePath: String) -> [String: (_: Program, _: Program?)] {
 
     var programDictionary: [String: (_: Program, _: Program?)] = [:]
     let fh = FileHelperFactory.getFileHelper()
-    let pathDictionary = fh.getFilePaths(path: basePath, elementSuffixes: [".swift", ".cpp"])
+    let pathDictionary = fh.getFilePaths(path: basePath, elementSuffixes: [".swift", ".cpp"])  //TODO: to increase reuse make this configurable
     for p in pathDictionary {
         print("key: \(p.key) path: \(p.value)")
         let pl = p.key == ".swift" ? Program.PL.swift : Program.PL.cpp
@@ -27,7 +27,6 @@ func getPrograms(_ basePath: String) -> [String: (_: Program, _: Program?)] {
             } else {
                 programDictionary[program.name] = (program, nil)
             }
-
         }
 
     }
@@ -48,7 +47,7 @@ private func getProgramFromPath(_ path: String, type: Program.PL) -> Program {
 }
 
 protocol Compiler {
-    func compileProgram(_ program: Program) async throws
+    func compileToIR(_ program: Program) async throws
 }
 
 struct CompilerFactory {
@@ -87,7 +86,7 @@ class GeneralCompiler: Compiler {
     internal let cppCompilerPath = "/usr/bin/clang++"
     internal let swiftcPath = "/usr/bin/swiftc"
 
-    func compileProgram(_ program: Program) async throws {
+    func compileToIR(_ program: Program) async throws {
         logger.debug("compileProgram called with \(program)")
 
         let config = try getCompileConfig(program)
