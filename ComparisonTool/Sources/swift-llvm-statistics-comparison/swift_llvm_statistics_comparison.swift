@@ -1,5 +1,6 @@
 import ArgumentParser
 import Foundation
+import Logging
 
 #if os(macOS)
     import System
@@ -13,50 +14,10 @@ import Foundation
 
     @available(macOS 13.0, *)
     extension swift_llvm_statistics_comparison {
+
         mutating func run() async throws {
-            // get all file paths for compilation (starting from provided base path)
-            await generateIr(basePath: path)
-            //            let processInfo = ProcessInfo()
-            //            print(processInfo.activeProcessorCount)
-            // let logicalCoresCount = ProcessInfo.processInfo.processorCount
-            //            func physicalCoresCount() -> UInt {
-            //
-            //                var size: size_t = MemoryLayout<UInt>.size
-            //                var coresCount: UInt = 0
-            //
-            //                sysctlbyname("hw.physicalcpu", &coresCount, &size, nil, 0)
-            //
-            //                return coresCount
-            //            }
-            // start compile
-            // start analysis
-            // await all (theoretically we can just await for a
-            // pair to compare, however this level of complexity might not be helpful)
-            // do comparison
-            //            let handle = Task {
-            //                let p = Process()
-            //                let fp = FilePath("/bin/ls")
-            //                p.executableURL = URL(filePath: fp)
-            //                p.arguments = ["-l"]
-            //                p.terminationHandler = { (process) in
-            //                    print("\ndidFinish: \(!process.isRunning)")
-            //                    print("end")
-            //
-            //                }
-            //
-            //                do {
-            //                    try p.run()
-            //                } catch {
-            //                    print("error occured")
-            //                }
-            //                p.waitUntilExit()
-            //                return "finished"
-            //            }
-            //
-            //            print("outside")
-            //            let res = await handle.value
-            //            print(res)
-            //            try start(path: path)
+            LoggingSystem.bootstrap(UnifiedLogger.init)
+            try await start(path: path)
         }
     }
 #endif
@@ -76,7 +37,7 @@ import Foundation
     func getPath(args: [String]) -> String {
         var p = ""
         for index in 1..<args.count {
-            print(index)
+            logger.info(index)
             let argument = args[index]
             if argument == "--path" {
                 if index + 1 < args.count {
@@ -89,7 +50,35 @@ import Foundation
     }
 #endif
 
-func start(path: String) throws {
-    let diffCalc = DiffCalculator(basePath: path)
-    try diffCalc.run()
+func start(path: String) async throws {
+    let logger = Logger(label: "com.struewer.llvm.statistics")
+    // get all file paths for compilation (starting from provided base path)
+    logger.info("Run LLVM Statistics Comparison for path \(path)")
+    logger.debug("Maximum number of parallel tasks: \(Worker.maximumNumberOfTasks)")
+    // fill worklist
+    let programs = getPrograms(path)
+    logger.info("Found \(programs.count).")
+    let workList = FileWorklist(programs: programs)
+    // work worklist
+    await withTaskGroup(of: Void.self) { taskGroup in
+        for i in 0..<Worker.maximumNumberOfTasks {
+            taskGroup.addTask {
+                let worker = Worker(workerNumber: i)
+                while let item = await workList.next() {
+                    logger.info(
+                        "Starting work on: \(item.0.name) and: \(item.1?.name ?? "") with worker no \(i)"
+                    )
+                    do {
+                        try await worker.work(item)
+                        logger.info(
+                            "Finished work on swift: \(item.0.name) and cpp: \(item.1?.name ?? "") with worker no \(i)"
+                        )
+                    } catch {
+                        logger.error("Worker failed for item \(item) failed with error \(error).")
+                    }
+                }
+            }
+        }
+    }
+    logger.info("Task group finished")
 }

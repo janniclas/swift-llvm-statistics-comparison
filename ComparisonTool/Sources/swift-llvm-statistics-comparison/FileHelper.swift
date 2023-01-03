@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logging
 
 #if os(macOS)
     import System
@@ -41,6 +42,9 @@ struct FileHelperFactory {
 }
 
 private class FileHelper: ProcessFile {
+
+    private let logger = Logger(label: "com.struewer.llvm.statistics.fileHelper")
+
     /// If append fails or missbehaves it returns basePath.
     func appendToPath(basePath: String, components: String...) -> String {
         if var url = URL(string: basePath) {
@@ -93,7 +97,6 @@ private class FileHelper: ProcessFile {
                             break
                         }
                     }
-
                 }
             }
         }
@@ -116,7 +119,7 @@ private class FileHelper: ProcessFile {
         if let content = FileManager.default.contents(atPath: path) {
             if let statistics = try? JSONDecoder().decode(T.self, from: content) { return statistics }
         }
-        print("Expected statistics at path \(path) was not found.")
+        self.logger.error("Expected statistics at path \(path) was not found.")
         return nil
     }
 }
