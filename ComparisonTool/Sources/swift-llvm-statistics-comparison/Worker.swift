@@ -67,9 +67,9 @@ struct Worker {
 
     init(workerNumber: UInt) {
         self.workerNumber = workerNumber
-        print("Initialized worker \(workerNumber)")
-
+        logger.info("Initialized worker \(workerNumber)")
     }
+
     internal let logger = Logger(label: "com.struewer.llvm.statistics.worker")
     static let maximumNumberOfTasks: UInt = physicalCoresCount()
 

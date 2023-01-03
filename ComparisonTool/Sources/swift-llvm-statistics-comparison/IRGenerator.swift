@@ -14,13 +14,12 @@ func getPrograms(_ basePath: String) -> [String: (_: Program, _: Program?)] {
     var programDictionary: [String: (_: Program, _: Program?)] = [:]
     let fh = FileHelperFactory.getFileHelper()
     let pathDictionary = fh.getFilePaths(path: basePath, elementSuffixes: [".swift", ".cpp"])  //TODO: to increase reuse make this configurable
+
     for p in pathDictionary {
-        print("key: \(p.key) path: \(p.value)")
         let pl = p.key == ".swift" ? Program.PL.swift : Program.PL.cpp
 
         for path in p.value {
             let program = getProgramFromPath(path, type: pl)
-            print(program)
             if var programTuple = programDictionary[program.name] {
                 programTuple.1 = program
                 programDictionary.updateValue(programTuple, forKey: program.name)
@@ -28,7 +27,6 @@ func getPrograms(_ basePath: String) -> [String: (_: Program, _: Program?)] {
                 programDictionary[program.name] = (program, nil)
             }
         }
-
     }
 
     return programDictionary
@@ -37,6 +35,7 @@ func getPrograms(_ basePath: String) -> [String: (_: Program, _: Program?)] {
 private func getProgramFromPath(_ path: String, type: Program.PL) -> Program {
     let fh = FileHelperFactory.getFileHelper()
     var fileName: String
+
     do {
         fileName = try fh.getFileName(path: path)
     } catch {

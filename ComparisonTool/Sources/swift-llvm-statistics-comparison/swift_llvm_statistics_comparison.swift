@@ -16,6 +16,7 @@ import Logging
     extension swift_llvm_statistics_comparison {
 
         mutating func run() async throws {
+            LoggingSystem.bootstrap(UnifiedLogger.init)
             try await start(path: path)
         }
     }
@@ -53,9 +54,10 @@ func start(path: String) async throws {
     let logger = Logger(label: "com.struewer.llvm.statistics")
     // get all file paths for compilation (starting from provided base path)
     logger.info("Run LLVM Statistics Comparison for path \(path)")
-    logger.info("\(Worker.maximumNumberOfTasks)")
+    logger.debug("Maximum number of parallel tasks: \(Worker.maximumNumberOfTasks)")
     // fill worklist
     let programs = getPrograms(path)
+    logger.info("Found \(programs.count).")
     let workList = FileWorklist(programs: programs)
     // work worklist
     await withTaskGroup(of: Void.self) { taskGroup in
