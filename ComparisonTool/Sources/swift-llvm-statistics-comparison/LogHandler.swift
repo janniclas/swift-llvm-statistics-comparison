@@ -32,8 +32,9 @@
 
         var metadata: Logging.Logger.Metadata = [:]
 
-        var logLevel: Logging.Logger.Level = .info
+        var logLevel: Logging.Logger.Level = .debug
 
+        /// Warning: this method uses Apple's internal logging mechanism with the privacy level set to .public!
         func log(
             level: Logging.Logger.Level,
             message: Logging.Logger.Message,
@@ -43,7 +44,7 @@
             function: String,
             line: UInt
         ) {
-            self.logger.log(level: logType(level), "\(message.description)")
+            self.logger.log(level: logType(level), "\(message.description, privacy: .public)")
         }
 
         private func logType(_ level: Logging.Logger.Level) -> OSLogType {
