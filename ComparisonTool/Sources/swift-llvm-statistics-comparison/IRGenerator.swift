@@ -78,15 +78,17 @@ class GeneralCompiler: Compiler {
         "-emit-ir", "-g", "-parse-as-library", "-Onone", "-Xfrontend", "-disable-llvm-optzns", "-Xfrontend",
         "-disable-swift-specific-llvm-optzns", "-module-name", "myModule", "-o",
     ]
-    private let cppArgs = ["-emit-llvm", "-g", "-S", "-fno-discard-value-names", "-std=c++20", "-o"]
+    //TODO: pass clang config file to ease reuseability https://clang.llvm.org/docs/UsersManual.html#configuration-files - the -o has to be specified in the code to make the output dir configurable!
+    private let cppArgs = ["-emit-llvm", "-g", "-S", "-fno-discard-value-names", "-std=c++20", "-o"]  //TODO: for openai evaluation maybe -fdiagnostics-parseable-fixits is useful to figure out, which potential errors are auto fixable by the compiler
 
     internal let logger = Logger(label: "com.struewer.llvm.statistics.compiler")
 
     internal let cppCompilerPath = "/usr/bin/clang++"
     internal let swiftcPath = "/usr/bin/swiftc"
 
+    //TODO: add flag to optionally store the compiler output to disk
     func compileToIR(_ program: Program) async throws {
-        logger.debug("compileProgram called with \(program)")
+        self.logger.debug("compileProgram called with \(program)")
 
         let config = try getCompileConfig(program)
         let p = Process()
@@ -94,9 +96,22 @@ class GeneralCompiler: Compiler {
         p.executableURL = config.url
         p.arguments = config.args
 
+        let outputPipe = Pipe()
+        p.standardError = outputPipe
+
         try p.run()
 
         p.waitUntilExit()
+        let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
+
+        if let outString = String(data: outputData, encoding: .utf8) {
+            if outString != "" {
+                self.logger.debug("Process output: \(outString)")
+            }
+        }
+
+        let returnCode = p.terminationStatus
+        self.logger.info("Return code: \(returnCode)")
     }
 
     internal func getCompileConfig(_ program: Program) throws -> (url: URL, args: [String]) {
