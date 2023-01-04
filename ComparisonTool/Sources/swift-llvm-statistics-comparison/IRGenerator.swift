@@ -46,7 +46,17 @@ private func getProgramFromPath(_ path: String, type: Program.PL) -> Program {
 }
 
 protocol Compiler {
-    func compileToIR(_ program: Program) async throws
+    func compileToIR(_ program: Program) async throws -> CompileResult
+}
+
+struct CompileResult {
+    let returnCode: Int32
+    let stdOut: String?
+
+    init(returnCode: Int32, stdOut: String? = nil) {
+        self.returnCode = returnCode
+        self.stdOut = stdOut
+    }
 }
 
 struct CompilerFactory {
@@ -87,7 +97,8 @@ class GeneralCompiler: Compiler {
     internal let swiftcPath = "/usr/bin/swiftc"
 
     //TODO: add flag to optionally store the compiler output to disk
-    func compileToIR(_ program: Program) async throws {
+    //TODO: this is now not necessarily "compileToIr but rather, run compiler with config
+    func compileToIR(_ program: Program) async throws -> CompileResult {
         self.logger.debug("compileProgram called with \(program)")
 
         let config = try getCompileConfig(program)
@@ -102,16 +113,19 @@ class GeneralCompiler: Compiler {
         try p.run()
 
         p.waitUntilExit()
+        let returnCode = p.terminationStatus
+        self.logger.info("Return code: \(returnCode)")
+
         let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
 
         if let outString = String(data: outputData, encoding: .utf8) {
             if outString != "" {
                 self.logger.debug("Process output: \(outString)")
+                return CompileResult(returnCode: returnCode, stdOut: outString)
             }
         }
 
-        let returnCode = p.terminationStatus
-        self.logger.info("Return code: \(returnCode)")
+        return CompileResult(returnCode: returnCode)
     }
 
     internal func getCompileConfig(_ program: Program) throws -> (url: URL, args: [String]) {

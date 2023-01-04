@@ -10,6 +10,7 @@ import Logging
 
 struct Statistics {}
 
+// TODO: abstract this to fit to general programs without ir path. maybe keep some sort of output path to also fit compiled programs. also we want to keep the folder structure of the input programs this could maybe also be included here.
 class Program {
     enum PL {
         case swift
@@ -32,6 +33,8 @@ class Program {
     var statistics: Statistics?
 }
 
+//TODO: update this to support single programs not only tuples
+// struct FileWorkList<T> where T: Program OR T: (_: Program, _: Program?)
 actor FileWorklist {
 
     /// Program name -> Programs
@@ -86,14 +89,26 @@ struct Worker {
     let workerNumber: UInt
     let compiler = CompilerFactory.getCompiler()
 
-    private func processProgram(_ program: Program) async throws {
-        try await compiler.compileToIR(program)
+    private func processProgram(_ program: Program) async throws -> CompileResult {
+        return try await compiler.compileToIR(program)
     }
 
-    func work(_ programs: (_: Program, _: Program?)) async throws {
-        try await processProgram(programs.0)
+    func work(_ program: Program) async throws -> CompileResult {
+        return try await processProgram(program)
+    }
+
+    //TODO: we should probably do error handling here somewhere. those try await things look scary on their own
+    func work(_ programs: (_: Program, _: Program?)) async throws -> (_: CompileResult, _: CompileResult?) {
+        var res: (_: CompileResult, _: CompileResult?)
+
+        res.0 = try await processProgram(programs.0)
+
         if let p1 = programs.1 {
-            try await processProgram(p1)
+            res.1 = try await processProgram(p1)
+        } else {
+            res.1 = nil
         }
+
+        return res
     }
 }

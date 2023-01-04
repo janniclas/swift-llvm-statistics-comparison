@@ -60,25 +60,60 @@ func start(path: String) async throws {
     logger.info("Found \(programs.count).")
     let workList = FileWorklist(programs: programs)
     // work worklist
-    await withTaskGroup(of: Void.self) { taskGroup in
+    let compileResults = await withTaskGroup(
+        of: Array<(_: CompileResult, _: CompileResult?)>.self,
+        returning: Array<(_: CompileResult, _: CompileResult?)>.self
+    ) { taskGroup in
+
+        var groupResult: [(_: CompileResult, _: CompileResult?)] = []
         for i in 0..<Worker.maximumNumberOfTasks {
             taskGroup.addTask {
                 let worker = Worker(workerNumber: i)
+                var results: [(_: CompileResult, _: CompileResult?)] = []
                 while let item = await workList.next() {
                     logger.info(
                         "Starting work on: \(item.0.name) and: \(item.1?.name ?? "") with worker no \(i)"
                     )
                     do {
-                        try await worker.work(item)
+                        let result = try await worker.work(item)
+                        results.append(result)
                         logger.info(
                             "Finished work on swift: \(item.0.name) and cpp: \(item.1?.name ?? "") with worker no \(i)"
                         )
                     } catch {
                         logger.error("Worker failed for item \(item) failed with error \(error).")
+
                     }
                 }
+                return results
             }
         }
+        for await childRes in taskGroup {
+            groupResult.append(contentsOf: childRes)
+        }
+        return groupResult
     }
-    logger.info("Task group finished")
+
+    let initialValue: Int32 = 0
+    let failedPrograms = compileResults.reduce(
+        initialValue,
+        {
+            acc, res in
+            if let res1 = res.1?.returnCode {
+                return acc + res1 + res.0.returnCode
+            }
+            return acc + res.0.returnCode
+        })
+
+    let inputPrograms = programs.reduce(
+        initialValue,
+        {
+            acc, p in
+            if let _ = p.value.1 {
+                return acc + 2
+            }
+            return acc + 1
+        })
+
+    logger.info("Task group finished. Of \(inputPrograms) input programs \(failedPrograms) failed to compile.")
 }
