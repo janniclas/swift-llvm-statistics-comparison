@@ -75,6 +75,8 @@ private class FileHelper: ProcessFile {
         }
     }
 
+    /// Searches for all files with the given suffixes.
+    /// Returns a dictionary mapping the element suffix to the found programs.
     func getFilePaths(path: String, elementSuffixes: [String]) -> [String: [String]] {
         var pathsDict: [String: [String]] = [:]
         let enumerator = FileManager.default.enumerator(atPath: path)

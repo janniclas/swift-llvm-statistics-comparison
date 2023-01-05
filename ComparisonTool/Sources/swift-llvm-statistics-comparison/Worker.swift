@@ -10,29 +10,6 @@ import Logging
 
 struct Statistics {}
 
-// TODO: abstract this to fit to general programs without ir path. maybe keep some sort of output path to also fit compiled programs. also we want to keep the folder structure of the input programs this could maybe also be included here.
-class Program {
-    enum PL {
-        case swift
-        case cpp
-    }
-
-    let language: PL
-
-    let name: String
-    let path: String
-
-    init(language: PL, name: String, path: String) {
-        self.language = language
-        self.name = name
-        self.path = path
-        self.irPath = "\(path).ir.ll"
-    }
-
-    var irPath: String
-    var statistics: Statistics?
-}
-
 //TODO: update this to support single programs not only tuples
 // struct FileWorkList<T> where T: Program OR T: (_: Program, _: Program?)
 actor FileWorklist {
@@ -65,6 +42,39 @@ actor FileWorklist {
         return res.value
     }
 }
+
+actor WorkList<T> {
+
+    let items: [T]
+    fileprivate var idx: Array<T>.Index
+
+    var isEmpty: Bool
+
+    init() {
+        self.init(items: [])
+    }
+
+    init(items: [T]) {
+        self.items = items
+        self.idx = self.items.startIndex
+        self.isEmpty = items.isEmpty
+    }
+
+    func next() -> (T)? {
+        if isEmpty {
+            return nil
+        }
+        let next = items[idx]
+        idx = items.index(after: idx)
+        if idx == items.endIndex {
+            isEmpty = true
+        }
+        return next
+    }
+}
+
+typealias ProgramWorkList = WorkList<Program>
+typealias ProgramTupleWorkList = WorkList<(_: Program, _: Program?)>
 
 struct Worker {
 

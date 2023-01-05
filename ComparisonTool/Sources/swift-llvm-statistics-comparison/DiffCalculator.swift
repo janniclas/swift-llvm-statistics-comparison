@@ -123,10 +123,10 @@ struct DiffCalculator {
     }
 
     private func getBaseLanguage(moduleName: inout String) throws -> BaseLanguage {
-        if moduleName.contains(".swift") {
+        if moduleName.contains(Program.SWIFT_LANGUAGE_EXTENSION) {
             moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
             return BaseLanguage.swift
-        } else if moduleName.contains(".cpp") {
+        } else if moduleName.contains(Program.CPP_LANGUAGE_EXTENSION) {
             moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
             return BaseLanguage.cpp
         }

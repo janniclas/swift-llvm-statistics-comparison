@@ -9,42 +9,6 @@ import Foundation
 import Logging
 import System
 
-func getPrograms(_ basePath: String) -> [String: (_: Program, _: Program?)] {
-
-    var programDictionary: [String: (_: Program, _: Program?)] = [:]
-    let fh = FileHelperFactory.getFileHelper()
-    let pathDictionary = fh.getFilePaths(path: basePath, elementSuffixes: [".swift", ".cpp"])  //TODO: to increase reuse make this configurable
-
-    for p in pathDictionary {
-        let pl = p.key == ".swift" ? Program.PL.swift : Program.PL.cpp
-
-        for path in p.value {
-            let program = getProgramFromPath(path, type: pl)
-            if var programTuple = programDictionary[program.name] {
-                programTuple.1 = program
-                programDictionary.updateValue(programTuple, forKey: program.name)
-            } else {
-                programDictionary[program.name] = (program, nil)
-            }
-        }
-    }
-
-    return programDictionary
-}
-
-private func getProgramFromPath(_ path: String, type: Program.PL) -> Program {
-    let fh = FileHelperFactory.getFileHelper()
-    var fileName: String
-
-    do {
-        fileName = try fh.getFileName(path: path)
-    } catch {
-        fileName = "invalidName_\(path)"
-    }
-
-    return Program(language: type, name: fileName, path: path)
-}
-
 protocol Compiler {
     func compileToIR(_ program: Program) async throws -> CompileResult
 }
@@ -77,6 +41,8 @@ struct CompilerFactory {
     }
 }
 
+//TODO: should we have the possibility to create one compiler for every language and
+// add language specific settings as input? Or maybe have a general compiler config, including the compiler path etc.
 class GeneralCompiler: Compiler {
 
     public enum CompilerError: Error {
@@ -128,28 +94,30 @@ class GeneralCompiler: Compiler {
         return CompileResult(returnCode: returnCode)
     }
 
+    //TODO: we can't load a default config we should have this provided as an external file
+    // for now we provide default configs for Swift and Cpp to be backwards compatible
     internal func getCompileConfig(_ program: Program) throws -> (url: URL, args: [String]) {
-        if program.language == .cpp {
+        if program.language == Program.CPP_LANGUAGE_EXTENSION {
             if let url = URL(string: cppCompilerPath) {
-                return (url, getCppArgs(program))
+                return (url, getCppArgs(ProgramWithIR(p: program)))
             }
             throw CompilerError.compilerUrlNotFound(url: swiftcPath)
         } else {
             if let url = URL(string: swiftcPath) {
-                return (url, getSwiftArgs(program))
+                return (url, getSwiftArgs(ProgramWithIR(p: program)))
             }
             throw CompilerError.compilerUrlNotFound(url: cppCompilerPath)
         }
     }
 
-    internal func getCppArgs(_ program: Program) -> [String] {
+    internal func getCppArgs(_ program: ProgramWithIR) -> [String] {
         var res = cppArgs
         res.insert(program.path, at: 5)
         res.append(program.irPath)
         return res
     }
 
-    internal func getSwiftArgs(_ program: Program) -> [String] {
+    internal func getSwiftArgs(_ program: ProgramWithIR) -> [String] {
         var res = swiftArgs
         res.insert(program.path, at: 10)
         res.append(program.irPath)
@@ -168,10 +136,10 @@ class CompilerMacOS: GeneralCompiler {
     }
 
     override internal func getCompileConfig(_ program: Program) -> (url: URL, args: [String]) {
-        if program.language == .cpp {
-            return (URL(filePath: cppCompilerPath), getCppArgs(program))
+        if program.language == Program.CPP_LANGUAGE_EXTENSION {
+            return (URL(filePath: cppCompilerPath), getCppArgs(ProgramWithIR(p: program)))
         } else {
-            return (URL(filePath: swiftcPath), getSwiftArgs(program))
+            return (URL(filePath: swiftcPath), getSwiftArgs(ProgramWithIR(p: program)))
         }
     }
 }
