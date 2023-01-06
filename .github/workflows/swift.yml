@@ -78,7 +78,7 @@ jobs:
       - name: Execute comparison
         run: |
           cd ComparisonTool 
-          ./.build/release/swift-llvm-statistics-comparison --path $HOME
+          ./.build/release/swift-llvm-statistics-comparison diff --path $HOME
       - name: Create Comparison Tar
         run: |
           find .

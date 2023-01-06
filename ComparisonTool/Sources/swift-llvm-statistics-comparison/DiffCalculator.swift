@@ -6,18 +6,21 @@
 //
 
 import Foundation
+import Logging
 
 struct DiffCalculator {
     let basePath: String
-    let fileHelper = FileHelperFactory.getFileHelper()
+    private let fileHelper = FileHelperFactory.getFileHelper()
+
+    private let logger = Logger(label: "com.struewer.llvm.statistics.fileHelper")
 
     func run() throws {
-        print("Search statistics at path: \(self.basePath)")
+        logger.info("Search statistics at path: \(self.basePath)")
         let statistics =
             fileHelper.getFileContents(path: self.basePath, elementSuffix: "psr-IrStatistics.json")
             as [PhasarStatistics]
 
-        print("successfully retrieved \(statistics.count) statistics.")
+        logger.info("successfully retrieved \(statistics.count) statistics.")
 
         // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
         let diffs: [String: Diff] = calculateAllDiffs(statistics: statistics)
@@ -37,12 +40,12 @@ struct DiffCalculator {
         }
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
-        for diff in diffs {
-            let fileOutput = fileHelper.appendToPath(basePath: outputPath, components: diff.key + "-comparison.json")
-            print(fileOutput)
+        for (idx, diff) in diffs.enumerated() {
+            let fileOutput = fileHelper.appendToPath(
+                basePath: outputPath, components: "\(idx)-\(diff.key)-comparison.json")
             FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(diff.value))
         }
-        print("Diffs were saved to \(outputPath)")
+        logger.info("Diffs were saved to \(outputPath)")
     }
 
     private func calculateAllDiffs(statistics: [PhasarStatistics]) -> [String: Diff] {
@@ -65,13 +68,13 @@ struct DiffCalculator {
                         if diff.swift == nil {
                             diff.swift = stat
                         } else {
-                            print("Duplicate entry found for \(stat.moduleName)")
+                            logger.debug("Duplicate entry found for \(stat.moduleName)")
                         }
                     case .cpp:
                         if diff.cpp == nil {
                             diff.cpp = stat
                         } else {
-                            print("Duplicate entry found for \(stat.moduleName)")
+                            logger.debug("Duplicate entry found for \(stat.moduleName)")
                         }
                     }
                     if let ds = diff.swift, let dc = diff.cpp {
@@ -121,10 +124,10 @@ struct DiffCalculator {
     }
 
     private func getBaseLanguage(moduleName: inout String) throws -> BaseLanguage {
-        if moduleName.contains(".swift") {
+        if moduleName.contains(Program.SWIFT_LANGUAGE_EXTENSION) {
             moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
             return BaseLanguage.swift
-        } else if moduleName.contains(".cpp") {
+        } else if moduleName.contains(Program.CPP_LANGUAGE_EXTENSION) {
             moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
             return BaseLanguage.cpp
         }
