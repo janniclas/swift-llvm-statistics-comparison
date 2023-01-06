@@ -30,12 +30,6 @@ struct CompilerFactory {
         if compiler != nil {
             return compiler!
         }
-        #if os(macOS)
-            if #available(macOS 13.0, *) {
-                compiler = CompilerMacOS()
-                return compiler!
-            }
-        #endif
         compiler = GeneralCompiler()
         return compiler!
     }
@@ -123,27 +117,5 @@ class GeneralCompiler: Compiler {
         res.append(program.irPath)
 
         return res
-    }
-}
-
-@available(macOS 12.0, *)
-class CompilerMacOS: GeneralCompiler {
-
-    override init() {
-        super.init()
-        logger.debug("MacOS Compiler initialized")
-        // TODO: add config file to inject custom paths and settings
-    }
-
-    override internal func getCompileConfig(_ program: Program) throws -> (url: URL, args: [String]) {
-        if #available(macOS 13.0, *) {
-            if program.language == Program.CPP_LANGUAGE_EXTENSION {
-                return (URL(filePath: cppCompilerPath), getCppArgs(ProgramWithIR(p: program)))
-            } else {
-                return (URL(filePath: swiftcPath), getSwiftArgs(ProgramWithIR(p: program)))
-            }
-        } else {
-            return try super.getCompileConfig(program)
-        }
     }
 }
