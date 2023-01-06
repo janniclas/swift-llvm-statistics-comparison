@@ -9,7 +9,7 @@ import Foundation
 import Logging
 
 struct DiffCalculator {
-    private let basePath: String
+    let basePath: String
     private let fileHelper = FileHelperFactory.getFileHelper()
 
     private let logger = Logger(label: "com.struewer.llvm.statistics.fileHelper")
@@ -40,8 +40,9 @@ struct DiffCalculator {
         }
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
-        for diff in diffs {
-            let fileOutput = fileHelper.appendToPath(basePath: outputPath, components: diff.key + "-comparison.json")
+        for (idx, diff) in diffs.enumerated() {
+            let fileOutput = fileHelper.appendToPath(
+                basePath: outputPath, components: "\(idx)-\(diff.key)-comparison.json")
             FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(diff.value))
         }
         logger.info("Diffs were saved to \(outputPath)")

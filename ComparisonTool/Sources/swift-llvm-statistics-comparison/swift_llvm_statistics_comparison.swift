@@ -5,6 +5,10 @@ import Logging
 #if os(macOS)
     import System
 
+    enum Mode: String, ExpressibleByArgument {
+        case diff, compile
+    }
+
     @main
     @available(macOS 13.0, *)
     struct swift_llvm_statistics_comparison: AsyncParsableCommand {
@@ -12,6 +16,9 @@ import Logging
         //TODO: add execution mode (compare/create ir, compilation only)
         @Option(help: "Directory path to scan for files.")
         var path: String
+
+        @Argument(help: "Which mode to run. Curent valid modes diff and compile.")
+        var mode: Mode
     }
 
     @available(macOS 13.0, *)
@@ -19,7 +26,13 @@ import Logging
 
         mutating func run() async throws {
             LoggingSystem.bootstrap(UnifiedLogger.init)
-            try await start(path: path)
+            switch mode {
+            case .diff:
+                try await startDiff(path: path)
+            case .compile:
+                try await start(path: path)
+            }
+
         }
     }
 #endif
@@ -51,6 +64,11 @@ import Logging
         return p
     }
 #endif
+func startDiff(path: String) async throws {
+    let logger = Logger(label: "com.struewer.llvm.statistics")
+    let diffCalc = DiffCalculator(basePath: path)
+    try diffCalc.run()
+}
 
 func start(path: String) async throws {
     let logger = Logger(label: "com.struewer.llvm.statistics")
