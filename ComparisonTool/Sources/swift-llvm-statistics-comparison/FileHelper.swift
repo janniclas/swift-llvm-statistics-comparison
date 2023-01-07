@@ -25,6 +25,8 @@ protocol ProcessFile {
     func readContent<T: Codable>(path: String) throws -> T
     func getFilePaths(path: String, elementSuffix: String) -> [String]
     func getFilePaths(path: String, elementSuffixes: [String]) -> [String: [String]]
+
+    func storeJson(dirPath: String, fileName: String, element: Codable) throws
 }
 
 struct FileHelperFactory {
@@ -47,7 +49,12 @@ struct FileHelperFactory {
 private class FileHelper: ProcessFile {
 
     private let logger = Logger(label: "com.struewer.llvm.statistics.fileHelper")
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
 
+    init() {
+        encoder.outputFormatting = .prettyPrinted
+    }
     /// If append fails or missbehaves it returns basePath.
     func appendToPath(basePath: String, components: String...) -> String {
         if var url = URL(string: basePath) {
@@ -58,6 +65,22 @@ private class FileHelper: ProcessFile {
         }
 
         return basePath
+    }
+
+    /// Stores given element at dirPath. Creates directories if non existend.
+    func storeJson(dirPath: String, fileName: String, element: Codable) throws {
+
+        if !FileManager.default.fileExists(atPath: dirPath) {
+            try FileManager.default.createDirectory(
+                atPath: dirPath, withIntermediateDirectories: true)
+        }
+
+        let fileOutput = appendToPath(
+            basePath: dirPath, components: fileName)
+
+        FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(element))
+
+        logger.info("File was saved to \(fileOutput)")
     }
 
     func getFileName(path: String) throws -> String {
@@ -122,7 +145,7 @@ private class FileHelper: ProcessFile {
     func readContent<T: Codable>(path: String) throws -> T {
 
         if let content = FileManager.default.contents(atPath: path) {
-            if let json = try? JSONDecoder().decode(T.self, from: content) {
+            if let json = try? decoder.decode(T.self, from: content) {
                 return json
             } else {
                 self.logger.error("Decoding of file at path \(path) failed.")

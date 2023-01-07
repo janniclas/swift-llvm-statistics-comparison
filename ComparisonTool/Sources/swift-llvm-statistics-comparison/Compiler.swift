@@ -42,9 +42,9 @@ struct GeneralCompiler: Compiler {
 
         let p = Process()
         let url = getURL(config.compilerPath)
-
+        let args = getCompileArguments(config: config, program: program)
         p.executableURL = url
-        p.arguments = config.compilerSettings
+        p.arguments = args  //TODO: add output file and actual program to compile:D
 
         let outputPipe = Pipe()
         p.standardError = outputPipe
@@ -65,6 +65,17 @@ struct GeneralCompiler: Compiler {
         }
 
         return CompileResult(returnCode: returnCode)
+    }
+
+    private func getCompileArguments(config: Config, program: Program) -> [String] {
+        var args = config.compilerSettings
+        let output = FileHelperFactory.getFileHelper().appendToPath(
+            basePath: config.outputPath, components: "\(program.name)\(config.compilerOutExtension)")
+
+        args.append(config.compilerOutFlag)
+        args.append(output)
+        args.append(program.path)
+        return args
     }
 
     private func getURL(_ string: String) -> URL {

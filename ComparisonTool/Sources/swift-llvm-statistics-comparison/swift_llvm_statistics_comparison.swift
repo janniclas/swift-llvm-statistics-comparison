@@ -121,6 +121,10 @@ func startCompiler(config: Config) async throws {
                     do {
                         let result = try await worker.work(item)
                         results.append(result)
+                        if let stdOut = result.stdOut {
+                            try FileHelperFactory.getFileHelper().storeJson(
+                                dirPath: config.outputPath, fileName: "\(item.name)-output.txt", element: stdOut)
+                        }
                         logger.info(
                             "Finished work on: \(item.name) with worker no \(i)"
                         )
@@ -145,6 +149,9 @@ func startCompiler(config: Config) async throws {
             acc, res in
             acc + res.returnCode
         })
+
+    //TODO: save the results to the output path
+    //TODO: reconstruct the input folder structure by starting from the base path and create every folder inbetween the program path and the base path
 
     logger.info("Task group finished. Of \(programs.count) input programs \(failedPrograms) failed to compile.")
 }

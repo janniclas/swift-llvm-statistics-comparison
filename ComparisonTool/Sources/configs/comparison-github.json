@@ -3,4 +3,6 @@
     "compilerSettings": ["-std=c++20"],
     "outputPath": "/tmp",
     "inputPath": "/Users/runner",
+    "compilerOutFlag": "-o",
+    "compilerOutExtension": ".ll"
 }

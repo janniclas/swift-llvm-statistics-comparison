@@ -33,19 +33,13 @@ struct DiffCalculator {
 
     private func storeDiffs(diffs: [Dictionary<String, Diff>.Element]) throws {
         let outputPath = fileHelper.appendToPath(basePath: self.basePath, components: "diffs")
-        print(outputPath)
-        if !FileManager.default.fileExists(atPath: outputPath) {
-            try FileManager.default.createDirectory(
-                atPath: outputPath, withIntermediateDirectories: false)
-        }
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
+
         for (idx, diff) in diffs.enumerated() {
-            let fileOutput = fileHelper.appendToPath(
-                basePath: outputPath, components: "\(idx)-\(diff.key)-comparison.json")
-            FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(diff.value))
+            try fileHelper.storeJson(
+                dirPath: outputPath, fileName: "\(idx)-\(diff.key)-comparison.json", element: diff.value)
         }
-        logger.info("Diffs were saved to \(outputPath)")
+
+        logger.info("All diffs were saved to \(outputPath)")
     }
 
     private func calculateAllDiffs(statistics: [PhasarStatistics]) -> [String: Diff] {
