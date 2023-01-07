@@ -10,39 +10,6 @@ import Logging
 
 struct Statistics {}
 
-//TODO: update this to support single programs not only tuples
-// struct FileWorkList<T> where T: Program OR T: (_: Program, _: Program?)
-actor FileWorklist {
-
-    /// Program name -> Programs
-    let programs: [String: (_: Program, _: Program?)]
-    fileprivate var idx: Dictionary<String, (_: Program, _: Program?)>.Index
-
-    var isEmpty: Bool
-
-    init() {
-        self.init(programs: [:])
-    }
-
-    init(programs: [String: (_: Program, _: Program?)]) {
-        self.programs = programs
-        self.idx = self.programs.startIndex
-        self.isEmpty = programs.isEmpty
-    }
-
-    func next() -> (_: Program, _: Program?)? {
-        if isEmpty {
-            return nil
-        }
-        let res = programs[idx]
-        idx = programs.index(after: idx)
-        if idx == programs.endIndex {
-            isEmpty = true
-        }
-        return res.value
-    }
-}
-
 actor WorkList<T> {
 
     let items: [T]
@@ -108,7 +75,6 @@ struct Worker {
         return try await processProgram(program)
     }
 
-    //TODO: we should probably do error handling here somewhere. those try await things look scary on their own
     func work(_ programs: (_: Program, _: Program?)) async throws -> (_: CompileResult, _: CompileResult?) {
         var res: (_: CompileResult, _: CompileResult?)
 

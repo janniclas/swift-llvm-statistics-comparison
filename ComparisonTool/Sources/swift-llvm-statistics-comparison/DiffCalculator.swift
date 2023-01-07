@@ -33,7 +33,7 @@ struct DiffCalculator {
 
     private func storeDiffs(diffs: [Dictionary<String, Diff>.Element]) throws {
         let outputPath = fileHelper.appendToPath(basePath: self.basePath, components: "diffs")
-
+        print(outputPath)
         if !FileManager.default.fileExists(atPath: outputPath) {
             try FileManager.default.createDirectory(
                 atPath: outputPath, withIntermediateDirectories: false)

@@ -1,5 +1,5 @@
 //
-//  IRGenerator.swift
+//  Compiler.swift
 //
 //
 //  Created by Jan-Niclas Strüwer on 15.12.22.
@@ -23,8 +23,6 @@ struct CompileResult {
     }
 }
 
-//TODO: should we have the possibility to create one compiler for every language and
-// add language specific settings as input? Or maybe have a general compiler config, including the compiler path etc.
 struct GeneralCompiler: Compiler {
 
     public enum CompilerError: Error {
@@ -39,8 +37,6 @@ struct GeneralCompiler: Compiler {
     internal let logger = Logger(label: "com.struewer.llvm.statistics.compiler")
     internal let config: Config
 
-    //TODO: add flag to optionally store the compiler output to disk
-    //TODO: this is now not necessarily "compileToIr but rather, run compiler with config
     func compile(_ program: Program) async throws -> CompileResult {
         self.logger.debug("compileProgram called with \(program.name)")
 
@@ -73,6 +69,7 @@ struct GeneralCompiler: Compiler {
 
     private func getURL(_ string: String) -> URL {
 
+        //XXX: this code was removed, because it lead to faulty behavior with GitHubs MacOS 12 runners, which crashed at compile time if URL(filePath: string) was in the code, no matter if there was a runtime check
         //        if #available(macOS 13.0, *) {
         //            return URL(filePath: string)
         //        } else {
