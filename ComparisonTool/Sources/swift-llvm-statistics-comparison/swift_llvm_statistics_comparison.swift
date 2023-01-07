@@ -12,11 +12,6 @@ import Logging
     @main
     @available(macOS 13.0, *)
     struct swift_llvm_statistics_comparison: AsyncParsableCommand {
-        //TODO: add config input for compiler settings
-        //TODO: add execution mode (compare/create ir, compilation only)
-        //        @Option(help: "Directory path to scan for files.")
-        //        var path: String
-
         @Argument(help: "Which mode to run. Curent valid modes diff and compile.")
         var mode: Mode
 
@@ -34,58 +29,78 @@ import Logging
 
             switch mode {
             case .diff:
-                try await startDiff(path: config.inputPath, config: config)
+                try await startDiff(config: config)
             case .compile:
-                try await startCompiler(path: config.inputPath, config: config)
+                try await startCompiler(config: config)
             }
 
         }
     }
 #endif
 #if os(Linux)
-    //    @main
-    //    struct swift_llvm_statistics_comparison {
-    //        static func main() throws {
-    //            let path = getPath(args: CommandLine.arguments)
-    //            if path != "" {
-    //                try startCompiler(path: path)
-    //            } else {
-    //                print("Path Argument not found.")
-    //            }
-    //        }
-    //    }
-    //
-    //    func getPath(args: [String]) -> String {
-    //        var p = ""
-    //        for index in 1..<args.count {
-    //            logger.info(index)
-    //            let argument = args[index]
-    //            if argument == "--path" {
-    //                if index + 1 < args.count {
-    //                    p = args[index + 1]
-    //                    break
-    //                }
-    //            }
-    //        }
-    //        return p
-    //    }
+
+    enum Mode: String {
+        case diff, compile
+    }
+
+    enum ArgError: Error {
+        case unkownArgument(arg: String)
+    }
+
+    @main
+    struct swift_llvm_statistics_comparison {
+        static func main() throws {
+            let args = try getPath(args: CommandLine.arguments)
+            let config = try loadConfig(path: args.path)
+
+            switch args.mode {
+            case .diff:
+                try await startDiff(config: config)
+            case .compile:
+                try await startCompiler(config: config)
+            }
+        }
+    }
+
+    func getPath(args: [String]) throws -> (mode: Mode, path: String) {
+        var mode: Mode
+        for index in 1..<args.count {
+            let argument = args[index]
+            switch argument {
+            case .diff:
+                mode = .diff
+            case .compile:
+                mode = .compile
+            case "--config":
+                if index + 1 < args.count {
+                    p = args[index + 1]
+                    break
+                }
+            default:
+                throw ArgError.unkownArgument(arg: argument)
+            }
+        }
+        return (mode, p)
+    }
 #endif
-func startDiff(path: String, config: Config) async throws {
+
+func startDiff(config: Config) async throws {
     let logger = Logger(label: "com.struewer.llvm.statistics")
-    let diffCalc = DiffCalculator(basePath: path)
+    logger.info("Started to run in diff mode. Input path \(config.inputPath)")
+    let diffCalc = DiffCalculator(basePath: config.inputPath)
     try diffCalc.run()
 }
 
-func startCompiler(path: String, config: Config) async throws {
+func startCompiler(config: Config) async throws {
     let logger = Logger(label: "com.struewer.llvm.statistics")
     // get all file paths for compilation (starting from provided base path)
-    logger.info("Run LLVM Statistics Comparison for path \(path)")
+    logger.info("Run LLVM Statistics Comparison for path \(config.inputPath)")
     logger.info("Config loaded \(config)")
     logger.debug("Maximum number of parallel tasks: \(Worker.maximumNumberOfTasks)")
 
     let compiler = GeneralCompiler(config: config)
     // fill worklist
-    let programs = BaseProgram.getProgramsFrom(path)
+    let programs = BaseProgram.getProgramsFrom(config.inputPath)
     logger.info("Found \(programs.count).")
     let workList = ProgramWorkList(items: programs)
     // work worklist
