@@ -14,12 +14,15 @@ import Logging
 
 enum FileHelperError: Error {
     case getFileNameFailed(path: String)
+    case FileNotFound(path: String)
+    case JsonParsingFailed(path: String)
 }
 
 protocol ProcessFile {
     func appendToPath(basePath: String, components: String...) -> String
     func getFileName(path: String) throws -> String
     func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T]
+    func readContent<T: Codable>(path: String)throws -> T
     func getFilePaths(path: String, elementSuffix: String) -> [String]
     func getFilePaths(path: String, elementSuffixes: [String]) -> [String: [String]]
 }
@@ -109,20 +112,24 @@ private class FileHelper: ProcessFile {
         var statistics: [T] = []
         let paths = getFilePaths(path: path, elementSuffix: elementSuffix)
         for cPath in paths {
-            if let stats = readContent(path: cPath) as T? {
+            if let stats = try? readContent(path: cPath) as T {
                 statistics.append(stats)
             }
         }
         return statistics
     }
 
-    func readContent<T: Codable>(path: String) -> T? {
+    func readContent<T: Codable>(path: String) throws -> T {
 
         if let content = FileManager.default.contents(atPath: path) {
-            if let statistics = try? JSONDecoder().decode(T.self, from: content) { return statistics }
+            if let json = try? JSONDecoder().decode(T.self, from: content) { return json } else {
+                self.logger.error("Decoding of file at path \(path) failed.")
+                throw FileHelperError.JsonParsingFailed(path: path)
+            }
+        } else {
+            self.logger.error("Expected file at path \(path) was not found.")
+            throw FileHelperError.FileNotFound(path: path)
         }
-        self.logger.error("Expected statistics at path \(path) was not found.")
-        return nil
     }
 }
 
@@ -146,6 +153,5 @@ private class FileHelper: ProcessFile {
 
             throw FileHelperError.getFileNameFailed(path: path)
         }
-
     }
 #endif

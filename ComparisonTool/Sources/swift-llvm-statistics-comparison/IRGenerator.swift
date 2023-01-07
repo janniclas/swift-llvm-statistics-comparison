@@ -10,7 +10,7 @@ import Logging
 import System
 
 protocol Compiler {
-    func compileToIR(_ program: Program) async throws -> CompileResult
+    func compile(_ program: Program) async throws -> CompileResult
 }
 
 struct CompileResult {
@@ -23,49 +23,33 @@ struct CompileResult {
     }
 }
 
-struct CompilerFactory {
-
-    static var compiler: Compiler?
-    static func getCompiler() -> Compiler {
-        if compiler != nil {
-            return compiler!
-        }
-        compiler = GeneralCompiler()
-        return compiler!
-    }
-}
-
 //TODO: should we have the possibility to create one compiler for every language and
 // add language specific settings as input? Or maybe have a general compiler config, including the compiler path etc.
-class GeneralCompiler: Compiler {
+struct GeneralCompiler: Compiler {
 
     public enum CompilerError: Error {
         case compilerUrlNotFound(url: String)
         case compilationFailed(program: Program)
     }
+    
+    init(config: Config) {
+        self.config = config
+    }
 
-    private let swiftArgs = [
-        "-emit-ir", "-g", "-parse-as-library", "-Onone", "-Xfrontend", "-disable-llvm-optzns", "-Xfrontend",
-        "-disable-swift-specific-llvm-optzns", "-module-name", "myModule", "-o",
-    ]
-    //TODO: pass clang config file to ease reuseability https://clang.llvm.org/docs/UsersManual.html#configuration-files - the -o has to be specified in the code to make the output dir configurable!
-    private let cppArgs = ["-emit-llvm", "-g", "-S", "-fno-discard-value-names", "-std=c++20", "-o"]  //TODO: for openai evaluation maybe -fdiagnostics-parseable-fixits is useful to figure out, which potential errors are auto fixable by the compiler
 
     internal let logger = Logger(label: "com.struewer.llvm.statistics.compiler")
-
-    internal let cppCompilerPath = "/usr/bin/clang++"
-    internal let swiftcPath = "/usr/bin/swiftc"
+    internal let config: Config
 
     //TODO: add flag to optionally store the compiler output to disk
     //TODO: this is now not necessarily "compileToIr but rather, run compiler with config
-    func compileToIR(_ program: Program) async throws -> CompileResult {
-        self.logger.debug("compileProgram called with \(program)")
+    func compile(_ program: Program) async throws -> CompileResult {
+        self.logger.debug("compileProgram called with \(program.name)")
 
-        let config = try getCompileConfig(program)
         let p = Process()
+        let url = getURL(config.compilerPath)
 
-        p.executableURL = config.url
-        p.arguments = config.args
+        p.executableURL = url
+        p.arguments = config.compilerSettings
 
         let outputPipe = Pipe()
         p.standardError = outputPipe
@@ -87,35 +71,14 @@ class GeneralCompiler: Compiler {
 
         return CompileResult(returnCode: returnCode)
     }
-
-    //TODO: we can't load a default config we should have this provided as an external file
-    // for now we provide default configs for Swift and Cpp to be backwards compatible
-    internal func getCompileConfig(_ program: Program) throws -> (url: URL, args: [String]) {
-        if program.language == Program.CPP_LANGUAGE_EXTENSION {
-            if let url = URL(string: cppCompilerPath) {
-                return (url, getCppArgs(ProgramWithIR(p: program)))
-            }
-            throw CompilerError.compilerUrlNotFound(url: swiftcPath)
+    
+    private func getURL(_ string: String)-> URL {
+        if #available(macOS 13.0, *) {
+            return URL(filePath: string)
         } else {
-            if let url = URL(string: swiftcPath) {
-                return (url, getSwiftArgs(ProgramWithIR(p: program)))
-            }
-            throw CompilerError.compilerUrlNotFound(url: cppCompilerPath)
+            return URL(fileURLWithPath: string)
         }
     }
 
-    internal func getCppArgs(_ program: ProgramWithIR) -> [String] {
-        var res = cppArgs
-        res.insert(program.path, at: 5)
-        res.append(program.irPath)
-        return res
-    }
 
-    internal func getSwiftArgs(_ program: ProgramWithIR) -> [String] {
-        var res = swiftArgs
-        res.insert(program.path, at: 10)
-        res.append(program.irPath)
-
-        return res
-    }
 }

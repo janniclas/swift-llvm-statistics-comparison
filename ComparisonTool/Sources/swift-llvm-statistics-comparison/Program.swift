@@ -7,10 +7,30 @@
 
 import Foundation
 
-// TODO: abstract this to fit to general programs without ir path. maybe keep some sort of output path to also fit compiled programs. also we want to keep the folder structure of the input programs this could maybe also be included here.
-class Program {
-    static let CPP_LANGUAGE_EXTENSION = ".cpp"
-    static let SWIFT_LANGUAGE_EXTENSION = ".swift"
+
+protocol Program {
+    var language: String { get }
+
+    var name: String { get }
+    var path: String { get }
+}
+
+extension Program {
+    static var CPP_LANGUAGE_EXTENSION: String {
+        return ".cpp"
+    }
+    static var SWIFT_LANGUAGE_EXTENSION: String {
+        return  ".swift"
+    }
+    static var JAVA_LANGUAGE_EXTENSION: String {
+        return ".java"
+    }
+    static var KOTLIN_LANGUAGE_EXTENSION: String {
+        return ".kt"
+    }
+}
+
+class BaseProgram: Program {
 
     /// Returns a dictionary mapping language extensions to programs
     static func getProgramsFrom(
@@ -57,7 +77,7 @@ class Program {
             fileName = "invalidName_\(path)"
         }
 
-        return Program(languageExtension: languageExtension, name: fileName, path: path)
+        return BaseProgram(languageExtension: languageExtension, name: fileName, path: path)
     }
 
     let language: String
@@ -73,7 +93,7 @@ class Program {
 
 }
 
-class ProgramWithIR: Program {
+class ProgramWithIR: BaseProgram {
 
     convenience init(p: Program) {
         self.init(languageExtension: p.language, name: p.name, path: p.path)
@@ -84,6 +104,20 @@ class ProgramWithIR: Program {
         super.init(languageExtension: languageExtension, name: name, path: path)
     }
 
-    var irPath: String
-    var statistics: Statistics?
+    let irPath: String
+
+}
+
+class ProgramWithStatistics: ProgramWithIR {
+    
+    convenience init(p: Program, statistics: Statistics) {
+        self.init(languageExtension: p.language, name: p.name, path: p.path, statistics: statistics)
+    }
+
+    init(languageExtension: String, name: String, path: String, statistics: Statistics) {
+        self.statistics = statistics
+        super.init(languageExtension: languageExtension, name: name, path: path)
+    }
+    
+    let statistics: Statistics
 }

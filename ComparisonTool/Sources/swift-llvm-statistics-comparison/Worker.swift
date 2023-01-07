@@ -78,8 +78,9 @@ typealias ProgramTupleWorkList = WorkList<(_: Program, _: Program?)>
 
 struct Worker {
 
-    init(workerNumber: UInt) {
+    init(workerNumber: UInt, compiler: Compiler) {
         self.workerNumber = workerNumber
+        self.compiler = compiler
         logger.info("Initialized worker \(workerNumber)")
     }
 
@@ -97,10 +98,10 @@ struct Worker {
     }
 
     let workerNumber: UInt
-    let compiler = CompilerFactory.getCompiler()
+    let compiler: Compiler
 
     private func processProgram(_ program: Program) async throws -> CompileResult {
-        return try await compiler.compileToIR(program)
+        return try await compiler.compile(program)
     }
 
     func work(_ program: Program) async throws -> CompileResult {

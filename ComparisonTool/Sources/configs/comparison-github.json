@@ -1,0 +1,6 @@
+{
+    "compilerPath": "/usr/bin/clang++",
+    "compilerSettings": ["-std=c++20"],
+    "outputPath": "/tmp",
+    "inputPath": "/Swift-C++-Testsuite/",
+}
