@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 protocol Program {
     var language: String { get }
 
@@ -20,7 +19,7 @@ extension Program {
         return ".cpp"
     }
     static var SWIFT_LANGUAGE_EXTENSION: String {
-        return  ".swift"
+        return ".swift"
     }
     static var JAVA_LANGUAGE_EXTENSION: String {
         return ".java"
@@ -109,7 +108,7 @@ class ProgramWithIR: BaseProgram {
 }
 
 class ProgramWithStatistics: ProgramWithIR {
-    
+
     convenience init(p: Program, statistics: Statistics) {
         self.init(languageExtension: p.language, name: p.name, path: p.path, statistics: statistics)
     }
@@ -118,6 +117,6 @@ class ProgramWithStatistics: ProgramWithIR {
         self.statistics = statistics
         super.init(languageExtension: languageExtension, name: name, path: path)
     }
-    
+
     let statistics: Statistics
 }

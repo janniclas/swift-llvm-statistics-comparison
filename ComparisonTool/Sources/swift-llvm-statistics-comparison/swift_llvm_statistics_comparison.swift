@@ -14,12 +14,12 @@ import Logging
     struct swift_llvm_statistics_comparison: AsyncParsableCommand {
         //TODO: add config input for compiler settings
         //TODO: add execution mode (compare/create ir, compilation only)
-//        @Option(help: "Directory path to scan for files.")
-//        var path: String
+        //        @Option(help: "Directory path to scan for files.")
+        //        var path: String
 
         @Argument(help: "Which mode to run. Curent valid modes diff and compile.")
         var mode: Mode
-        
+
         @Option(help: "Config file with paths to executables and compiler configs.")
         var config: String
     }
@@ -43,32 +43,32 @@ import Logging
     }
 #endif
 #if os(Linux)
-//    @main
-//    struct swift_llvm_statistics_comparison {
-//        static func main() throws {
-//            let path = getPath(args: CommandLine.arguments)
-//            if path != "" {
-//                try startCompiler(path: path)
-//            } else {
-//                print("Path Argument not found.")
-//            }
-//        }
-//    }
-//
-//    func getPath(args: [String]) -> String {
-//        var p = ""
-//        for index in 1..<args.count {
-//            logger.info(index)
-//            let argument = args[index]
-//            if argument == "--path" {
-//                if index + 1 < args.count {
-//                    p = args[index + 1]
-//                    break
-//                }
-//            }
-//        }
-//        return p
-//    }
+    //    @main
+    //    struct swift_llvm_statistics_comparison {
+    //        static func main() throws {
+    //            let path = getPath(args: CommandLine.arguments)
+    //            if path != "" {
+    //                try startCompiler(path: path)
+    //            } else {
+    //                print("Path Argument not found.")
+    //            }
+    //        }
+    //    }
+    //
+    //    func getPath(args: [String]) -> String {
+    //        var p = ""
+    //        for index in 1..<args.count {
+    //            logger.info(index)
+    //            let argument = args[index]
+    //            if argument == "--path" {
+    //                if index + 1 < args.count {
+    //                    p = args[index + 1]
+    //                    break
+    //                }
+    //            }
+    //        }
+    //        return p
+    //    }
 #endif
 func startDiff(path: String, config: Config) async throws {
     let logger = Logger(label: "com.struewer.llvm.statistics")
@@ -82,7 +82,7 @@ func startCompiler(path: String, config: Config) async throws {
     logger.info("Run LLVM Statistics Comparison for path \(path)")
     logger.info("Config loaded \(config)")
     logger.debug("Maximum number of parallel tasks: \(Worker.maximumNumberOfTasks)")
-    
+
     let compiler = GeneralCompiler(config: config)
     // fill worklist
     let programs = BaseProgram.getProgramsFrom(path)

@@ -22,7 +22,7 @@ protocol ProcessFile {
     func appendToPath(basePath: String, components: String...) -> String
     func getFileName(path: String) throws -> String
     func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T]
-    func readContent<T: Codable>(path: String)throws -> T
+    func readContent<T: Codable>(path: String) throws -> T
     func getFilePaths(path: String, elementSuffix: String) -> [String]
     func getFilePaths(path: String, elementSuffixes: [String]) -> [String: [String]]
 }
@@ -122,7 +122,9 @@ private class FileHelper: ProcessFile {
     func readContent<T: Codable>(path: String) throws -> T {
 
         if let content = FileManager.default.contents(atPath: path) {
-            if let json = try? JSONDecoder().decode(T.self, from: content) { return json } else {
+            if let json = try? JSONDecoder().decode(T.self, from: content) {
+                return json
+            } else {
                 self.logger.error("Decoding of file at path \(path) failed.")
                 throw FileHelperError.JsonParsingFailed(path: path)
             }

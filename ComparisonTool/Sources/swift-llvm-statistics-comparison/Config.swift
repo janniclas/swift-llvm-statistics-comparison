@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Jan-Niclas Strüwer on 07.01.23.
 //
@@ -14,7 +14,7 @@ func loadConfig(path: String) throws -> Config {
 }
 
 struct Config: Codable {
-    
+
     let compilerPath: String
     let compilerSettings: [String]
 

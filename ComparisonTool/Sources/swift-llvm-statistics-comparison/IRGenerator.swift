@@ -31,11 +31,10 @@ struct GeneralCompiler: Compiler {
         case compilerUrlNotFound(url: String)
         case compilationFailed(program: Program)
     }
-    
+
     init(config: Config) {
         self.config = config
     }
-
 
     internal let logger = Logger(label: "com.struewer.llvm.statistics.compiler")
     internal let config: Config
@@ -71,14 +70,13 @@ struct GeneralCompiler: Compiler {
 
         return CompileResult(returnCode: returnCode)
     }
-    
-    private func getURL(_ string: String)-> URL {
+
+    private func getURL(_ string: String) -> URL {
         if #available(macOS 13.0, *) {
             return URL(filePath: string)
         } else {
             return URL(fileURLWithPath: string)
         }
     }
-
 
 }
