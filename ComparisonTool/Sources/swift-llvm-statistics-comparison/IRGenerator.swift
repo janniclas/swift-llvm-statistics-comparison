@@ -72,12 +72,12 @@ struct GeneralCompiler: Compiler {
     }
 
     private func getURL(_ string: String) -> URL {
-        
-//        if #available(macOS 13.0, *) {
-//            return URL(filePath: string)
-//        } else {
-            return URL(fileURLWithPath: string)
-//        }
+
+        //        if #available(macOS 13.0, *) {
+        //            return URL(filePath: string)
+        //        } else {
+        return URL(fileURLWithPath: string)
+        //        }
     }
 
 }
