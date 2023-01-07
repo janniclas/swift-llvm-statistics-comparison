@@ -74,6 +74,7 @@ jobs:
       - name: Build
         run: |
           cd ComparisonTool 
+          echo $(swift --version)
           swift build -c release
       - name: Execute comparison
         run: |
