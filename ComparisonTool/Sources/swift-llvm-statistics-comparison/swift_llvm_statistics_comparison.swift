@@ -110,6 +110,7 @@ func startCompiler(config: Config) async throws {
     ) { taskGroup in
 
         var groupResult: [CompileResult] = []
+
         for i in 0..<Worker.maximumNumberOfTasks {
             taskGroup.addTask {
                 let worker = Worker(workerNumber: i, compiler: compiler)
@@ -136,12 +137,14 @@ func startCompiler(config: Config) async throws {
                 return results
             }
         }
+
         for await childRes in taskGroup {
             groupResult.append(contentsOf: childRes)
         }
         return groupResult
     }
-
+    let csvFile = CsvFile(compileResults: compileResults)
+    try csvFile.storeData(path: config.outputPath)
     let initialValue: Int32 = 0
     let failedPrograms = compileResults.reduce(
         initialValue,
@@ -149,9 +152,6 @@ func startCompiler(config: Config) async throws {
             acc, res in
             acc + res.returnCode
         })
-
-    //TODO: save the results to the output path
-    //TODO: reconstruct the input folder structure by starting from the base path and create every folder inbetween the program path and the base path
 
     logger.info("Task group finished. Of \(programs.count) input programs \(failedPrograms) failed to compile.")
 }

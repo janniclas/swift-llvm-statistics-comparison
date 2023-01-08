@@ -14,12 +14,15 @@ protocol Compiler {
 }
 
 struct CompileResult {
+    let program: Program
+
     let returnCode: Int32
     let stdOut: String?
 
-    init(returnCode: Int32, stdOut: String? = nil) {
+    init(returnCode: Int32, program: Program, stdOut: String? = nil) {
         self.returnCode = returnCode
         self.stdOut = stdOut
+        self.program = program
     }
 }
 
@@ -60,11 +63,11 @@ struct GeneralCompiler: Compiler {
         if let outString = String(data: outputData, encoding: .utf8) {
             if outString != "" {
                 self.logger.debug("Process output: \(outString)")
-                return CompileResult(returnCode: returnCode, stdOut: outString)
+                return CompileResult(returnCode: returnCode, program: program, stdOut: outString)
             }
         }
 
-        return CompileResult(returnCode: returnCode)
+        return CompileResult(returnCode: returnCode, program: program)
     }
 
     private func getCompileArguments(config: Config, program: Program) -> [String] {

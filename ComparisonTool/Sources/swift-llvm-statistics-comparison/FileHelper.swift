@@ -18,6 +18,71 @@ enum FileHelperError: Error {
     case JsonParsingFailed(path: String)
 }
 
+struct CsvData: Codable {
+    let headers: [String]
+    var rows: [[String]] = []
+}
+
+struct CsvFile {
+
+    private let logger = Logger(label: "com.struewer.llvm.statistics.CsvFile")
+    private var data: CsvData
+
+    init(headers: [String]) {
+        self.data = CsvData(headers: headers)
+    }
+
+    init(compileResults: [CompileResult]) {
+        self.data = CsvData(headers: ["Name", "Language", "Compiler Exit Code", "Compiler Output"])
+        for result in compileResults {
+            var row = [result.program.name, result.program.language, "\(result.returnCode)"]
+            if let stdOut = result.stdOut {
+                let cleaned = stdOut.replacingOccurrences(of: ",", with: " ").replacingOccurrences(of: "\n", with: " ")
+                row.append(cleaned)
+            } else {
+                row.append("No output")
+            }
+
+            self.addRow(row)
+        }
+    }
+
+    mutating func addRow(_ row: [String]) {
+        if row.count == data.headers.count {
+            data.rows.append(row)
+        } else {
+            logger.error("Add row failed. Number of columns doesn't match number of headers.")
+        }
+    }
+
+    func storeData(path: String) throws {
+        var csvString = rowToCsvString(data.headers)
+        for row in data.rows {
+            csvString += rowToCsvString(row)
+        }
+        let outputPath = try FileHelperFactory.getFileHelper().createOrGetOutputPath(
+            dirPath: path, fileName: "results.csv")
+        let url = URL(fileURLWithPath: outputPath)
+        try csvString.write(to: url, atomically: true, encoding: .utf8)
+    }
+
+    private func rowToCsvString(_ row: [String]) -> String {
+        var csvString = row.reduce(
+            "",
+            {
+                acc, next in
+                if acc == "" {
+                    return "\(next)"
+                } else {
+                    return "\(acc),\(next)"
+                }
+            })
+        csvString += " \n"
+
+        return csvString
+    }
+}
+
 protocol ProcessFile {
     func appendToPath(basePath: String, components: String...) -> String
     func getFileName(path: String) throws -> String
@@ -25,7 +90,7 @@ protocol ProcessFile {
     func readContent<T: Codable>(path: String) throws -> T
     func getFilePaths(path: String, elementSuffix: String) -> [String]
     func getFilePaths(path: String, elementSuffixes: [String]) -> [String: [String]]
-
+    func createOrGetOutputPath(dirPath: String, fileName: String) throws -> String
     func storeJson(dirPath: String, fileName: String, element: Codable) throws
 }
 
@@ -70,17 +135,22 @@ private class FileHelper: ProcessFile {
     /// Stores given element at dirPath. Creates directories if non existend.
     func storeJson(dirPath: String, fileName: String, element: Codable) throws {
 
+        let fileOutput = try createOrGetOutputPath(dirPath: dirPath, fileName: fileName)
+
+        FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(element))
+
+        logger.info("File was saved to \(fileOutput)")
+    }
+
+    /// Creates directories or files if non existend.
+    func createOrGetOutputPath(dirPath: String, fileName: String) throws -> String {
         if !FileManager.default.fileExists(atPath: dirPath) {
             try FileManager.default.createDirectory(
                 atPath: dirPath, withIntermediateDirectories: true)
         }
 
-        let fileOutput = appendToPath(
+        return appendToPath(
             basePath: dirPath, components: fileName)
-
-        FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(element))
-
-        logger.info("File was saved to \(fileOutput)")
     }
 
     func getFileName(path: String) throws -> String {
