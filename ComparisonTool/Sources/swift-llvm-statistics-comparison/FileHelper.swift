@@ -32,6 +32,55 @@ struct CsvFile {
         self.data = CsvData(headers: headers)
     }
 
+    init(compileResults: [CompileResult], sourceLanguage: String, targetLanguage: String) {
+        self.data = CsvData(headers: [
+            "Name", "Source Language", "Target Language", "Compiler Exit Code", "Request", "Response",
+            "Compiler Output",
+        ])
+        let encoder = JSONEncoder()
+        for result in compileResults {
+
+            let program = result.program
+            var requestString: String? = nil
+            var responseString: String? = nil
+
+            if let requestResponse = try? FileHelperFactory.getFileHelper().getProgramRequestResponse(program: program)
+            {
+                if let jsonData = try? encoder.encode(requestResponse.request) {
+                    requestString =
+                        String(data: jsonData, encoding: .utf8) ?? "No request found for program \(program.name)"
+                    requestString = requestString!.replacingOccurrences(of: ",", with: " ").replacingOccurrences(
+                        of: "\n", with: " ")
+                }
+                if let jsonData = try? encoder.encode(requestResponse.response) {
+                    responseString =
+                        String(data: jsonData, encoding: .utf8) ?? "No request found for program \(program.name)"
+                    responseString = responseString!.replacingOccurrences(of: ",", with: " ").replacingOccurrences(
+                        of: "\n", with: " ")
+                }
+            }
+
+            if targetLanguage != program.language {
+                logger.warning(
+                    "Missmatch between target language (\(targetLanguage)) and program language (\(program.language))! Expected both to match."
+                )
+            }
+
+            var row = [
+                program.name, sourceLanguage, targetLanguage, "\(result.returnCode)",
+                requestString ?? "No request found", responseString ?? "No response found",
+            ]
+            if let stdOut = result.stdOut {
+                let cleaned = stdOut.replacingOccurrences(of: ",", with: " ").replacingOccurrences(of: "\n", with: " ")
+                row.append(cleaned)
+            } else {
+                row.append("No output")
+            }
+
+            self.addRow(row)
+        }
+    }
+
     init(compileResults: [CompileResult]) {
         self.data = CsvData(headers: ["Name", "Language", "Compiler Exit Code", "Compiler Output"])
         for result in compileResults {
@@ -92,6 +141,7 @@ protocol ProcessFile {
     func getFilePaths(path: String, elementSuffixes: [String]) -> [String: [String]]
     func createOrGetOutputPath(dirPath: String, fileName: String) throws -> String
     func storeJson(dirPath: String, fileName: String, element: Codable) throws
+    func getProgramRequestResponse(program: Program) throws -> (request: OpenAiRequest, response: OpenAiResponse)
 }
 
 struct FileHelperFactory {
@@ -130,6 +180,19 @@ private class FileHelper: ProcessFile {
         }
 
         return basePath
+    }
+
+    func getProgramRequestResponse(program: Program) throws -> (request: OpenAiRequest, response: OpenAiResponse) {
+        if let dirPath = URL(string: program.path)?.deletingLastPathComponent().absoluteString {
+            let requestPath = self.appendToPath(basePath: dirPath, components: "\(program.name)-request.json")
+            let responsePath = self.appendToPath(basePath: dirPath, components: "\(program.name)-response.json")
+
+            let request = try self.readContent(path: requestPath) as OpenAiRequest
+            let response = try self.readContent(path: responsePath) as OpenAiResponse
+
+            return (request: request, response: response)
+        }
+        throw FileHelperError.FileNotFound(path: program.path)
     }
 
     /// Stores given element at dirPath. Creates directories if non existend.
@@ -202,14 +265,14 @@ private class FileHelper: ProcessFile {
     }
 
     func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T] {
-        var statistics: [T] = []
+        var contents: [T] = []
         let paths = getFilePaths(path: path, elementSuffix: elementSuffix)
         for cPath in paths {
-            if let stats = try? readContent(path: cPath) as T {
-                statistics.append(stats)
+            if let content = try? readContent(path: cPath) as T {
+                contents.append(content)
             }
         }
-        return statistics
+        return contents
     }
 
     func readContent<T: Codable>(path: String) throws -> T {

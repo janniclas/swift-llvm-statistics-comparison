@@ -17,6 +17,7 @@ struct Config: Codable {
 
     let compilerPath: String
     let compilerSettings: [String]
+    let languageExtension: String
     // TODO: do we need a compiler output extension or naming pattern here? probably yes because we generate files with different extensions
     let compilerOutFlag: String
     let compilerOutExtension: String

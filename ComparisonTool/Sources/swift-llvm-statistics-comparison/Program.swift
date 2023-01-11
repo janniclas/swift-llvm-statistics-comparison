@@ -7,6 +7,42 @@
 
 import Foundation
 
+struct OpenAiRequest: Codable {
+    let model: String
+    let prompt: String
+    let max_tokens: Int
+    let frequency_penalty: Int
+    let presence_penalty: Int
+    let stop: [String]
+}
+
+struct OpenAiResponse: Codable {
+    let id: String
+    let object: String
+    let created: Int
+    let model: String
+    let choices: [Choice]
+    let usage: Usage
+}
+
+struct Usage: Codable {
+    let prompt_tokens: Int
+    let completion_tokens: Int
+    let total_tokens: Int
+}
+
+struct Choice: Codable {
+    let text: String
+    let index: Int
+    let logprobs: Int?
+    let finish_reason: String
+}
+
+struct InputOutputLanguage: Codable {
+    let sourceLanguage: String
+    let targetLanguage: String
+}
+
 protocol Program {
     var language: String { get }
 

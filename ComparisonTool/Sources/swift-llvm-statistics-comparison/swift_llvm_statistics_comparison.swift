@@ -100,7 +100,7 @@ func startCompiler(config: Config) async throws {
 
     let compiler = GeneralCompiler(config: config)
     // fill worklist
-    let programs = BaseProgram.getProgramsFrom(config.inputPath)
+    let programs = BaseProgram.getProgramsFrom(config.inputPath, languageExtensions: [config.languageExtension])
     logger.info("Found \(programs.count).")
     let workList = ProgramWorkList(items: programs)
     // work worklist
@@ -143,8 +143,25 @@ func startCompiler(config: Config) async throws {
         }
         return groupResult
     }
-    let csvFile = CsvFile(compileResults: compileResults)
+
+    //TODO: get additional data for result - go from program path and collect request/response data
+    // go from base path and get config data
+    var csvFile: CsvFile
+
+    let inputOutputLanguages =
+        FileHelperFactory.getFileHelper().getFileContents(path: config.inputPath, elementSuffix: "config.json")
+        as [InputOutputLanguage]
+    if inputOutputLanguages.count == 1 && inputOutputLanguages.first != nil {
+        let inputOutputLanguage = inputOutputLanguages.first!
+        csvFile = CsvFile(
+            compileResults: compileResults, sourceLanguage: inputOutputLanguage.sourceLanguage,
+            targetLanguage: inputOutputLanguage.targetLanguage)
+    } else {
+        logger.warning("Found more than one or none config.json file at \(config.inputPath)")
+        csvFile = CsvFile(compileResults: compileResults)
+    }
     try csvFile.storeData(path: config.outputPath)
+
     let initialValue: Int32 = 0
     let failedPrograms = compileResults.reduce(
         initialValue,
