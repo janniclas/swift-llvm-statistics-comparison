@@ -4,5 +4,7 @@
     "outputPath": "/tmp",
     "inputPath": "/Users/runner",
     "compilerOutFlag": "-o",
-    "compilerOutExtension": ".ll"
+    "compilerOutExtension": ".ll",
+    "languageExtension": "",
 }
+
