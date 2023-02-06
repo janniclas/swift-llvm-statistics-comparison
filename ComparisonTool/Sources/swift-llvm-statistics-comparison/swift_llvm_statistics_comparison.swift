@@ -24,8 +24,9 @@ import Logging
 
         mutating func run() async throws {
             LoggingSystem.bootstrap(UnifiedLogger.init)
-
-            let config = try loadConfig(path: config)
+            //TODO: loading the config is most likely mode dependend
+            // e.g., diff mode only needs an input path right now
+            let config = try loadConfig(path: config) as Config
 
             switch mode {
             case .diff:
@@ -51,7 +52,7 @@ import Logging
     struct swift_llvm_statistics_comparison {
         static func main() throws {
             let args = try getPath(args: CommandLine.arguments)
-            let config = try loadConfig(path: args.path)
+            let config = try loadConfig(path: args.path) as Config
 
             switch args.mode {
             case .diff:
@@ -89,6 +90,22 @@ func startDiff(config: Config) async throws {
     logger.info("Started to run in diff mode. Input path \(config.inputPath)")
     let diffCalc = DiffCalculator(basePath: config.inputPath)
     try diffCalc.run()
+}
+
+func transpile(config: TranspileModeConfig) {
+
+    // example calls for single file mode qt tool
+    // --path /Users/struewer/git/openAISwiftToCpp/tests/SimpleAdd.swift --targetLanguage C++ --targetLanguageExtension .cpp --sourceLanguage Swift --sourceLanguageExtension .swift --singleFileMode --outputPath /tmp/singleFileTest
+    // for batch mode provide path to base folder and no --singleFileMode flag
+
+    startBatchTranspilation(config.transpilerConfig)
+
+}
+
+func startBatchTranspilation(_ config: TranspilerConfig) {
+
+    // call QT
+
 }
 
 func startCompiler(config: Config) async throws {
