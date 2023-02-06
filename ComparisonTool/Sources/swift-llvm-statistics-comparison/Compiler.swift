@@ -33,11 +33,11 @@ class GeneralCompiler: ExternalProgram, Compiler {
         case compilationFailed(program: Program)
     }
 
-    init(config: Config) {
+    init(config: CompilerConfig) {
         self.config = config
     }
 
-    internal let config: Config
+    internal let config: CompilerConfig
 
     func compile(_ program: Program) async throws -> CompileResult {
         self.logger.debug("compileProgram called with \(program.name)")
@@ -49,7 +49,7 @@ class GeneralCompiler: ExternalProgram, Compiler {
         return CompileResult(returnCode: res.exitCode, program: program, stdOut: res.output)
     }
 
-    private func getCompileArguments(config: Config, program: Program) -> [String] {
+    private func getCompileArguments(config: CompilerConfig, program: Program) -> [String] {
         var args = config.compilerSettings
         let output = FileHelperFactory.getFileHelper().appendToPath(
             basePath: config.outputPath, components: "\(program.name)\(config.compilerOutExtension)")

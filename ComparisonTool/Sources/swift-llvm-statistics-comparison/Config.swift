@@ -13,7 +13,7 @@ func loadConfig<T: Codable>(path: String) throws -> T {
     return try fh.readContent(path: path) as T
 }
 
-struct Config: Codable {
+struct CompilerConfig: Codable {
 
     let compilerPath: String
     let compilerSettings: [String]
@@ -27,25 +27,48 @@ struct Config: Codable {
 }
 
 struct TranspileModeConfig: Codable {
-
-    let transpilerConfig: TranspilerConfig
-
     let compilerPath: String
     let compilerSettings: [String]
     let compilerOutFlag: String
     let compilerOutExtension: String
-}
-
-struct TranspilerConfig: Codable {
 
     // Config related to QT
+    let outputPath: String
+    let inputPath: String
+
     let targetLanguage: String
     let targetLanguageExtension: String
     let sourceLanguage: String
     let sourceLanguageExtension: String
 
-    let inputPath: String
+    let nodePath: String
+    let programPath: String
+    let envPath: String
+}
+
+struct TranspilerConfig: Codable {
+
+    init(_ config: TranspileModeConfig, singleFileMode: Bool) {
+        self.envPath = config.envPath
+        self.inputPath = config.inputPath
+        self.outputPath = config.outputPath
+        self.targetLanguage = config.targetLanguage
+        self.sourceLanguage = config.sourceLanguage
+        self.targetLanguageExtension = config.targetLanguageExtension
+        self.sourceLanguageExtension = config.sourceLanguageExtension
+        self.nodePath = config.nodePath
+        self.singleFileMode = singleFileMode
+        self.programPath = config.programPath
+    }
+    let envPath: String
+    // Config related to QT
     let outputPath: String
+    let inputPath: String
+
+    let targetLanguage: String
+    let targetLanguageExtension: String
+    let sourceLanguage: String
+    let sourceLanguageExtension: String
 
     let nodePath: String
     let programPath: String

@@ -6,7 +6,7 @@ import Logging
     import System
 
     enum Mode: String, ExpressibleByArgument {
-        case diff, compile
+        case diff, compile, transpile
     }
 
     @main
@@ -24,15 +24,17 @@ import Logging
 
         mutating func run() async throws {
             LoggingSystem.bootstrap(UnifiedLogger.init)
-            //TODO: loading the config is most likely mode dependend
-            // e.g., diff mode only needs an input path right now
-            let config = try loadConfig(path: config) as Config
 
             switch mode {
             case .diff:
-                try await startDiff(config: config)
+                let diffAndCompileConfig = try loadConfig(path: config) as CompilerConfig
+                try await startDiff(config: diffAndCompileConfig)
             case .compile:
-                try await startCompiler(config: config)
+                let diffAndCompileConfig = try loadConfig(path: config) as CompilerConfig
+                try await startCompiler(config: diffAndCompileConfig)
+            case .transpile:
+                let transConfig = try loadConfig(path: config) as TranspileModeConfig
+                try await transpile(config: transConfig)
             }
 
         }
@@ -50,15 +52,19 @@ import Logging
 
     @main
     struct swift_llvm_statistics_comparison {
-        static func main() throws {
+        static func main() async throws {
             let args = try getPath(args: CommandLine.arguments)
-            let config = try loadConfig(path: args.path) as Config
 
             switch args.mode {
             case .diff:
+                let config = try loadConfig(path: args.path) as Config
                 try await startDiff(config: config)
             case .compile:
+                let config = try loadConfig(path: args.path) as Config
                 try await startCompiler(config: config)
+            case .transpile:
+                let config = try loadConfig(path: args.path) as TranspileModeConfig
+                try await transpile(config: config)
             }
         }
     }
@@ -85,30 +91,47 @@ import Logging
     }
 #endif
 
-func startDiff(config: Config) async throws {
+func startDiff(config: CompilerConfig) async throws {
     let logger = Logger(label: "com.struewer.llvm.statistics")
     logger.info("Started to run in diff mode. Input path \(config.inputPath)")
     let diffCalc = DiffCalculator(basePath: config.inputPath)
     try diffCalc.run()
 }
 
-func transpile(config: TranspileModeConfig) {
+func transpile(config: TranspileModeConfig) async throws {
 
-    // example calls for single file mode qt tool
-    // --path /Users/struewer/git/openAISwiftToCpp/tests/SimpleAdd.swift --targetLanguage C++ --targetLanguageExtension .cpp --sourceLanguage Swift --sourceLanguageExtension .swift --singleFileMode --outputPath /tmp/singleFileTest
-    // for batch mode provide path to base folder and no --singleFileMode flag
+    //TODO: Multiple reruns have to have different output directories so we don't accidently
+    // override files
+    let transpilerConfig = TranspilerConfig(config, singleFileMode: false)
+    try await startBatchTranspilation(transpilerConfig)
 
-    startBatchTranspilation(config.transpilerConfig)
+    let compilerConfig = CompilerConfig(
+        compilerPath: config.compilerPath, compilerSettings: config.compilerSettings,
+        languageExtension: config.targetLanguageExtension, compilerOutFlag: config.compilerOutFlag,
+        compilerOutExtension: config.compilerOutExtension, outputPath: config.outputPath, inputPath: config.outputPath)
+
+    let batchCompileResult = try await startCompiler(config: compilerConfig)
+    let failedPrograms = batchCompileResult.filter { result in
+        result.returnCode != 0
+    }
+    //TODO: figure out how to map failed programs to original input programs
+    //idea: maybe batch compiling isn't the way to go
+    // take initial dir as input, look for all files (reuse fuctionality from batch compiling)
+    // process files one by one and directly retry every single file if it fails.
+    // TODO: update compiler functionality to have a sensible 1 file implementation
 
 }
 
-func startBatchTranspilation(_ config: TranspilerConfig) {
-
+func startBatchTranspilation(_ config: TranspilerConfig) async throws {
+    let logger = Logger(label: "com.struewer.llvm.transpiler")
     // call QT
+    let transpiler = GeneralTranspiler()
+    let transpileResult = try await transpiler.transpile(config: config)
 
+    logger.info("\(transpileResult)")
 }
 
-func startCompiler(config: Config) async throws {
+func startCompiler(config: CompilerConfig) async throws -> [CompileResult] {
     let logger = Logger(label: "com.struewer.llvm.statistics")
     // get all file paths for compilation (starting from provided base path)
     logger.info("Run LLVM Statistics Comparison for path \(config.inputPath)")
@@ -188,4 +211,5 @@ func startCompiler(config: Config) async throws {
         })
 
     logger.info("Task group finished. Of \(programs.count) input programs \(failedPrograms) failed to compile.")
+    return compileResults
 }

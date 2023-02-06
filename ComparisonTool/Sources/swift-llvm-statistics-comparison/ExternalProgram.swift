@@ -42,6 +42,6 @@ class ExternalProgram {
             }
         }
 
-        return ExternalProgramResult(exitCode: returnCode, output: "")
+        return ExternalProgramResult(exitCode: returnCode, output: "No output generated")
     }
 }
