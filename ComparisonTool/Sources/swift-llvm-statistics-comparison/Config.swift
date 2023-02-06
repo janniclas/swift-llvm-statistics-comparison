@@ -60,6 +60,20 @@ struct TranspilerConfig: Codable {
         self.singleFileMode = singleFileMode
         self.programPath = config.programPath
     }
+
+    init(_ config: TranspileModeConfig, inputPath: String, outputPath: String, singleFileMode: Bool) {
+        self.envPath = config.envPath
+        self.inputPath = inputPath
+        self.outputPath = outputPath
+        self.targetLanguage = config.targetLanguage
+        self.sourceLanguage = config.sourceLanguage
+        self.targetLanguageExtension = config.targetLanguageExtension
+        self.sourceLanguageExtension = config.sourceLanguageExtension
+        self.nodePath = config.nodePath
+        self.singleFileMode = singleFileMode
+        self.programPath = config.programPath
+    }
+
     let envPath: String
     // Config related to QT
     let outputPath: String

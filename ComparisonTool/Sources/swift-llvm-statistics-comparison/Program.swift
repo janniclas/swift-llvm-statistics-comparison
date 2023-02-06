@@ -102,7 +102,7 @@ class BaseProgram: Program {
         return programDictionary
     }
 
-    private static func getProgramFromPath(_ path: String, languageExtension: String) -> Program {
+    static func getProgramFromPath(_ path: String, languageExtension: String) -> Program {
         let fh = FileHelperFactory.getFileHelper()
         var fileName: String
 

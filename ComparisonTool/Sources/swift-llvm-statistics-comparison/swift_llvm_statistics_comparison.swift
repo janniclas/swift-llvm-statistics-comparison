@@ -100,35 +100,36 @@ func startDiff(config: CompilerConfig) async throws {
 
 func transpile(config: TranspileModeConfig) async throws {
 
-    //TODO: Multiple reruns have to have different output directories so we don't accidently
-    // override files
-    let transpilerConfig = TranspilerConfig(config, singleFileMode: false)
-    try await startBatchTranspilation(transpilerConfig)
-
-    let compilerConfig = CompilerConfig(
-        compilerPath: config.compilerPath, compilerSettings: config.compilerSettings,
-        languageExtension: config.targetLanguageExtension, compilerOutFlag: config.compilerOutFlag,
-        compilerOutExtension: config.compilerOutExtension, outputPath: config.outputPath, inputPath: config.outputPath)
-
-    let batchCompileResult = try await startCompiler(config: compilerConfig)
-    let failedPrograms = batchCompileResult.filter { result in
-        result.returnCode != 0
-    }
-    //TODO: figure out how to map failed programs to original input programs
-    //idea: maybe batch compiling isn't the way to go
-    // take initial dir as input, look for all files (reuse fuctionality from batch compiling)
-    // process files one by one and directly retry every single file if it fails.
-    // TODO: update compiler functionality to have a sensible 1 file implementation
-
-}
-
-func startBatchTranspilation(_ config: TranspilerConfig) async throws {
-    let logger = Logger(label: "com.struewer.llvm.transpiler")
-    // call QT
+    let fh = FileHelperFactory.getFileHelper()
+    let transpileFilePaths = fh.getFilePaths(path: config.inputPath, elementSuffix: config.sourceLanguageExtension)
     let transpiler = GeneralTranspiler()
-    let transpileResult = try await transpiler.transpile(config: config)
 
-    logger.info("\(transpileResult)")
+    for path in transpileFilePaths {
+        var i = 0
+        repeat {
+            let outPath = fh.appendToPath(basePath: config.outputPath, components: "-\(i)")
+            let transpilerConfig = TranspilerConfig(config, inputPath: path, outputPath: outPath, singleFileMode: true)
+            let transpileResult = try await transpiler.transpile(config: transpilerConfig)
+
+            let transpileResultPath = try fh.appendToPath(basePath: outPath, components: fh.getFileName(path: path))
+            let compilerConfig = CompilerConfig(
+                compilerPath: config.compilerPath, compilerSettings: config.compilerSettings,
+                languageExtension: config.targetLanguageExtension, compilerOutFlag: config.compilerOutFlag,
+                compilerOutExtension: config.compilerOutExtension, outputPath: outPath, inputPath: transpileResultPath)
+            let compiler = GeneralCompiler(config: compilerConfig)
+            let program = BaseProgram.getProgramFromPath(
+                transpileResultPath, languageExtension: config.targetLanguageExtension)
+
+            let compileResult = try await compiler.compile(program)
+
+            if compileResult.returnCode == 0 {
+                // this breaks the loop
+                i = 3
+            } else {
+                i = i + 1
+            }
+        } while i < 3
+    }
 }
 
 func startCompiler(config: CompilerConfig) async throws -> [CompileResult] {
