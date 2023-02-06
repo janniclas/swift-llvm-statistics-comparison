@@ -31,7 +31,7 @@ import Logging
                 try await startDiff(config: diffAndCompileConfig)
             case .compile:
                 let diffAndCompileConfig = try loadConfig(path: config) as CompilerConfig
-                try await startCompiler(config: diffAndCompileConfig)
+                let _ = try await startCompiler(config: diffAndCompileConfig)
             case .transpile:
                 let transConfig = try loadConfig(path: config) as TranspileModeConfig
                 try await transpile(config: transConfig)
@@ -99,19 +99,23 @@ func startDiff(config: CompilerConfig) async throws {
 }
 
 func transpile(config: TranspileModeConfig) async throws {
-
+    let logger = Logger(label: "com.struewer.llvm.transpiler")
     let fh = FileHelperFactory.getFileHelper()
     let transpileFilePaths = fh.getFilePaths(path: config.inputPath, elementSuffix: config.sourceLanguageExtension)
     let transpiler = GeneralTranspiler()
-
+    logger.info("Starting transpiler for paths \(transpileFilePaths)")
     for path in transpileFilePaths {
+        logger.debug("Transpiling for path \(path)")
         var i = 0
         repeat {
-            let outPath = fh.appendToPath(basePath: config.outputPath, components: "-\(i)")
+            logger.debug("Try \(0)")
+            let outPath = fh.appendToPath(basePath: config.outputPath, components: "try-\(i)")
             let transpilerConfig = TranspilerConfig(config, inputPath: path, outputPath: outPath, singleFileMode: true)
-            let transpileResult = try await transpiler.transpile(config: transpilerConfig)
-
-            let transpileResultPath = try fh.appendToPath(basePath: outPath, components: fh.getFileName(path: path))
+            let transpilerResult = try await transpiler.transpile(config: transpilerConfig)
+            logger.debug("Transpiler finished with result \(transpilerResult)")
+            let transpileResultPath = try fh.appendToPath(
+                basePath: outPath, components: "\(fh.getFileName(path: path))\(config.targetLanguageExtension)")
+            logger.debug("Transpiler Result path \(transpileResultPath)")
             let compilerConfig = CompilerConfig(
                 compilerPath: config.compilerPath, compilerSettings: config.compilerSettings,
                 languageExtension: config.targetLanguageExtension, compilerOutFlag: config.compilerOutFlag,
@@ -119,15 +123,16 @@ func transpile(config: TranspileModeConfig) async throws {
             let compiler = GeneralCompiler(config: compilerConfig)
             let program = BaseProgram.getProgramFromPath(
                 transpileResultPath, languageExtension: config.targetLanguageExtension)
-
+            logger.debug("Compiler Program \(program)")
             let compileResult = try await compiler.compile(program)
-
+            logger.debug("Compile Result \(compileResult)")
             if compileResult.returnCode == 0 {
                 // this breaks the loop
                 i = 3
             } else {
                 i = i + 1
             }
+
         } while i < 3
     }
 }
