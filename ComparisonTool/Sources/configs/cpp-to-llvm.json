@@ -1,0 +1,8 @@
+{
+    "compilerPath": "/usr/bin/clang++",
+    "compilerSettings": ["-emit-llvm", "-g", "-S", "-fno-discard-value-names", "-std=c++20"],
+    "outputPath": "/tmp/test2",
+    "inputPath": "/Users/struewer/git/openAISwiftToCpp/2022-12-28T08-result",
+    "compilerOutFlag": "-o",
+    "compilerOutExtension": ".ll"
+}

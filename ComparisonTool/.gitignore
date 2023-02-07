@@ -10,3 +10,4 @@ DerivedData/
 .vscode
 .swiftpm
 diffs
+ComparisonTool/Sources/configs/

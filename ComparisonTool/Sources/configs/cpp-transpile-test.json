@@ -1,0 +1,18 @@
+{
+    "compilerPath": "/usr/bin/clang++",
+    "compilerSettings": ["-std=c++20"],
+    "compilerOutFlag": "-o",
+
+    "compilerOutExtension": ".o",
+
+
+    "outputPath": "/tmp/transpile2",
+    "inputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
+    "targetLanguage": "C++",
+    "targetLanguageExtension": ".cpp",
+    "sourceLanguage": "Swift",
+    "sourceLanguageExtension": ".swift",
+    "nodePath": "/opt/homebrew/bin/node",
+    "programPath": "/Users/struewer/git/openAISwiftToCpp/build/main.js",
+    "envPath": "/Users/struewer/git/openAISwiftToCpp/.env"
+}

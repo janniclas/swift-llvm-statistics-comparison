@@ -1,0 +1,9 @@
+{
+    "compilerPath": "/usr/bin/clang++",
+    "compilerSettings": ["-std=c++20"],
+    "compilerOutFlag": "-o",
+    "languageExtension": ".cpp",
+    "compilerOutExtension": ".o",
+    "outputPath": "/tmp/res",
+    "inputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test"
+}

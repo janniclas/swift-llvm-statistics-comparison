@@ -1,0 +1,9 @@
+{
+    "compilerPath": "/opt/homebrew/bin/kotlinc",
+    "compilerSettings": [],
+    "compilerOutFlag": "-d",
+    "languageExtension": ".kt",
+    "compilerOutExtension": "",
+    "outputPath": "/tmp/resKotlin",
+    "inputPath": "/Users/struewer/git/openAISwiftToCpp/2023-01-11Tkotlin-result"
+}
