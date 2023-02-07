@@ -1,7 +1,7 @@
-# Enum Differences
+# Error Differences
 
 ## General Differences
 
 
 ## Programs with no equivalent C++ representation
-* Enum's can't be defined recursivly in C++
+* We can't cast exceptions to optionals in C++
