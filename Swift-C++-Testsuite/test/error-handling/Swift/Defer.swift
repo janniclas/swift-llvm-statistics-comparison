@@ -8,11 +8,12 @@ struct MyMain {
         if exists(filename) {
             let file = open(filename)
             defer {
-                close(file)
+                file.close()
+
             }
-            while let line = try file.readline() {
-                // Work with the file.
-            }
+            let line = try file.readline()
+            // Work with the file.
+
             // close(file) is called here, at the end of the scope.
         }
     }
@@ -22,9 +23,7 @@ struct MyMain {
     static func open(_ fName: String) -> File {
         return File(name: fName)
     }
-    static func close(_ file: File) -> String {
-        return "closed"
-    }
+
 }
 
 struct File {
@@ -32,5 +31,9 @@ struct File {
 
     func readline() throws -> String? {
         return "test"
+    }
+
+    func close() -> String {
+        return "closed"
     }
 }
