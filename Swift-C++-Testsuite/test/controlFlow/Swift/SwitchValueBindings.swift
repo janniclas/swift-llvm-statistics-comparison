@@ -13,10 +13,10 @@ struct MyMain {
             counter = x
         case (0, let y):
             counter = -y
-        case let (x, y):
+        case let (x, y) where x == y:
             counter = -x
         default:
-            counter = 42
+            counter = -1
         }
         return counter
     }

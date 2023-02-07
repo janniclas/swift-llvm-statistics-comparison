@@ -2,20 +2,17 @@
 struct MyMain {
 
     static func main() {
-        let res = switchMe(input: (2, 3))
+        let res = switchMe(input: (2))
     }
 
-    static func switchMe(input: (Int, Int)) -> Int {
+    static func switchMe(input: Int) -> Int {
         var counter = 0
-        var max = 7
         switch input {
-        case (let x, let y):
+        case 2:
             counter = 100
             fallthrough
-        case (0, let y):
-            counter = -y
-        case let (x, y):
-            counter = -x
+        case 3:
+            counter -= 23
         default:
             counter = 42
         }
