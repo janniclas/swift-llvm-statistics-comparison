@@ -28,3 +28,6 @@ Swift's operations don't overflow by default.
 ## Reminder
 * Both use srem for the actual calculation of the reminder
 * Swift does additional checks in regards of overflows --> for x % y it checks %9 = icmp eq i64 x, -9223372036854775808
+
+## Programs with no equivalent C++ representation
+* OverflowAdd --> C++ always overflows
