@@ -1,0 +1,1 @@
+{"id":"cmpl-6hElHO03AQ72mufUL0cmhq5yOEWRV","object":"text_completion","created":1675762867,"model":"text-davinci-003","choices":[{"text":"\n int a = 42;\n a = a + 2;\n int b = 100;\n b = 100 * 2;\n int c = 33;\n c = 33 / 3;","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":53,"completion_tokens":39,"total_tokens":92}}

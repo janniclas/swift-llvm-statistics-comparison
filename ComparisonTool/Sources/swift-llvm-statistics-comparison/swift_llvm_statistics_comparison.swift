@@ -104,11 +104,15 @@ func transpile(config: TranspileModeConfig) async throws {
     let transpileFilePaths = fh.getFilePaths(path: config.inputPath, elementSuffix: config.sourceLanguageExtension)
     let transpiler = GeneralTranspiler()
     logger.info("Starting transpiler for paths \(transpileFilePaths)")
+    var compileResults: [CompileResult] = []
+
+    var avgTriesCounter = 0
+    var sucessfulAfterRetry = 0
     for path in transpileFilePaths {
         logger.debug("Transpiling for path \(path)")
         var i = 0
         repeat {
-            logger.debug("Try \(0)")
+            logger.debug("Try \(i)")
             let outPath = fh.appendToPath(basePath: config.outputPath, components: "try-\(i)")
             let transpilerConfig = TranspilerConfig(config, inputPath: path, outputPath: outPath, singleFileMode: true)
             let transpilerResult = try await transpiler.transpile(config: transpilerConfig)
@@ -125,16 +129,31 @@ func transpile(config: TranspileModeConfig) async throws {
                 transpileResultPath, languageExtension: config.targetLanguageExtension)
             logger.debug("Compiler Program \(program)")
             let compileResult = try await compiler.compile(program)
+            compileResults.append(compileResult)
             logger.debug("Compile Result \(compileResult)")
             if compileResult.returnCode == 0 {
                 // this breaks the loop
+                if i > 0 {
+                    sucessfulAfterRetry = sucessfulAfterRetry + 1
+                }
+                logger.info("Transpilation successfull after \(i + 1) tries.")
+                avgTriesCounter = avgTriesCounter + i + 1
                 i = 3
             } else {
                 i = i + 1
             }
-
         } while i < 3
     }
+
+    let avgTries: Double = Double(avgTriesCounter) / Double(transpileFilePaths.count)
+    logger.info("Avg used tries \(avgTries)")
+    logger.info("Successfull after retries \(sucessfulAfterRetry)")
+    //TODO: create the csv log
+    let csvFile = CsvFile(
+        compileResults: compileResults, sourceLanguage: config.sourceLanguage,
+        targetLanguage: config.targetLanguage)
+
+    try csvFile.storeData(path: config.outputPath)
 }
 
 func startCompiler(config: CompilerConfig) async throws -> [CompileResult] {

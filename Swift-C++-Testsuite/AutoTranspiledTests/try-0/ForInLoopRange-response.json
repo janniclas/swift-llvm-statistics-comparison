@@ -1,0 +1,1 @@
+{"id":"cmpl-6hFlVGkfCeauSWDNnXZgTZ7ACgo2A","object":"text_completion","created":1675766725,"model":"text-davinci-003","choices":[{"text":" \nint main() \n{\n    int sum = 0;\n    for (int a  = 1; a <= 5; a++) \n    {\n        sum += a; \n    }\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":63,"completion_tokens":47,"total_tokens":110}}

@@ -1,0 +1,1 @@
+{"id":"cmpl-6hElVsFxGYHVUb2S1Etwd9DppOF6o","object":"text_completion","created":1675762881,"model":"text-davinci-003","choices":[{"text":" \nint a = 100; \nint b = 200; \nint c = a + b; \nint d = a + 500;","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":61,"completion_tokens":32,"total_tokens":93}}

@@ -1,0 +1,1 @@
+{"id":"cmpl-6hElKfp3zjJ0BXPtuCao4kIqfjnml","object":"text_completion","created":1675762870,"model":"text-davinci-003","choices":[{"text":"\nint a = 42;\na = a + 2;\nint b = 100;\nb = 100 * 2;\nint c = 33;\nc = 33 / 3;","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":53,"completion_tokens":39,"total_tokens":92}}

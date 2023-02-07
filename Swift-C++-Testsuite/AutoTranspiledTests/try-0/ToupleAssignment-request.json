@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Swift to C++\n# Swift version\n@main\nstruct simpleAssignment {\n\n    static func main() {\n        var b = (1, 2)\n        var a = (2, 4)\n        a = b\n    }\n}\n# End\n # C++ version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

@@ -1,0 +1,1 @@
+{"id":"cmpl-6hEtNrF5S4mAKZm6zeeSi5QnAIpZL","object":"text_completion","created":1675763369,"model":"text-davinci-003","choices":[{"text":"\nint main(){\n\tMyMain::main();\n} \n\nint compoundAssignment(int x){\n\tint a = x;\n\ta-=42;\n\treturn a;\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":140,"completion_tokens":45,"total_tokens":185}}

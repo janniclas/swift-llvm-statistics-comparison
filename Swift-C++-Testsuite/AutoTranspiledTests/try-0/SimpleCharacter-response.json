@@ -1,0 +1,1 @@
+{"id":"cmpl-6hFtAXDqeA5IOuWhGeqieXqRjeRNn","object":"text_completion","created":1675767200,"model":"text-davinci-003","choices":[{"text":"\n int main() { \n  char c = '!';\n }","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":49,"completion_tokens":16,"total_tokens":65}}

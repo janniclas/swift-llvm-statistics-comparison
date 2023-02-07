@@ -1,0 +1,1 @@
+{"id":"cmpl-6hFQO2gbUdeiC68Hf9XtTLG9qWCYr","object":"text_completion","created":1675765416,"model":"text-davinci-003","choices":[{"text":"\nint main() {\nnoParamNoReturn();\n return 0;\n }\nvoid noParamNoReturn() {\nint a = 5;\nint b = 10;\nint c = a + b;\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":80,"completion_tokens":47,"total_tokens":127}}

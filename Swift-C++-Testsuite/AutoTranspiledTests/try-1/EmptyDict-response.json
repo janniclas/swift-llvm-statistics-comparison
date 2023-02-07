@@ -1,0 +1,1 @@
+{"id":"cmpl-6hEdjYpJYF4UWhHBUF7CNEjFOWhsH","object":"text_completion","created":1675762399,"model":"text-davinci-003","choices":[{"text":" \n int main()\n {\n \tstd::map<int, int> empty;\n \treturn 0;\n }","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":53,"completion_tokens":28,"total_tokens":81}}

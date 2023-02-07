@@ -1,0 +1,1 @@
+{"id":"cmpl-6hEbVZlptZi6u75jNpXsVTTeSrWpM","object":"text_completion","created":1675762261,"model":"text-davinci-003","choices":[{"text":"\n int main() {\n \tint arr[] = {2, 4, 123};\n \tarr[1] = 42;\n \treturn 0;\n }","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":60,"completion_tokens":37,"total_tokens":97}}

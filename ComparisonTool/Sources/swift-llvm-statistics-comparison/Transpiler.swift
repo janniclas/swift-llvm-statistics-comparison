@@ -14,6 +14,12 @@ struct TranspileResult {
     let outputPath: String
 }
 
+struct CombinedResults {
+    let transpileResult: TranspileResult
+    let compileResult: CompileResult
+    let numberOfTries: UInt8
+}
+
 class GeneralTranspiler: ExternalProgram {
 
     func transpile(config: TranspilerConfig) async throws -> TranspileResult {

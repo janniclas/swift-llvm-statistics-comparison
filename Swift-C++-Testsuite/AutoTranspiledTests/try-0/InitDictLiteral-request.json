@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Swift to C++\n# Swift version\n@main\nstruct MyMain {\n\n    static func main() {\n        var namesOfIntegers: [Int: Int] = [5: 32, 4: 42]\n    }\n}\n# End\n # C++ version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

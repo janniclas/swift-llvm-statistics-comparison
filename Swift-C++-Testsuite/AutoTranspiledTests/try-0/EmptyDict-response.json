@@ -1,0 +1,1 @@
+{"id":"cmpl-6hEddWevbKw5AZeNViKqM5tX9s20p","object":"text_completion","created":1675762393,"model":"text-davinci-003","choices":[{"text":"\nstruct MyMain {\n\tstatic void main() {\n\t\tstd::map<int, int> empty;\n\t}\n};\nint main() {\n\tMyMain::main();\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":53,"completion_tokens":44,"total_tokens":97}}

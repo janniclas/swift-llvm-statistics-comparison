@@ -1,0 +1,1 @@
+{"id":"cmpl-6hEcJZPqUlPTN1fugCakxsaVyi09g","object":"text_completion","created":1675762311,"model":"text-davinci-003","choices":[{"text":"\n #include <iostream>\n #include <vector>\n \n int main() {\n    std::vector<int> a;\n    a.push_back(42);\n }","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":58,"completion_tokens":43,"total_tokens":101}}

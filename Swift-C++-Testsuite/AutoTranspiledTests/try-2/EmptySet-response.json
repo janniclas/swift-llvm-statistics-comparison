@@ -1,0 +1,1 @@
+{"id":"cmpl-6hEZ2fq44y2lUeEkuSVu4ermXIsmq","object":"text_completion","created":1675762108,"model":"text-davinci-003","choices":[{"text":" \n#include <iostream>\n#include <set>\n\nint main() {\n    std::set<int> emptySet;\n\treturn 0;\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":51,"completion_tokens":39,"total_tokens":90}}

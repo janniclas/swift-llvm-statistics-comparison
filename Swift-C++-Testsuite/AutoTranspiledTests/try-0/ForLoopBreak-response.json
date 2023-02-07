@@ -1,0 +1,1 @@
+{"id":"cmpl-6hFlYKG9YojCTgahJR44mPsdiPk7Y","object":"text_completion","created":1675766728,"model":"text-davinci-003","choices":[{"text":"\nint counter = 0;\n \nfor (int a = 1; a <= 10; a++) {\n    if (a % 4 == 0) {\n        break;\n    }\n    counter++; \n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":79,"completion_tokens":48,"total_tokens":127}}

@@ -1,0 +1,1 @@
+{"id":"cmpl-6hEvG8Iifpg9KzgbBozq3gsTtwXmk","object":"text_completion","created":1675763486,"model":"text-davinci-003","choices":[{"text":"\n int a = 1;\n int b = 2;\n int c = a + 41;","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":37,"completion_tokens":20,"total_tokens":57}}

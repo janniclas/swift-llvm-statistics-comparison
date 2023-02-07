@@ -1,0 +1,1 @@
+{"id":"cmpl-6hFVIC6vMNBXeIgStEX1VdV8fdEzR","object":"text_completion","created":1675765720,"model":"text-davinci-003","choices":[{"text":" \n int main() {\n    int numbers [] = {42, 1, 47, 22, 23, 24};\n    sort(numbers, numbers + 6, greater<int>());\n };","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":73,"completion_tokens":43,"total_tokens":116}}

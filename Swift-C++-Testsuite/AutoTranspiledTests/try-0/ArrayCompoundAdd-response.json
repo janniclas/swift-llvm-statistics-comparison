@@ -1,0 +1,1 @@
+{"id":"cmpl-6hEb6zWDZRq4pKGgercWbEzu8fQts","object":"text_completion","created":1675762236,"model":"text-davinci-003","choices":[{"text":"\nint main() \n{ \n    vector<int> arr = {2}; \n    arr.push_back(5 - );\n    return 0; \n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":55,"completion_tokens":40,"total_tokens":95}}
