@@ -2,7 +2,7 @@
 struct MyMain {
 
     static func main() {
-        let res = arithmeticMean(3, 8.25, 18.75)
+        let res = arithmeticMean(3.2, 8.25, 18.75)
     }
 
 }
