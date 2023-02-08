@@ -1,3 +1,16 @@
-var a = 1
-var b = 2
-var c = a + b
+@main
+struct MyMain {
+
+    static func main() {
+        // The code of this method can't be directly placed inside
+        // the main function or it would be removed by the compiler
+        // due to mandatory optimizations.
+        var _ = simpleAdd(x: 1)
+    }
+
+    static func simpleAdd(x: Int) -> Int {
+        var a = x
+        var b = a + 2
+        return b
+    }
+}
