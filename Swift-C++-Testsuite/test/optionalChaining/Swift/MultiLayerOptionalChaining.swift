@@ -17,7 +17,7 @@ struct MyMain {
         if john.residence?.printNumberOfRooms() != nil {
             print("It was possible to print the number of rooms.")
         } else {
-            print("It was not possible to print the number of rooms.")
+            print("It was possible to print the number of rooms.")
         }
 
         if (john.residence?.address = someAddress) != nil {

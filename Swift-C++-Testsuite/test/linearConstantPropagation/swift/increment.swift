@@ -10,8 +10,8 @@ struct MyMain {
         var c = 3
         a = inc(p: a)
         b = inc(p: b)
-        c = b*4
+        c = b * 4
     }
-    static func inc(p: Int)-> Int { return p+1}
+    static func inc(p: Int) -> Int { return p + 1 }
 
 }
