@@ -14,8 +14,8 @@ struct MyMain {
         let res = Resolution(width: 1920, height: 1080)
         var copied = res
         copied.height = 42
-        //        print(res.height)
-        //        print(copied.height)
+        print(res.height)
+        print(copied.height)
     }
 }
 
