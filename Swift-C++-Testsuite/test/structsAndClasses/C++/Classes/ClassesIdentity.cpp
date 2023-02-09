@@ -3,10 +3,11 @@
 #include <iostream> 
 using namespace std; 
 
-struct VideoMode {
-    bool interlaced = false;
-    double frameRate = 0.0;
-    string name = "My Mode";
+class VideoMode {
+    public:
+        bool interlaced = false;
+        double frameRate = 0.0;
+        string name = "My Mode";
 };
 
 int main() {

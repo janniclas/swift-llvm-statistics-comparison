@@ -56,4 +56,7 @@ int main()
             << song->getArtist() << std::endl;
         }
     }
+      for (auto item: library) {
+          delete item;
+  }
 }

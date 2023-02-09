@@ -42,5 +42,8 @@ int main() {
     auto movieName = movie->name; 
     auto songName  = song->name; 
     
+      for (auto item: library) {
+          delete item;
+  }
     return 0; 
 }

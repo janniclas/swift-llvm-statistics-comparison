@@ -58,6 +58,8 @@ int main() {
     }
     
     cout << "Media library contains " << movieCount << " movies and " << songCount << " songs";
-
+  for (auto item: library) {
+          delete item;
+  }
     return 0; 
 }
