@@ -10,8 +10,8 @@ struct MyMain {
 
     static func main() {
         let incrementByTen = makeIncrementer(forIncrement: 10)
-        incrementByTen()
-        incrementByTen()
+        print("First increment call \(incrementByTen())")
+        print("Second increment call \(incrementByTen())")
     }
 
 }
