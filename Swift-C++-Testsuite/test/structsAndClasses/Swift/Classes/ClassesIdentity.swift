@@ -10,6 +10,7 @@ struct MyMain {
         copied.interlaced = true
         copied.frameRate = 2.7
         let identity = (vm === copied)
+        print(identity)
     }
 }
 class VideoMode {
