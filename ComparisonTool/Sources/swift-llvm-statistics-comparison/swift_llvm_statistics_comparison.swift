@@ -27,6 +27,7 @@ import Logging
 
             switch mode {
             case .diff:
+                //TODO: calculate average values for stuff like loc and global variables acrosse all Swift and C++ files
                 let diffAndCompileConfig = try loadConfig(path: config) as CompilerConfig
                 try await startDiff(config: diffAndCompileConfig)
             case .compile:
