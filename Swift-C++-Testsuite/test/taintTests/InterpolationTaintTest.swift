@@ -8,7 +8,7 @@
 @main
 struct MyMain {
     static func source() -> Int {
-        return 3;
+        return 3
     }
     static func sink(leaked: String) {
         print("Leaked")
