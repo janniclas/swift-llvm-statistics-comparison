@@ -1,0 +1,18 @@
+{
+    "compilerPath": "/usr/bin/swiftc",
+    "compilerSettings": ["-parse-as-library"],
+    "compilerOutFlag": "-o",
+
+    "compilerOutExtension": ".o",
+
+
+    "outputPath": "/tmp/transpile2",
+    "inputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test/linearConstantPropagation/c++",
+    "targetLanguage": "Swift",
+    "targetLanguageExtension": ".swift",
+    "sourceLanguage": "Cpp",
+    "sourceLanguageExtension": ".cpp",
+    "nodePath": "/opt/homebrew/bin/node",
+    "programPath": "/Users/struewer/git/openAISwiftToCpp/build/main.js",
+    "envPath": "/Users/struewer/git/openAISwiftToCpp/.env"
+}
