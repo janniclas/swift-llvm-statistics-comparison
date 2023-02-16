@@ -8,7 +8,7 @@ function generate_IR {
         newSwiftIRName="$1".noOpt.ll
         fileName=${newSwiftIRName##*/}
 
-        swiftc -emit-ir -suppress-warnings -parse-as-library -Onone -Xfrontend -disable-llvm-optzns -Xfrontend -disable-swift-specific-llvm-optzns -module-name myModule "$1" | swift demangle > $newSwiftIRNameDemangled || echo "$fileName failed to compile"
+        swiftc -emit-ir -suppress-warnings -g -parse-as-library -Onone -Xfrontend -disable-llvm-optzns -Xfrontend -disable-swift-specific-llvm-optzns -module-name myModule "$1" | swift demangle > $newSwiftIRNameDemangled || echo "$fileName failed to compile"
         swiftc -emit-ir -suppress-warnings -g -parse-as-library -Onone -Xfrontend -disable-llvm-optzns -Xfrontend -disable-swift-specific-llvm-optzns -module-name myModule "$1" -o $newSwiftIRName || echo "$fileName failed to compile"
     fi
 
