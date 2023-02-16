@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXNwByNw9zZcmYyRS3R3RnIm9hYb","object":"text_completion","created":1676549440,"model":"text-davinci-003","choices":[{"text":"\n var g = 10\n  \n func main() {\n   var i = g \n   i -= 20\n   g = i\n  return 0\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":58,"completion_tokens":35,"total_tokens":93}}

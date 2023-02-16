@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXXaYy6RAd0OMheCFSQpa79D1zbG","object":"text_completion","created":1676550038,"model":"text-davinci-003","choices":[{"text":"\n var i = 42\n while i > 0 {\n     i += 2\n }\n var a = i\n a = 13\n \nprint(\"return 0\")","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":72,"completion_tokens":35,"total_tokens":107}}

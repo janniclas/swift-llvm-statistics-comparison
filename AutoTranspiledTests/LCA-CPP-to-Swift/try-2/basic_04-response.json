@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXUvTPBnm8NxVeesTOe7KGtBPAz1","object":"text_completion","created":1676549873,"model":"text-davinci-003","choices":[{"text":"\nvar i = 14\nvar j = 20\nvar k = i + j","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":66,"completion_tokens":17,"total_tokens":83}}

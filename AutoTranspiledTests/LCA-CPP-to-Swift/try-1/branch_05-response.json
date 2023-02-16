@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXKfHgfwxlw9OE5BVXY4MCcMyDEV","object":"text_completion","created":1676549237,"model":"text-davinci-003","choices":[{"text":"\nvar cond : Bool\nvar j : Int = 10\nvar i : Int = 42\n\nif (cond){\n    i = j + 32\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":70,"completion_tokens":35,"total_tokens":105}}

@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXRpsh5XHoHqmuZnJCIX7scxvQDo","object":"text_completion","created":1676549681,"model":"text-davinci-003","choices":[{"text":"\nfunc main() {\n  var i = 13\n  i = 17\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":45,"completion_tokens":18,"total_tokens":63}}

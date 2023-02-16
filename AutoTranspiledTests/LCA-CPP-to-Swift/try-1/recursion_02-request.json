@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Cpp to Swift\n# Cpp version\nunsigned fac(unsigned i) {\n  if (i == 0) {\n    return 1;\n  }\n  return i * fac(i - 1);\n}\n\nint main() {\n  unsigned a = fac(5);\n  return 0;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

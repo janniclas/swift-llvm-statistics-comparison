@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXLFNckwe5isdTLx4ehCOpwC2KBy","object":"text_completion","created":1676549273,"model":"text-davinci-003","choices":[{"text":"\n var cond = true\nvar j = 10\nvar i = j + 20\nif cond {\n i = j + 20\n }","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":72,"completion_tokens":29,"total_tokens":101}}

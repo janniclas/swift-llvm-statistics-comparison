@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXWydLS2mPqNShB4dsiAggVs86R5","object":"text_completion","created":1676550000,"model":"text-davinci-003","choices":[{"text":" \n\nvar i = 4\nvar j = 3 \ni += j * 4","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":54,"completion_tokens":19,"total_tokens":73}}

@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Cpp to Swift\n# Cpp version\nint foo(int a) { // clang-format off\n  return a + 40;\n} // clang-format on\n\nint main() {\n  int i;\n  i = foo(2);\n  return 0;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

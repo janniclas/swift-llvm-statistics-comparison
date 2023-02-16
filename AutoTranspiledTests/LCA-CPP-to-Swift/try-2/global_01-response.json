@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXNIOqNHYPdkOKHe4CO9paUleKC5","object":"text_completion","created":1676549400,"model":"text-davinci-003","choices":[{"text":"\n\nvar g1 = 10\nvar g2 = 1\nvar g3 = 3.1415\n\nfunc main() {\n  var i = 666\n  g1 = 42\n  g2 = g1\n  return 0\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":79,"completion_tokens":53,"total_tokens":132}}

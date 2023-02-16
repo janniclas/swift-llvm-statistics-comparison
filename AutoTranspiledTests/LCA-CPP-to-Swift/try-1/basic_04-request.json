@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Cpp to Swift\n# Cpp version\n// k (%4) is non-constant\nint main() {\n  int i = 14;\n  int j = 20;\n  int k = i + j;\n  return 0;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

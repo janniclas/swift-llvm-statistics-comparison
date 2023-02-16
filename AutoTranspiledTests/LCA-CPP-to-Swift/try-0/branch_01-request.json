@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Cpp to Swift\n# Cpp version\nextern bool cond;\nint main() {\n  int i = 10;\n  if (cond) {\n    i = 2;\n  }\n  return 0;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

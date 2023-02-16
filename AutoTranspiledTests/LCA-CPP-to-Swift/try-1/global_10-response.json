@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXQhxfgbDYsvwZsmo4LuCkSjwkHS","object":"text_completion","created":1676549611,"model":"text-davinci-003","choices":[{"text":"\n\nvar g1 = 42\nvar g2 = 9001\n\nfunc main() -> Int {\n    return 0\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":46,"completion_tokens":28,"total_tokens":74}}

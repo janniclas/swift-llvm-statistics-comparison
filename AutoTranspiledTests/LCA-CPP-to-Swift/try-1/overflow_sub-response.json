@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXOvIX2XrMjXqwhN7RKAifmy1zns","object":"text_completion","created":1676549501,"model":"text-davinci-003","choices":[{"text":" \nvar i: Int64 = -9223372036854775807 \nvar j: Int64 = i - 8 \nprint(j)","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":90,"completion_tokens":35,"total_tokens":125}}

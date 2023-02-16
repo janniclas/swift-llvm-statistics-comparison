@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXJbTaci8m45PLhRHaIKyFC6n3wJ","object":"text_completion","created":1676549171,"model":"text-davinci-003","choices":[{"text":" \n \n var cond: Bool\n var i: Int\n \n if cond {\n    i = 10\n}\n \n  print(i)","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":66,"completion_tokens":35,"total_tokens":101}}

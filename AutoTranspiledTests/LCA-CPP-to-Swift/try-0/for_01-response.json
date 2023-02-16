@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXSkB9m1pTeUA0KbQA75tcX90nUO","object":"text_completion","created":1676549738,"model":"text-davinci-003","choices":[{"text":"\n func main() {\n    var a = 0\n    for i in 0...9 {\n        a += i\n    }\n    return 0 \n }","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":65,"completion_tokens":35,"total_tokens":100}}

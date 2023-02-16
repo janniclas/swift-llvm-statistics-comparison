@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXXBls4iLxMIGC8nBi1GcF2SSLHW","object":"text_completion","created":1676550013,"model":"text-davinci-003","choices":[{"text":" \nfunc foo() -> Int {\n    return 42\n}\n\nfunc main() -> Int {\n    var i = 10\n    foo()\n    return 0\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":68,"completion_tokens":38,"total_tokens":106}}

@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Cpp to Swift\n# Cpp version\nint g1 = 10;\nint g2 = 1;\ndouble g3 = 3.1415;\n\nint main() {\n  int i = 666;\n  g1 = 42;\n  g2 = g1;\n  return 0;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

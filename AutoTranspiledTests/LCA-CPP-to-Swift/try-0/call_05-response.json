@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXVx4EX30Nyqgw2O80Wg9VU4CV8g","object":"text_completion","created":1676549937,"model":"text-davinci-003","choices":[{"text":"\nfunc main(argc: Int, argv: [String]) -> Int {\n  let i = argc\n  return 0\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":50,"completion_tokens":31,"total_tokens":81}}

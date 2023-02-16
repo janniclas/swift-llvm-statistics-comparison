@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Cpp to Swift\n# Cpp version\nint g = 0;\n\nstruct X {\n  X() { g = 1024; }\n};\n\nint foo(int x) {\n  x = x + 1;\n  return x;\n}\n\nX var;\n\nint main() {\n  int a = g;\n  a = foo(a);\n  return a;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXTwV2tIukerIn9DbeTrPNu2VP9X","object":"text_completion","created":1676549812,"model":"text-davinci-003","choices":[{"text":"\nfunc foo(a: Int, b: Int) -> Int {\n  a += b\n  b += a\n  return a + b\n}\n\nvar k: Int\nk = foo(a: 1, b: 2)","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":80,"completion_tokens":52,"total_tokens":132}}

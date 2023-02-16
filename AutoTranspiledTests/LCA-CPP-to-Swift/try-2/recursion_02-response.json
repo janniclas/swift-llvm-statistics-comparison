@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXUmKxo6Dx8VuH3E5o4QGoQqPdqY","object":"text_completion","created":1676549864,"model":"text-davinci-003","choices":[{"text":" \n  func fac(i: Int) -> Int {\n  if i == 0 {\n    return 1\n  }\n  return i * fac(i-1)\n}\n\nlet a = fac(5)","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":80,"completion_tokens":49,"total_tokens":129}}

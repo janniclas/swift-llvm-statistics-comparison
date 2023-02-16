@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXVUTs1gSp9k4We4ZT04eavUJGgK","object":"text_completion","created":1676549908,"model":"text-davinci-003","choices":[{"text":"\nfunc main() {\n\tvar i:Int \n\twhile(i > 0) {\n\t\ti += 2\n\t}\n\treturn 0\n}","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":57,"completion_tokens":36,"total_tokens":93}}
