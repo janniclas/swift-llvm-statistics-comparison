@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Cpp to Swift\n# Cpp version\n\nstruct X {\n  int A = 13;\n  int B = 0;\n};\n\nint main() {\n  X V;\n  V.B = 42;\n  return V.A + V.B;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

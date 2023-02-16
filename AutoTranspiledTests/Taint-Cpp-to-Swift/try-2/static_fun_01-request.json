@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from Cpp to Swift\n# Cpp version\nstatic int bar(int A, int *B) {\n  *B = 13;\n  if (A == 42) {\n    return 13;\n  }\n  return A;\n}\n\nint main() {\n  int A = 42;\n  int B = 0;\n  int C = bar(A, &B);\n  return C;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

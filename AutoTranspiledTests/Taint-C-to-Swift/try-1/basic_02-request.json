@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from C to Swift\n# C version\n\nstruct X {\n  int A;\n  int B;\n  double C;\n};\n\nvoid modX(struct X *A) {\n  A->A = 42;\n  A->B = 13;\n  A->C = 1.23;\n}\n\nint main() {\n  struct X A;\n  modX(&A);\n  return A.B;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

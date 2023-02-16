@@ -1,0 +1,1 @@
+{"model":"text-davinci-003","prompt":"# Convert this from C to Swift\n# C version\nint main() {\n  int I = 42;\n  int J = 13;\n  int K = I + J;\n  return K;\n}\n# End\n # Swift version","max_tokens":2048,"frequency_penalty":0,"presence_penalty":0,"stop":["###"]}

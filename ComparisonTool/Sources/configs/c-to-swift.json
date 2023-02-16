@@ -6,12 +6,12 @@
     "compilerOutExtension": ".o",
 
 
-    "outputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/AutoTranspiledTests/Taint-Cpp-to-Swift",
+    "outputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/AutoTranspiledTests/Taint-C-to-Swift",
     "inputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test/taintTests/C++",
     "targetLanguage": "Swift",
     "targetLanguageExtension": ".swift",
-    "sourceLanguage": "Cpp",
-    "sourceLanguageExtension": ".cpp",
+    "sourceLanguage": "C",
+    "sourceLanguageExtension": ".c",
     "nodePath": "/opt/homebrew/bin/node",
     "programPath": "/Users/struewer/git/openAISwiftToCpp/build/main.js",
     "envPath": "/Users/struewer/git/openAISwiftToCpp/.env"

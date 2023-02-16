@@ -1,0 +1,1 @@
+{"id":"cmpl-6kXhyf7yjtryLnBN1VG4cMcwjDblf","object":"text_completion","created":1676550682,"model":"text-davinci-003","choices":[{"text":"\nlet A = 42\nvar B = 0\nlet C = bar(A, &B)\nfoo(&C)\nreturn C","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":133,"completion_tokens":29,"total_tokens":162}}
