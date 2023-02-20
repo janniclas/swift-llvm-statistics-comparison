@@ -2,7 +2,7 @@
 
 auto makeIncrementer(int amount) {
   int runningTotal = 0;
-  auto incrementer = [&runningTotal, amount]() {//mutable
+  auto incrementer = [runningTotal, amount]() mutable {
     runningTotal += amount;
     return runningTotal;
   };

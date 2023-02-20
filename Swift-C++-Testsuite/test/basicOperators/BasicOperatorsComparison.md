@@ -29,3 +29,15 @@
 
 ## Assignments
 * In Swift an Integer is defined as a struct, thus the access is done with a getElementPtr instruction
+
+## Globals
+* @g = dso_local global i32 10, align 4, !dbg !0 in C++  
+define hidden swiftcc i8* @"$s9global_031gSivau"() #0 !dbg !36 {
+entry:
+  ret i8* bitcast (%TSi* @"$s9global_031gSivp" to i8*), !dbg !40
+}
+@"$s9global_012g1Sivp" = hidden global %TSi <{ i64 10 }>, align 8, !dbg !0
+@"$s9global_012g2_Wz" = internal global i64 0, align 8
+@"$s9global_012g2Sivp" = hidden global %TSi <{ i64 1 }>, align 8, !dbg !8
+@"$s9global_012g3_Wz" = internal global i64 0, align 8
+@"$s9global_012g3Sdvp" = hidden global %TSd <{ double 3.141500e+00 }>, align 8, !dbg !10
