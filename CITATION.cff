@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this microbenchmark or the related software, please cite it as below."
+authors:
+- family-names: "Strüwer"
+  given-names: "Jan-Niclas"
+  orcid: "https://orcid.org/0000-0002-4876-3483"
+title: "Microbenchmark for Swift-based and C++-based LLVM IR"
+version: 1.0.0
+# doi: 10.5281/zenodo.1234
+date-released: 2023-02-20
+url: "https://github.com/janniclas/swift-llvm-statistics-comparison"
