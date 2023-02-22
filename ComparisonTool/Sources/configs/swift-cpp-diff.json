@@ -17,7 +17,9 @@
         "inputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
         "outputPath": "/tmp/res/second"
     },
-    "outputPath": "/tmp/res/diffs/",
-    "dockerPath": "/usr/local/bin/docker",
-    "phasarImage": "ghcr.io/secure-software-engineering/phasar:development",
+    "dockerConfig" : {
+        "outputPath": "/tmp/res/stats",
+        "dockerPath": "/usr/local/bin/docker",
+        "phasarImage": "ghcr.io/secure-software-engineering/phasar:development"
+    }
 }

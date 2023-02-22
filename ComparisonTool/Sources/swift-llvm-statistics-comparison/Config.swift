@@ -16,7 +16,11 @@ func loadConfig<T: Codable>(path: String) throws -> T {
 struct DiffConfig: Codable {
     let firstLanguage: CompilerConfig
     let secondLanguage: CompilerConfig
+    let dockerConfig: DockerConfig
+    let outputPath: String
+}
 
+struct DockerConfig: Codable {
     let outputPath: String
     let dockerPath: String
     let phasarImage: String
