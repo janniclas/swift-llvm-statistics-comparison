@@ -1,9 +1,18 @@
-var cond: Bool
+var cond: Bool = true
 
-func main() {
-    var i = 10
-    if cond {
-        i = 10
+@main
+struct MyMain {
+    static func main() {
+        var _ = wrapper(10)
     }
-    return 0
+
+    static func wrapper(_ x: Int) -> Int {
+        var i = 10
+        var j = 10
+        if cond {
+            i = 10
+        }
+        j = 9
+        return x
+    }
 }

@@ -1,7 +1,10 @@
+var g = 10
+
 @main
 struct MyMain {
     static func main() {
-        var i = 13
-        i = 17
+      var i = g
+      i -= 20
+      g = i
     }
 }

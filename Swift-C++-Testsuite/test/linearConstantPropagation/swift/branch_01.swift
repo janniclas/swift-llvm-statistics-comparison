@@ -7,12 +7,10 @@ struct MyMain {
     }
 
     static func wrapper(_ x: Int) -> Int {
-        var i = x
-        i += 2
+        var i = 10
         if cond {
-            i += 3
+            i = 2
         }
-
         return i
     }
 }

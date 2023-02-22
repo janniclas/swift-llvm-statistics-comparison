@@ -1,7 +1,7 @@
+var y = 42
 @main
 struct MyMain {
     static func main() {
-        var i = 13
-        i = 17
+        y += 1
     }
 }
