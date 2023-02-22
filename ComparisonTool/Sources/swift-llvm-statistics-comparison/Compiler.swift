@@ -43,20 +43,28 @@ class GeneralCompiler: ExternalProgram, Compiler {
         self.logger.debug("compileProgram called with \(program.name)")
 
         let url = URL(fileURLWithPath: config.compilerPath)
-        let args = getCompileArguments(config: config, program: program)
+        let args = try getCompileArguments(config: config, program: program)
         let res = try await self.run(executableURL: url, args: args)
-        let p = ProgramWithCompileOutput(p: program, outputPath: getOutputPath(config, program))
+        let p = ProgramWithCompileOutput(p: program, outputPath: try getAndCreateOutputPath(config, program))
         return CompileResult(returnCode: res.exitCode, program: p, stdOut: res.output)
     }
 
-    private func getOutputPath(_ config: CompilerConfig, _ program: Program) -> String {
-        return FileHelperFactory.getFileHelper().appendToPath(
-            basePath: config.outputPath, components: "\(program.name)\(config.compilerOutExtension)")
+    private func getAndCreateOutputPath(_ config: CompilerConfig, _ program: Program) throws -> String {
+        let fh = FileHelperFactory.getFileHelper()
+        let subdirs = fh.getDirectoryPathForFile(filePath: program.path)?.replacingOccurrences(
+            of: config.inputPath, with: "")
+        let dirPath = fh.appendToPath(
+            basePath: config.outputPath, components: subdirs ?? "")
+        if !FileManager.default.fileExists(atPath: dirPath) {
+            try FileManager.default.createDirectory(
+                atPath: dirPath, withIntermediateDirectories: true)
+        }
+        return fh.appendToPath(basePath: dirPath, components: "\(program.name)\(config.compilerOutExtension)")
     }
 
-    private func getCompileArguments(config: CompilerConfig, program: Program) -> [String] {
+    private func getCompileArguments(config: CompilerConfig, program: Program) throws -> [String] {
         var args = config.compilerSettings
-        let output = getOutputPath(config, program)
+        let output = try getAndCreateOutputPath(config, program)
 
         args.append(config.compilerOutFlag)
         args.append(output)

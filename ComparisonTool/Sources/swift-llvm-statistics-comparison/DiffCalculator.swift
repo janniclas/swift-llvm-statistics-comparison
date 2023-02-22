@@ -118,11 +118,11 @@ struct DiffCalculator {
     }
 
     private func getBaseLanguage(moduleName: inout String) throws -> BaseLanguage {
-        if moduleName.contains(BaseProgram.SWIFT_LANGUAGE_EXTENSION) {
-            moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
+        if moduleName.contains(BaseProgram.SWIFT_MODULE_LANGUAGE_EXTENSION) {
+            moduleName.removeSubrange(moduleName.lastIndex(of: "_")!..<moduleName.endIndex)
             return BaseLanguage.swift
-        } else if moduleName.contains(BaseProgram.CPP_LANGUAGE_EXTENSION) {
-            moduleName.removeSubrange(moduleName.firstIndex(of: ".")!..<moduleName.endIndex)
+        } else if moduleName.contains(BaseProgram.CPP_MODULE_LANGUAGE_EXTENSION) {
+            moduleName.removeSubrange(moduleName.lastIndex(of: "_")!..<moduleName.endIndex)
             return BaseLanguage.cpp
         }
 

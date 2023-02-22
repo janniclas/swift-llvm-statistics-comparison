@@ -17,7 +17,7 @@ struct DiffConfig: Codable {
     let firstLanguage: CompilerConfig
     let secondLanguage: CompilerConfig
     let dockerConfig: DockerConfig
-    let outputPath: String
+    let outputBasePath: String
 }
 
 struct DockerConfig: Codable {
@@ -36,6 +36,7 @@ struct CompilerConfig: Codable {
 
     let outputPath: String
     let inputPath: String
+
 }
 
 struct TranspileModeConfig: Codable {

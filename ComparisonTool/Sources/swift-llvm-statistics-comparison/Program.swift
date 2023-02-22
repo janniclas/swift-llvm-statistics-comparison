@@ -57,6 +57,12 @@ extension Program {
     static var SWIFT_LANGUAGE_EXTENSION: String {
         return ".swift"
     }
+    static var CPP_MODULE_LANGUAGE_EXTENSION: String {
+        return "_cpp"
+    }
+    static var SWIFT_MODULE_LANGUAGE_EXTENSION: String {
+        return "_swift"
+    }
     static var JAVA_LANGUAGE_EXTENSION: String {
         return ".java"
     }

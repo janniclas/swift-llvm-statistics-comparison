@@ -106,10 +106,13 @@ func startDiff(config: DiffConfig) async throws {
     )
     .filter { r in r.returnCode == 0 }
     .map { r in r.program }
-
-    let programs = firstLanguageCompileResult + secondLanguageCompileResult
-
-    let _ = try await runDocker(config: config.dockerConfig, programs: programs)
+    //
+    //    let programs = firstLanguageCompileResult + secondLanguageCompileResult
+    //
+    //    let _ = try await runDocker(config: config.dockerConfig, programs: programs)
+    //
+    //    let diffCalculator = DiffCalculator(basePath: config.outputBasePath)
+    //    try diffCalculator.run()
 }
 
 func runDocker(config: DockerConfig, programs: [ProgramWithCompileOutput]) async throws {
@@ -119,8 +122,11 @@ func runDocker(config: DockerConfig, programs: [ProgramWithCompileOutput]) async
     let fh = FileHelperFactory.getFileHelper()
     for program in programs {
         if let inputPath = fh.getDirectoryPathForFile(filePath: program.outputPath) {
-            let dockerRunnerConfig = DockerRunnerConfig(config: config, programName: program.name, inputPath: inputPath)
-            let _ = try await docker.run(config: dockerRunnerConfig)
+            if let programPath = try? fh.getFileNameWithExtension(path: program.outputPath) {
+                let dockerRunnerConfig = DockerRunnerConfig(
+                    config: config, programName: programPath, inputPath: inputPath)
+                let _ = try await docker.run(config: dockerRunnerConfig)
+            }
         }
     }
 }

@@ -40,9 +40,9 @@ class DockerRunner: ExternalProgram {
 
         // docker run --mount type=bind,source=${PWD}/$workingdirectory,target=/usr/data/" ghcr.io/secure-software-engineering/phasar:development -m "/usr/data/$fileName" -S --emit-statistics-as-json --project-id "$fileName-results" --out /usr/data
 
-        var args: [String] = [
+        let args: [String] = [
             "run", "--mount", "type=bind,source=\(config.inputPath),target=/usr/data/", config.config.phasarImage, "-m",
-            "/usr/data/\(config.programName).ll", "-S", "--emit-statistics-as-json", "--project-id",
+            "/usr/data/\(config.programName)", "-S", "--emit-statistics-as-json", "--project-id",
             "\(config.programName)-results", "--out", "/usr/data",
         ]
 

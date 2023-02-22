@@ -4,22 +4,23 @@
         "compilerSettings": ["-std=c++20", "-S", "-emit-llvm", "-fno-discard-value-names", "-w" ],
         "compilerOutFlag": "-o",
         "languageExtension": ".cpp",
-        "compilerOutExtension": ".ll",
+        "compilerOutExtension": "_cpp.ll",
         "inputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
-        "outputPath": "/tmp/res/first"
+        "outputPath": "/tmp/res",
     },
     "secondLanguage": {
         "compilerPath": "/usr/bin/swiftc",
         "compilerSettings": ["-parse-as-library", "-emit-ir", "-Onone", "-suppress-warnings", "-Xfrontend", "-disable-llvm-optzns", "-Xfrontend", "-disable-swift-specific-llvm-optzns"],
         "compilerOutFlag": "-o",
         "languageExtension": ".swift",
-        "compilerOutExtension": ".ll",
+        "compilerOutExtension": "_swift.ll",
         "inputPath": "/Users/struewer/git/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
-        "outputPath": "/tmp/res/second"
+        "outputPath": "/tmp/res",
     },
     "dockerConfig" : {
         "dockerPath": "/usr/local/bin/docker",
         "phasarImage": "ghcr.io/secure-software-engineering/phasar:development"
     },
-    "outputPath": "/tmp/res/stats",
+    "outputBasePath": "/tmp/res",
+
 }

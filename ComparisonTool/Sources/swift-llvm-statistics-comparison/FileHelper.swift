@@ -135,6 +135,7 @@ struct CsvFile {
 protocol ProcessFile {
     func appendToPath(basePath: String, components: String...) -> String
     func getFileName(path: String) throws -> String
+    func getFileNameWithExtension(path: String) throws -> String
     func getFileContents<T: Codable>(path: String, elementSuffix: String) -> [T]
     func readContent<T: Codable>(path: String) throws -> T
     func getFilePaths(path: String, elementSuffix: String) -> [String]
@@ -220,6 +221,16 @@ private class FileHelper: ProcessFile {
     func getFileName(path: String) throws -> String {
         if let url = URL(string: path) {
             if url.isFileURL {
+                return url.lastPathComponent
+            }
+        }
+        throw FileHelperError.getFileNameFailed(path: path)
+    }
+
+    func getFileNameWithExtension(path: String) throws -> String {
+        if let url = URL(string: path) {
+            if url.isFileURL {
+                print(url)
                 return url.lastPathComponent
             }
         }
@@ -318,6 +329,13 @@ private class FileHelper: ProcessFile {
                 return fileName.stem
             }
 
+            throw FileHelperError.getFileNameFailed(path: path)
+        }
+
+        override func getFileNameWithExtension(path: String) throws -> String {
+            if let fileName = FilePath(path).lastComponent {
+                return fileName.string
+            }
             throw FileHelperError.getFileNameFailed(path: path)
         }
     }
