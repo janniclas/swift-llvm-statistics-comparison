@@ -16,63 +16,121 @@ struct DiffCalculator {
 
     func run() throws {
         logger.info("Search statistics at path: \(self.basePath)")
-        let statistics =
-            fileHelper.getFileContents(path: self.basePath, elementSuffix: "psr-IrStatistics.json")
-            as [PhasarStatistics]
+        //        let statistics =
+        //            fileHelper.getFileContents(path: self.basePath, elementSuffix: "psr-IrStatistics.json")
+        //            as [PhasarStatistics]
 
-        logger.info("successfully retrieved \(statistics.count) statistics.")
+        let statisticPaths = fileHelper.getFilePaths(path: self.basePath, elementSuffix: "psr-IrStatistics.json")
+        logger.info("successfully retrieved \(statisticPaths.count) statistic paths.")
 
         // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
-        let diffs: [String: Diff] = calculateAllDiffs(statistics: statistics)
-
+        let diffs: [String: Diff] = calculateAllDiffs(statisticPaths: statisticPaths)
+        let avgDiffs: [String: AvgDiff] = getAvgDiffs(diffs.values.reversed())
         let onlyCompleteDiffs = diffs.filter({ $0.value.diff != nil })
         let sortedDiffs = onlyCompleteDiffs.sorted(by: { $0.value.diff! < $1.value.diff! })
 
         try storeDiffs(diffs: sortedDiffs)
     }
 
+    private func getAvgDiffs(_ diffs: [Diff]) -> [String: AvgDiff] {
+        var avgDiffs: [String: AvgDiff] = [:]
+
+        for diff in diffs {
+            if let outPath = diff.outputPath {
+                if avgDiffs[outPath] == nil {
+                    avgDiffs[outPath] = AvgDiff()
+                }
+                let currentAvg = avgDiffs[outPath]!
+
+                currentAvg.diff += diff.diff ?? 0
+
+                currentAvg.swift.allocaInstructions += diff.swift?.allocaInstructions ?? 0
+                currentAvg.swift.basicBlocks += diff.swift?.basicBlocks ?? 0
+                currentAvg.swift.branches += diff.swift?.branches ?? 0
+                currentAvg.swift.callSites += diff.swift?.callSites ?? 0
+                currentAvg.swift.functions += diff.swift?.functions ?? 0
+                currentAvg.swift.getElementPtrs += diff.swift?.getElementPtrs ?? 0
+                currentAvg.swift.globalVariables += diff.swift?.globalVariables ?? 0
+                currentAvg.swift.instructions += diff.swift?.instructions ?? 0
+                currentAvg.swift.phiNodes += diff.swift?.phiNodes ?? 0
+
+                currentAvg.cpp.allocaInstructions += diff.cpp?.allocaInstructions ?? 0
+                currentAvg.cpp.basicBlocks += diff.cpp?.basicBlocks ?? 0
+                currentAvg.cpp.branches += diff.cpp?.branches ?? 0
+                currentAvg.cpp.callSites += diff.cpp?.callSites ?? 0
+                currentAvg.cpp.functions += diff.cpp?.functions ?? 0
+                currentAvg.cpp.getElementPtrs += diff.cpp?.getElementPtrs ?? 0
+                currentAvg.cpp.globalVariables += diff.cpp?.globalVariables ?? 0
+                currentAvg.cpp.instructions += diff.cpp?.instructions ?? 0
+                currentAvg.cpp.phiNodes += diff.cpp?.phiNodes ?? 0
+
+            }
+        }
+
+        return avgDiffs
+    }
+
     private func storeDiffs(diffs: [Dictionary<String, Diff>.Element]) throws {
-        let outputPath = fileHelper.appendToPath(basePath: self.basePath, components: "diffs")
 
         for (idx, diff) in diffs.enumerated() {
+            let outputPath = fileHelper.appendToPath(
+                basePath: self.basePath, components: diff.value.outputPath ?? "diffs")
+            diff.value.outputPath = nil
             try fileHelper.storeJson(
                 dirPath: outputPath, fileName: "\(idx)-\(diff.key)-comparison.json", element: diff.value)
         }
 
-        logger.info("All diffs were saved to \(outputPath)")
+        logger.info("All diffs were saved.")
     }
 
-    private func calculateAllDiffs(statistics: [PhasarStatistics]) -> [String: Diff] {
+    private func getOutputPath(_ p: String) -> String {
+        var dirPath = self.fileHelper.getDirectoryPathForFile(filePath: p)
+        dirPath = dirPath?.replacingOccurrences(of: self.basePath, with: "")
+        if let url = URL(string: dirPath ?? "") {
+            if url.pathComponents.count > 2 {
+                let res = url.pathComponents[0] + url.pathComponents[1]
+                return res
+            }
+        }
+        return p
+    }
+
+    private func calculateAllDiffs(statisticPaths: [String]) -> [String: Diff] {
         // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
         var diffs: [String: Diff] = [:]
-        for stat in statistics {
 
-            if var normalizedModuleName = try? getNormalized(moduleName: stat.moduleName) {
+        for statsPath in statisticPaths {
+            if let stat = try? fileHelper.readContent(path: statsPath) as PhasarStatistics {
 
-                if let fileType: BaseLanguage = try? getBaseLanguage(moduleName: &normalizedModuleName) {
+                if var normalizedModuleName = try? getNormalized(moduleName: stat.moduleName) {
 
-                    if diffs[normalizedModuleName] == nil {
-                        diffs[normalizedModuleName] = Diff()
-                    }
+                    if let fileType: BaseLanguage = try? getBaseLanguage(moduleName: &normalizedModuleName) {
 
-                    let diff = diffs[normalizedModuleName]!
-
-                    switch fileType {
-                    case .swift:
-                        if diff.swift == nil {
-                            diff.swift = stat
-                        } else {
-                            logger.debug("Duplicate entry found for \(stat.moduleName)")
+                        if diffs[normalizedModuleName] == nil {
+                            diffs[normalizedModuleName] = Diff()
+                            let outputPath = getOutputPath(statsPath)
+                            diffs[normalizedModuleName]?.outputPath = outputPath
                         }
-                    case .cpp:
-                        if diff.cpp == nil {
-                            diff.cpp = stat
-                        } else {
-                            logger.debug("Duplicate entry found for \(stat.moduleName)")
+
+                        let diff = diffs[normalizedModuleName]!
+
+                        switch fileType {
+                        case .swift:
+                            if diff.swift == nil {
+                                diff.swift = stat
+                            } else {
+                                logger.debug("Duplicate entry found for \(stat.moduleName)")
+                            }
+                        case .cpp:
+                            if diff.cpp == nil {
+                                diff.cpp = stat
+                            } else {
+                                logger.debug("Duplicate entry found for \(stat.moduleName)")
+                            }
                         }
-                    }
-                    if let ds = diff.swift, let dc = diff.cpp {
-                        diff.diff = calculateDiff(ds, dc)
+                        if let ds = diff.swift, let dc = diff.cpp {
+                            diff.diff = calculateDiff(ds, dc)
+                        }
                     }
                 }
             }
@@ -132,6 +190,25 @@ struct DiffCalculator {
     class Diff: Codable {
         var diff: Int?
         var cpp: PhasarStatistics?, swift: PhasarStatistics?
+        var outputPath: String?
+    }
+
+    class AvgStats: Codable {
+        var allocaInstructions: Int = 0
+        var callSites: Int = 0
+        var functions: Int = 0
+        var globalVariables: Int = 0
+        var instructions: Int = 0
+        var branches: Int = 0
+        var phiNodes: Int = 0
+        var basicBlocks: Int = 0
+        var getElementPtrs: Int = 0
+    }
+
+    class AvgDiff: Codable {
+        var swift = AvgStats()
+        var cpp = AvgStats()
+        var diff = 0
     }
 
     struct PhasarStatistics: Codable {
