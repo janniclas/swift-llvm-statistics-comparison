@@ -128,31 +128,26 @@ class BaseProgram: Program {
 
 }
 
-class ProgramWithIR: BaseProgram {
+class ProgramWithCompileOutput: BaseProgram {
 
-    convenience init(p: Program) {
-        self.init(languageExtension: p.language, name: p.name, path: p.path)
+    init(p: Program, outputPath: String) {
+        self.outputPath = outputPath
+        super.init(languageExtension: p.language, name: p.name, path: p.path)
     }
 
-    override init(languageExtension: String, name: String, path: String) {
-        self.irPath = "\(path).ir.ll"
-        super.init(languageExtension: languageExtension, name: name, path: path)
-    }
-
-    let irPath: String
-
+    let outputPath: String
 }
-
-class ProgramWithStatistics: ProgramWithIR {
-
-    convenience init(p: Program, statistics: Statistics) {
-        self.init(languageExtension: p.language, name: p.name, path: p.path, statistics: statistics)
-    }
-
-    init(languageExtension: String, name: String, path: String, statistics: Statistics) {
-        self.statistics = statistics
-        super.init(languageExtension: languageExtension, name: name, path: path)
-    }
-
-    let statistics: Statistics
-}
+//
+//class ProgramWithStatistics: ProgramWithCompileOutput {
+//
+//    convenience init(p: Program, statistics: Statistics) {
+//        self.init(languageExtension: p.language, name: p.name, path: p.path, statistics: statistics)
+//    }
+//
+//    init(languageExtension: String, name: String, path: String, statistics: Statistics) {
+//        self.statistics = statistics
+//        super.init(languageExtension: languageExtension, name: name, path: path)
+//    }
+//
+//    let statistics: Statistics
+//}

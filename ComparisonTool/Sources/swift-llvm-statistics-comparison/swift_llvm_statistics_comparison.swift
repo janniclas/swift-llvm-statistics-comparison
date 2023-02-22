@@ -29,11 +29,7 @@ import Logging
             case .diff:
                 //TODO: calculate average values for stuff like loc and global variables acrosse all Swift and C++ files
                 let diffAndCompileConfig = try loadConfig(path: config) as DiffConfig
-                let firstLanguageCompileResult = try await startCompiler(
-                    config: diffAndCompileConfig.firstLanguage, logging: false)
-                let secondLanguageCompileResult = try await startCompiler(
-                    config: diffAndCompileConfig.secondLanguage, logging: false)
-            //                try await startDiff(config: diffAndCompileConfig)
+                try await startDiff(config: diffAndCompileConfig)
             case .compile:
                 let diffAndCompileConfig = try loadConfig(path: config) as CompilerConfig
                 let _ = try await startCompiler(config: diffAndCompileConfig)
@@ -62,7 +58,7 @@ import Logging
 
             switch args.mode {
             case .diff:
-                let config = try loadConfig(path: args.path) as Config
+                let config = try loadConfig(path: args.path) as DiffConfig
                 try await startDiff(config: config)
             case .compile:
                 let config = try loadConfig(path: args.path) as Config
@@ -96,11 +92,37 @@ import Logging
     }
 #endif
 
-func startDiff(config: CompilerConfig) async throws {
+func startDiff(config: DiffConfig) async throws {
     let logger = Logger(label: "com.struewer.llvm.statistics")
-    logger.info("Started to run in diff mode. Input path \(config.inputPath)")
-    let diffCalc = DiffCalculator(basePath: config.inputPath)
-    try diffCalc.run()
+
+    let firstLanguageCompileResult = try await startCompiler(
+        config: config.firstLanguage, logging: false
+    )
+    .filter { r in r.returnCode == 0 }
+    .map { r in r.program }
+
+    let secondLanguageCompileResult = try await startCompiler(
+        config: config.secondLanguage, logging: false
+    )
+    .filter { r in r.returnCode == 0 }
+    .map { r in r.program }
+
+    let programs = firstLanguageCompileResult + secondLanguageCompileResult
+
+    let _ = try await runDocker(config: config.dockerConfig, programs: programs)
+}
+
+func runDocker(config: DockerConfig, programs: [ProgramWithCompileOutput]) async throws {
+    let logger = Logger(label: "com.struewer.llvm.dockerrunner")
+    let docker = DockerRunner()
+    logger.info("Starting docker for programs \(programs)")
+    let fh = FileHelperFactory.getFileHelper()
+    for program in programs {
+        if let inputPath = fh.getDirectoryPathForFile(filePath: program.outputPath) {
+            let dockerRunnerConfig = DockerRunnerConfig(config: config, programName: program.name, inputPath: inputPath)
+            let _ = try await docker.run(config: dockerRunnerConfig)
+        }
+    }
 }
 
 func transpile(config: TranspileModeConfig) async throws {

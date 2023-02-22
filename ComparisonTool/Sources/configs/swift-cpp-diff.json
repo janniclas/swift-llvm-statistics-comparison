@@ -18,8 +18,8 @@
         "outputPath": "/tmp/res/second"
     },
     "dockerConfig" : {
-        "outputPath": "/tmp/res/stats",
         "dockerPath": "/usr/local/bin/docker",
         "phasarImage": "ghcr.io/secure-software-engineering/phasar:development"
-    }
+    },
+    "outputPath": "/tmp/res/stats",
 }

@@ -21,7 +21,6 @@ struct DiffConfig: Codable {
 }
 
 struct DockerConfig: Codable {
-    let outputPath: String
     let dockerPath: String
     let phasarImage: String
 }

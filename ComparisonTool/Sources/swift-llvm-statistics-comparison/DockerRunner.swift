@@ -11,7 +11,6 @@ import System
 
 struct DockerRunnerResult {
     let externalProgramResult: ExternalProgramResult
-    let outputPath: String
 }
 
 struct CombinedDockerResults {
@@ -26,15 +25,15 @@ struct DockerRunnerConfig {
     let inputPath: String
 }
 
-class GeneralDockerRunner: ExternalProgram {
+class DockerRunner: ExternalProgram {
 
-    func run(programPath: String, config: DockerRunnerConfig) async throws -> DockerRunnerResult {
+    func run(config: DockerRunnerConfig) async throws -> DockerRunnerResult {
         let args = getCliArguments(config: config)
         let url = URL(fileURLWithPath: config.config.dockerPath)
 
         let res = try await self.run(executableURL: url, args: args)
 
-        return DockerRunnerResult(externalProgramResult: res, outputPath: config.config.outputPath)
+        return DockerRunnerResult(externalProgramResult: res)
     }
 
     private func getCliArguments(config: DockerRunnerConfig) -> [String] {
@@ -43,7 +42,7 @@ class GeneralDockerRunner: ExternalProgram {
 
         var args: [String] = [
             "run", "--mount", "type=bind,source=\(config.inputPath),target=/usr/data/", config.config.phasarImage, "-m",
-            "/usr/data/\(config.programName)", "-S", "--emit-statistics-as-json", "--project-id",
+            "/usr/data/\(config.programName).ll", "-S", "--emit-statistics-as-json", "--project-id",
             "\(config.programName)-results", "--out", "/usr/data",
         ]
 

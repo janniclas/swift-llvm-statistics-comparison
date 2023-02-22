@@ -142,6 +142,7 @@ protocol ProcessFile {
     func createOrGetOutputPath(dirPath: String, fileName: String) throws -> String
     func storeJson(dirPath: String, fileName: String, element: Codable) throws
     func getProgramRequestResponse(program: Program) throws -> (request: OpenAiRequest, response: OpenAiResponse)
+    func getDirectoryPathForFile(filePath: String) -> String?
 }
 
 struct FileHelperFactory {
@@ -151,7 +152,7 @@ struct FileHelperFactory {
             return fh!
         }
         #if os(macOS)
-            if #available(macOS 12.0, *) {
+            if #available(macOS 13.0, *) {
                 fh = FileHelperOSX()
                 return fh!
             }
@@ -289,11 +290,19 @@ private class FileHelper: ProcessFile {
             throw FileHelperError.FileNotFound(path: path)
         }
     }
+
+    func getDirectoryPathForFile(filePath: String) -> String? {
+        return URL(string: filePath)?.deletingLastPathComponent().absoluteString
+    }
 }
 
 #if os(macOS)
-    @available(macOS 12.0, *)
+    @available(macOS 13.0, *)
     private class FileHelperOSX: FileHelper {
+
+        override func getDirectoryPathForFile(filePath: String) -> String? {
+            return URL(string: filePath)?.deletingLastPathComponent().path()
+        }
 
         /// If append fails or missbehaves it returns basePath.
         override func appendToPath(basePath: String, components: String...) -> String {

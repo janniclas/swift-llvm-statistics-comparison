@@ -14,12 +14,12 @@ protocol Compiler {
 }
 
 struct CompileResult {
-    let program: Program
+    let program: ProgramWithCompileOutput
 
     let returnCode: Int32
     let stdOut: String?
 
-    init(returnCode: Int32, program: Program, stdOut: String? = nil) {
+    init(returnCode: Int32, program: ProgramWithCompileOutput, stdOut: String? = nil) {
         self.returnCode = returnCode
         self.stdOut = stdOut
         self.program = program
@@ -45,14 +45,18 @@ class GeneralCompiler: ExternalProgram, Compiler {
         let url = URL(fileURLWithPath: config.compilerPath)
         let args = getCompileArguments(config: config, program: program)
         let res = try await self.run(executableURL: url, args: args)
+        let p = ProgramWithCompileOutput(p: program, outputPath: getOutputPath(config, program))
+        return CompileResult(returnCode: res.exitCode, program: p, stdOut: res.output)
+    }
 
-        return CompileResult(returnCode: res.exitCode, program: program, stdOut: res.output)
+    private func getOutputPath(_ config: CompilerConfig, _ program: Program) -> String {
+        return FileHelperFactory.getFileHelper().appendToPath(
+            basePath: config.outputPath, components: "\(program.name)\(config.compilerOutExtension)")
     }
 
     private func getCompileArguments(config: CompilerConfig, program: Program) -> [String] {
         var args = config.compilerSettings
-        let output = FileHelperFactory.getFileHelper().appendToPath(
-            basePath: config.outputPath, components: "\(program.name)\(config.compilerOutExtension)")
+        let output = getOutputPath(config, program)
 
         args.append(config.compilerOutFlag)
         args.append(output)
