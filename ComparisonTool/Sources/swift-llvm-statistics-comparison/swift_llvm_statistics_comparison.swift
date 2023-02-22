@@ -12,7 +12,7 @@ import Logging
     @main
     @available(macOS 13.0, *)
     struct swift_llvm_statistics_comparison: AsyncParsableCommand {
-        @Argument(help: "Which mode to run. Curent valid modes diff and compile.")
+        @Argument(help: "Which mode to run. Curent valid modes diff, transpile, and compile.")
         var mode: Mode
 
         @Option(help: "Config file with paths to executables and compiler configs.")
@@ -28,8 +28,12 @@ import Logging
             switch mode {
             case .diff:
                 //TODO: calculate average values for stuff like loc and global variables acrosse all Swift and C++ files
-                let diffAndCompileConfig = try loadConfig(path: config) as CompilerConfig
-                try await startDiff(config: diffAndCompileConfig)
+                let diffAndCompileConfig = try loadConfig(path: config) as DiffConfig
+                let firstLanguageCompileResult = try await startCompiler(
+                    config: diffAndCompileConfig.firstLanguage, logging: false)
+                let secondLanguageCompileResult = try await startCompiler(
+                    config: diffAndCompileConfig.secondLanguage, logging: false)
+            //                try await startDiff(config: diffAndCompileConfig)
             case .compile:
                 let diffAndCompileConfig = try loadConfig(path: config) as CompilerConfig
                 let _ = try await startCompiler(config: diffAndCompileConfig)
@@ -157,7 +161,7 @@ func transpile(config: TranspileModeConfig) async throws {
     try csvFile.storeData(path: config.outputPath)
 }
 
-func startCompiler(config: CompilerConfig) async throws -> [CompileResult] {
+func startCompiler(config: CompilerConfig, logging: Bool = true) async throws -> [CompileResult] {
     let logger = Logger(label: "com.struewer.llvm.statistics")
     // get all file paths for compilation (starting from provided base path)
     logger.info("Run LLVM Statistics Comparison for path \(config.inputPath)")
@@ -189,8 +193,10 @@ func startCompiler(config: CompilerConfig) async throws -> [CompileResult] {
                         let result = try await worker.work(item)
                         results.append(result)
                         if let stdOut = result.stdOut {
-                            try FileHelperFactory.getFileHelper().storeJson(
-                                dirPath: config.outputPath, fileName: "\(item.name)-output.txt", element: stdOut)
+                            if stdOut != "No output generated" {
+                                try FileHelperFactory.getFileHelper().storeJson(
+                                    dirPath: config.outputPath, fileName: "\(item.name)-output.txt", element: stdOut)
+                            }
                         }
                         logger.info(
                             "Finished work on: \(item.name) with worker no \(i)"
@@ -209,25 +215,25 @@ func startCompiler(config: CompilerConfig) async throws -> [CompileResult] {
         }
         return groupResult
     }
+    if logging {
+        //TODO: get additional data for result - go from program path and collect request/response data
+        // go from base path and get config data
+        var csvFile: CsvFile
 
-    //TODO: get additional data for result - go from program path and collect request/response data
-    // go from base path and get config data
-    var csvFile: CsvFile
-
-    let inputOutputLanguages =
-        FileHelperFactory.getFileHelper().getFileContents(path: config.inputPath, elementSuffix: "config.json")
-        as [InputOutputLanguage]
-    if inputOutputLanguages.count == 1 && inputOutputLanguages.first != nil {
-        let inputOutputLanguage = inputOutputLanguages.first!
-        csvFile = CsvFile(
-            compileResults: compileResults, sourceLanguage: inputOutputLanguage.sourceLanguage,
-            targetLanguage: inputOutputLanguage.targetLanguage)
-    } else {
-        logger.warning("Found more than one or none config.json file at \(config.inputPath)")
-        csvFile = CsvFile(compileResults: compileResults)
+        let inputOutputLanguages =
+            FileHelperFactory.getFileHelper().getFileContents(path: config.inputPath, elementSuffix: "config.json")
+            as [InputOutputLanguage]
+        if inputOutputLanguages.count == 1 && inputOutputLanguages.first != nil {
+            let inputOutputLanguage = inputOutputLanguages.first!
+            csvFile = CsvFile(
+                compileResults: compileResults, sourceLanguage: inputOutputLanguage.sourceLanguage,
+                targetLanguage: inputOutputLanguage.targetLanguage)
+        } else {
+            logger.warning("Found more than one or none config.json file at \(config.inputPath)")
+            csvFile = CsvFile(compileResults: compileResults)
+        }
+        try csvFile.storeData(path: config.outputPath)
     }
-    try csvFile.storeData(path: config.outputPath)
-
     let initialValue: Int32 = 0
     let failedPrograms = compileResults.reduce(
         initialValue,

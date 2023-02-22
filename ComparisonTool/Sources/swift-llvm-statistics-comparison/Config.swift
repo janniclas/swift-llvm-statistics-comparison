@@ -13,6 +13,15 @@ func loadConfig<T: Codable>(path: String) throws -> T {
     return try fh.readContent(path: path) as T
 }
 
+struct DiffConfig: Codable {
+    let firstLanguage: CompilerConfig
+    let secondLanguage: CompilerConfig
+
+    let outputPath: String
+    let dockerPath: String
+    let phasarImage: String
+}
+
 struct CompilerConfig: Codable {
 
     let compilerPath: String
