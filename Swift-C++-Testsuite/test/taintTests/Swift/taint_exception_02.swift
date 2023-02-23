@@ -14,6 +14,6 @@ struct S {
 struct MyMain {
     static func main() {
         var s = S(0)  // original C++ code was: S *s = new S(0);
-        sink(CommandLine.count)
+        sink(CommandLine.arguments.count)
     }
 }

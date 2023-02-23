@@ -13,7 +13,7 @@ struct S {
 @main
 struct MyMain {
     static func main() {
-        var data: Int
+        var data = 0
         do {
             var s = S(0)
 

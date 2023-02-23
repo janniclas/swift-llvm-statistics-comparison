@@ -35,19 +35,17 @@ struct S {
 @main
 struct MyMain {
     static func main() {
-        var data: Int = 0 // Swift does not support uninitilized variables as given in the C++ test case
+        var data: Int = 0  // Swift does not support uninitilized variables as given in the C++ test case
         do {
             var s = S(0)
- catch {
-                data = source()
-            }
-                        do {
-            var s = S(0)
-            }
         } catch {
-        sink(data)
+            data = source()
+        }
+        do {
+            var s = S(0)
+        } catch {
+            sink(data)
         }
 
     }
 }
-
