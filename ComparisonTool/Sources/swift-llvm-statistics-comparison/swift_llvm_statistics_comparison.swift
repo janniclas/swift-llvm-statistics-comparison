@@ -94,22 +94,22 @@ import Logging
 
 func startDiff(config: DiffConfig) async throws {
     let logger = Logger(label: "com.struewer.llvm.statistics")
-    //
-    //    let firstLanguageCompileResult = try await startCompiler(
-    //        config: config.firstLanguage, logging: false
-    //    )
-    //    .filter { r in r.returnCode == 0 }
-    //    .map { r in r.program }
-    //
-    //    let secondLanguageCompileResult = try await startCompiler(
-    //        config: config.secondLanguage, logging: false
-    //    )
-    //    .filter { r in r.returnCode == 0 }
-    //    .map { r in r.program }
-    //
-    //        let programs = firstLanguageCompileResult + secondLanguageCompileResult
-    //
-    //        let _ = try await runDocker(config: config.dockerConfig, programs: programs)
+
+    let firstLanguageCompileResult = try await startCompiler(
+        config: config.firstLanguage, logging: false
+    )
+    .filter { r in r.returnCode == 0 }
+    .map { r in r.program }
+
+    let secondLanguageCompileResult = try await startCompiler(
+        config: config.secondLanguage, logging: false
+    )
+    .filter { r in r.returnCode == 0 }
+    .map { r in r.program }
+
+    let programs = firstLanguageCompileResult + secondLanguageCompileResult
+
+    let _ = try await runDocker(config: config.dockerConfig, programs: programs)
 
     let diffCalculator = DiffCalculator(basePath: config.outputBasePath)
     try diffCalculator.run()

@@ -25,49 +25,112 @@ struct DiffCalculator {
 
         // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
         let diffs: [String: Diff] = calculateAllDiffs(statisticPaths: statisticPaths)
-        let avgDiffs: [String: AvgDiff] = getAvgDiffs(diffs.values.reversed())
         let onlyCompleteDiffs = diffs.filter({ $0.value.diff != nil })
         let sortedDiffs = onlyCompleteDiffs.sorted(by: { $0.value.diff! < $1.value.diff! })
 
+        let avgDiffs: [String: AvgDiff] = getAvgDiffs(sortedDiffs.map { sd in sd.value })
         try storeDiffs(diffs: sortedDiffs)
+        try storeAvgDiff(diffs: avgDiffs)
     }
 
     private func getAvgDiffs(_ diffs: [Diff]) -> [String: AvgDiff] {
-        var avgDiffs: [String: AvgDiff] = [:]
+        var diffSum: [String: (AvgDiff, Int)] = [:]
+        diffSum["avg"] = (AvgDiff(), 0)
 
         for diff in diffs {
             if let outPath = diff.outputPath {
-                if avgDiffs[outPath] == nil {
-                    avgDiffs[outPath] = AvgDiff()
+                if diffSum[outPath] == nil {
+                    diffSum[outPath] = (AvgDiff(), 0)
                 }
-                let currentAvg = avgDiffs[outPath]!
+                let currentAvg = diffSum[outPath]!
 
-                currentAvg.diff += diff.diff ?? 0
+                currentAvg.0.diff += diff.diff ?? 0
 
-                currentAvg.swift.allocaInstructions += diff.swift?.allocaInstructions ?? 0
-                currentAvg.swift.basicBlocks += diff.swift?.basicBlocks ?? 0
-                currentAvg.swift.branches += diff.swift?.branches ?? 0
-                currentAvg.swift.callSites += diff.swift?.callSites ?? 0
-                currentAvg.swift.functions += diff.swift?.functions ?? 0
-                currentAvg.swift.getElementPtrs += diff.swift?.getElementPtrs ?? 0
-                currentAvg.swift.globalVariables += diff.swift?.globalVariables ?? 0
-                currentAvg.swift.instructions += diff.swift?.instructions ?? 0
-                currentAvg.swift.phiNodes += diff.swift?.phiNodes ?? 0
+                currentAvg.0.swift.allocaInstructions += diff.swift?.allocaInstructions ?? 0
+                currentAvg.0.swift.basicBlocks += diff.swift?.basicBlocks ?? 0
+                currentAvg.0.swift.branches += diff.swift?.branches ?? 0
+                currentAvg.0.swift.callSites += diff.swift?.callSites ?? 0
+                currentAvg.0.swift.functions += diff.swift?.functions ?? 0
+                currentAvg.0.swift.getElementPtrs += diff.swift?.getElementPtrs ?? 0
+                currentAvg.0.swift.globalVariables += diff.swift?.globalVariables ?? 0
+                currentAvg.0.swift.instructions += diff.swift?.instructions ?? 0
+                currentAvg.0.swift.phiNodes += diff.swift?.phiNodes ?? 0
 
-                currentAvg.cpp.allocaInstructions += diff.cpp?.allocaInstructions ?? 0
-                currentAvg.cpp.basicBlocks += diff.cpp?.basicBlocks ?? 0
-                currentAvg.cpp.branches += diff.cpp?.branches ?? 0
-                currentAvg.cpp.callSites += diff.cpp?.callSites ?? 0
-                currentAvg.cpp.functions += diff.cpp?.functions ?? 0
-                currentAvg.cpp.getElementPtrs += diff.cpp?.getElementPtrs ?? 0
-                currentAvg.cpp.globalVariables += diff.cpp?.globalVariables ?? 0
-                currentAvg.cpp.instructions += diff.cpp?.instructions ?? 0
-                currentAvg.cpp.phiNodes += diff.cpp?.phiNodes ?? 0
+                currentAvg.0.cpp.allocaInstructions += diff.cpp?.allocaInstructions ?? 0
+                currentAvg.0.cpp.basicBlocks += diff.cpp?.basicBlocks ?? 0
+                currentAvg.0.cpp.branches += diff.cpp?.branches ?? 0
+                currentAvg.0.cpp.callSites += diff.cpp?.callSites ?? 0
+                currentAvg.0.cpp.functions += diff.cpp?.functions ?? 0
+                currentAvg.0.cpp.getElementPtrs += diff.cpp?.getElementPtrs ?? 0
+                currentAvg.0.cpp.globalVariables += diff.cpp?.globalVariables ?? 0
+                currentAvg.0.cpp.instructions += diff.cpp?.instructions ?? 0
+                currentAvg.0.cpp.phiNodes += diff.cpp?.phiNodes ?? 0
 
+                let avg = diffSum["avg"]!
+                avg.0.diff += currentAvg.0.diff
+                avg.0.swift.allocaInstructions += currentAvg.0.swift.allocaInstructions
+                avg.0.swift.basicBlocks += currentAvg.0.swift.basicBlocks
+                avg.0.swift.branches += currentAvg.0.swift.branches
+                avg.0.swift.callSites += currentAvg.0.swift.callSites
+                avg.0.swift.functions += currentAvg.0.swift.functions
+                avg.0.swift.getElementPtrs += currentAvg.0.swift.getElementPtrs
+                avg.0.swift.globalVariables += currentAvg.0.swift.globalVariables
+                avg.0.swift.instructions += currentAvg.0.swift.instructions
+                avg.0.swift.phiNodes += currentAvg.0.swift.phiNodes
+
+                avg.0.cpp.allocaInstructions += currentAvg.0.cpp.allocaInstructions
+                avg.0.cpp.basicBlocks += currentAvg.0.cpp.basicBlocks
+                avg.0.cpp.branches += currentAvg.0.cpp.branches
+                avg.0.cpp.callSites += currentAvg.0.cpp.callSites
+                avg.0.cpp.functions += currentAvg.0.cpp.functions
+                avg.0.cpp.getElementPtrs += currentAvg.0.cpp.getElementPtrs
+                avg.0.cpp.globalVariables += currentAvg.0.cpp.globalVariables
+                avg.0.cpp.instructions += currentAvg.0.cpp.instructions
+                avg.0.cpp.phiNodes += currentAvg.0.cpp.phiNodes
+                diffSum["avg"] = (avg.0, avg.1 + 1)
+                diffSum[outPath] = (currentAvg.0, currentAvg.1 + 1)
             }
+        }
+        var avgDiffs: [String: AvgDiff] = [:]
+
+        for (idx, diffAndSum) in diffSum {
+            let diff = diffAndSum.0
+            let avg = AvgDiff()
+            avg.diff = diff.diff / diffAndSum.1
+
+            avg.swift.allocaInstructions += diff.swift.allocaInstructions / diffAndSum.1
+            avg.swift.basicBlocks += diff.swift.basicBlocks / diffAndSum.1
+            avg.swift.branches += diff.swift.branches / diffAndSum.1
+            avg.swift.callSites += diff.swift.callSites / diffAndSum.1
+            avg.swift.functions += diff.swift.functions / diffAndSum.1
+            avg.swift.getElementPtrs += diff.swift.getElementPtrs / diffAndSum.1
+            avg.swift.globalVariables += diff.swift.globalVariables / diffAndSum.1
+            avg.swift.instructions += diff.swift.instructions / diffAndSum.1
+            avg.swift.phiNodes += diff.swift.phiNodes / diffAndSum.1
+
+            avg.cpp.allocaInstructions += diff.cpp.allocaInstructions / diffAndSum.1
+            avg.cpp.basicBlocks += diff.cpp.basicBlocks / diffAndSum.1
+            avg.cpp.branches += diff.cpp.branches / diffAndSum.1
+            avg.cpp.callSites += diff.cpp.callSites / diffAndSum.1
+            avg.cpp.functions += diff.cpp.functions / diffAndSum.1
+            avg.cpp.getElementPtrs += diff.cpp.getElementPtrs / diffAndSum.1
+            avg.cpp.globalVariables += diff.cpp.globalVariables / diffAndSum.1
+            avg.cpp.instructions += diff.cpp.instructions / diffAndSum.1
+            avg.cpp.phiNodes += diff.cpp.phiNodes / diffAndSum.1
+
+            avgDiffs[idx] = avg
         }
 
         return avgDiffs
+    }
+
+    private func storeAvgDiff(diffs: [String: AvgDiff]) throws {
+        for (path, diff) in diffs {
+            let outputPath = fileHelper.appendToPath(
+                basePath: self.basePath, components: path)
+            try fileHelper.storeJson(
+                dirPath: outputPath, fileName: "avg-comparison.json", element: diff)
+        }
     }
 
     private func storeDiffs(diffs: [Dictionary<String, Diff>.Element]) throws {
