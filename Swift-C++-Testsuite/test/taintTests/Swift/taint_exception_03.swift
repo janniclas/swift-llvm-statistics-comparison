@@ -1,16 +1,22 @@
-// extern int source();
-// extern void sink(int data);
+@_silgen_name("source")
+func source() -> Int
 
-// struct S {
-//   int data;
-//   S(int data) : data(data) {}
-// };
+@_silgen_name("sink")
+func sink(_ p: Int)
 
-// int main() {
-//   int a = source();
-//   sink(a);
-//   S *s = new S(0);
-//   int b = a;
-//   sink(b);
-//   return 0;
-// }
+struct S {
+    var data: Int
+    init(_ data: Int) {
+        self.data = data
+    }
+}
+@main
+struct MyMain {
+    static func main() {
+        var a = source()
+        sink(a)
+        var s = S(0)  // original C++ code was: S *s = new S(0);
+        var b = a
+        sink(b)
+    }
+}

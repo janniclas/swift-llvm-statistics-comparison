@@ -1,13 +1,19 @@
-// extern int source();
-// extern void sink(int data);
+@_silgen_name("source")
+func source() -> Int
 
-// struct S {
-//   int data;
-//   S(int data) : data(data) {}
-// };
+@_silgen_name("sink")
+func sink(_ p: Int)
 
-// int main(int argc, char **argv) {
-//   S *s = new S(0);
-//   sink(argc);
-//   return 0;
-// }
+struct S {
+    var data: Int
+    init(_ data: Int) {
+        self.data = data
+    }
+}
+@main
+struct MyMain {
+    static func main() {
+        var s = S(0)  // original C++ code was: S *s = new S(0);
+        sink(CommandLine.count)
+    }
+}
