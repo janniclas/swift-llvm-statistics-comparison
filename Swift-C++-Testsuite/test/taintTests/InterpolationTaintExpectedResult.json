@@ -1,3 +1,0 @@
-{
-    "leaks": ["call swiftcc void @\"static Interpolation.MyMain.sink(leaked: Swift.String) -> ()\""]
-}

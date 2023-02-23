@@ -1,3 +1,0 @@
-{
-    "leaks": ["call swiftcc void @\"$s26SimpleStringTaintTestSwift6MyMainV4sink6leakedySS_tFZ\""]
-}
