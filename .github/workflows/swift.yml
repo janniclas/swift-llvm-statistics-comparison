@@ -11,94 +11,93 @@ jobs:
     runs-on: macos-latest
 
     steps:
+
     - uses: actions/checkout@v3
-    - name: Compile LLVM IR
+    - name: Compile Tool
       shell: bash
       run: |
-        cd Swift-C++-Testsuite/scripts
-        ./createIR.sh
+        cd ComparisonTool
+        swift build -c release
         cd ..
-    - name: Create IR Tar
-      run: tar -cf llvm_ir.tar $(find . -name "*.ll")
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+
+    - uses: actions/checkout@v3
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
-        name: llvm-ir
-        path: llvm_ir.tar
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.dockerlogin }}
+    - name: Download Docker Image
+      run: docker pull ghcr.io/secure-software-engineering/phasar:development
+    - name: Run diff
+      shell: bash
+      run: |
+        echo $(which docker)
+#   analysis:
+#     needs: ir
+#     runs-on: ubuntu-latest
 
-  analysis:
-    needs: ir
-    runs-on: ubuntu-latest
+#     steps:
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-            registry: ghcr.io
-            username: ${{ github.actor }}
-            password: ${{ secrets.dockerlogin }}
-      - name: Download Docker Image
-        run: docker pull ghcr.io/secure-software-engineering/phasar:development
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: llvm-ir
-      - name: Extract IR
-        run: tar -xvf llvm_ir.tar -C "Swift-C++-Testsuite"
-      - name: Run Statistics Analysis
-        run: |
-          cd Swift-C++-Testsuite/scripts
-          ./runDocker.sh
-      - name: Create Statistics Tar
-        run: |
-          tar -cf llvm_ir_statistics.tar $(find . -name "psr-IrStatistics.json")
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: llvm-ir-statistics
-          path: llvm_ir_statistics.tar
-# The program relies on MacOS 12 features and those are only partially available on GitHub
-  differences:
-    needs: analysis
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: llvm-ir-statistics
-      - name: Extract Analysis Results
-        run: |
-         tar -xvf llvm_ir_statistics.tar -C "Swift-C++-Testsuite"
-      - name: Build
-        run: |
-          cd ComparisonTool 
-          echo $(swift --version)
-          swift build -c release
-      - name: Execute comparison
-        run: |
-          cd ComparisonTool 
-          echo $HOME
-          ./.build/release/swift-llvm-statistics-comparison diff --config Sources/configs/comparison-github.json
-      - name: Create Comparison Tar
-        run: |
-          find .
-          tar -cvf llvm_ir_statistics_comparison.tar $(find /Users/runner/diffs -name "*-comparison.json")
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: llvm-ir-statistics-comparison
-          path: llvm_ir_statistics_comparison.tar
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: llvm-ir
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: |
-            llvm_ir_statistics_comparison.tar
-            llvm_ir_statistics.tar
-            llvm_ir.tar
+#       - name: Download Artifact
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: llvm-ir
+#       - name: Extract IR
+#         run: tar -xvf llvm_ir.tar -C "Swift-C++-Testsuite"
+#       - name: Run Statistics Analysis
+#         run: |
+#           cd Swift-C++-Testsuite/scripts
+#           ./runDocker.sh
+#       - name: Create Statistics Tar
+#         run: |
+#           tar -cf llvm_ir_statistics.tar $(find . -name "psr-IrStatistics.json")
+#       - name: Upload Artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: llvm-ir-statistics
+#           path: llvm_ir_statistics.tar
+# # The program relies on MacOS 12 features and those are only partially available on GitHub
+#   differences:
+#     needs: analysis
+#     runs-on: macos-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Download Artifact
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: llvm-ir-statistics
+#       - name: Extract Analysis Results
+#         run: |
+#          tar -xvf llvm_ir_statistics.tar -C "Swift-C++-Testsuite"
+#       - name: Build
+#         run: |
+#           cd ComparisonTool 
+#           echo $(swift --version)
+#           swift build -c release
+#       - name: Execute comparison
+#         run: |
+#           cd ComparisonTool 
+#           echo $HOME
+#           ./.build/release/swift-llvm-statistics-comparison diff --config Sources/configs/comparison-github.json
+#       - name: Create Comparison Tar
+#         run: |
+#           find .
+#           tar -cvf llvm_ir_statistics_comparison.tar $(find /Users/runner/diffs -name "*-comparison.json")
+#       - name: Upload Artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: llvm-ir-statistics-comparison
+#           path: llvm_ir_statistics_comparison.tar
+#       - name: Download Artifact
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: llvm-ir
+#       - name: Release
+#         uses: softprops/action-gh-release@v1
+#         if: startsWith(github.ref, 'refs/tags/')
+#         with:
+#           files: |
+#             llvm_ir_statistics_comparison.tar
+#             llvm_ir_statistics.tar
+#             llvm_ir.tar
