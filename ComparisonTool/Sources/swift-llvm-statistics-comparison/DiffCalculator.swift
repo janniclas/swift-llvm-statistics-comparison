@@ -43,48 +43,14 @@ struct DiffCalculator {
                     }
                     let currentAvg = diffSum[outPath]!
                     currentAvg.0.diff += Double(diff.diff ?? 0)
-
-                    currentAvg.0.swift.allocaInstructions += Double(diff.swift?.allocaInstructions ?? 0)
-                    currentAvg.0.swift.basicBlocks += Double(diff.swift?.basicBlocks ?? 0)
-                    currentAvg.0.swift.branches += Double(diff.swift?.branches ?? 0)
-                    currentAvg.0.swift.callSites += Double(diff.swift?.callSites ?? 0)
-                    currentAvg.0.swift.functions += Double(diff.swift?.functions ?? 0)
-                    currentAvg.0.swift.getElementPtrs += Double(diff.swift?.getElementPtrs ?? 0)
-                    currentAvg.0.swift.globalVariables += Double(diff.swift?.globalVariables ?? 0)
-                    currentAvg.0.swift.instructions += Double(diff.swift?.instructions ?? 0)
-                    currentAvg.0.swift.phiNodes += Double(diff.swift?.phiNodes ?? 0)
-
-                    currentAvg.0.cpp.allocaInstructions += Double(diff.cpp?.allocaInstructions ?? 0)
-                    currentAvg.0.cpp.basicBlocks += Double(diff.cpp?.basicBlocks ?? 0)
-                    currentAvg.0.cpp.branches += Double(diff.cpp?.branches ?? 0)
-                    currentAvg.0.cpp.callSites += Double(diff.cpp?.callSites ?? 0)
-                    currentAvg.0.cpp.functions += Double(diff.cpp?.functions ?? 0)
-                    currentAvg.0.cpp.getElementPtrs += Double(diff.cpp?.getElementPtrs ?? 0)
-                    currentAvg.0.cpp.globalVariables += Double(diff.cpp?.globalVariables ?? 0)
-                    currentAvg.0.cpp.instructions += Double(diff.cpp?.instructions ?? 0)
-                    currentAvg.0.cpp.phiNodes += Double(diff.cpp?.phiNodes ?? 0)
+                    currentAvg.0.swift = addToAvg(avgDiff: currentAvg.0.swift, diff: diff.swift!)
+                    currentAvg.0.cpp = addToAvg(avgDiff: currentAvg.0.cpp, diff: diff.cpp!)
 
                     let avg = diffSum["avg"]!
                     avg.0.diff += Double(diff.diff ?? 0)
-                    avg.0.swift.allocaInstructions += Double(diff.swift?.allocaInstructions ?? 0)
-                    avg.0.swift.basicBlocks += Double(diff.swift?.basicBlocks ?? 0)
-                    avg.0.swift.branches += Double(diff.swift?.branches ?? 0)
-                    avg.0.swift.callSites += Double(diff.swift?.callSites ?? 0)
-                    avg.0.swift.functions += Double(diff.swift?.functions ?? 0)
-                    avg.0.swift.getElementPtrs += Double(diff.swift?.getElementPtrs ?? 0)
-                    avg.0.swift.globalVariables += Double(diff.swift?.globalVariables ?? 0)
-                    avg.0.swift.instructions += Double(diff.swift?.instructions ?? 0)
-                    avg.0.swift.phiNodes += Double(diff.swift?.phiNodes ?? 0)
+                    avg.0.swift = addToAvg(avgDiff: avg.0.swift, diff: diff.swift!)
+                    avg.0.cpp = addToAvg(avgDiff: avg.0.cpp, diff: diff.cpp!)
 
-                    avg.0.cpp.allocaInstructions += Double(diff.cpp?.allocaInstructions ?? 0)
-                    avg.0.cpp.basicBlocks += Double(diff.cpp?.basicBlocks ?? 0)
-                    avg.0.cpp.branches += Double(diff.cpp?.branches ?? 0)
-                    avg.0.cpp.callSites += Double(diff.cpp?.callSites ?? 0)
-                    avg.0.cpp.functions += Double(diff.cpp?.functions ?? 0)
-                    avg.0.cpp.getElementPtrs += Double(diff.cpp?.getElementPtrs ?? 0)
-                    avg.0.cpp.globalVariables += Double(diff.cpp?.globalVariables ?? 0)
-                    avg.0.cpp.instructions += Double(diff.cpp?.instructions ?? 0)
-                    avg.0.cpp.phiNodes += Double(diff.cpp?.phiNodes ?? 0)
                     diffSum["avg"] = (avg.0, avg.1 + 1)
                     diffSum[outPath] = (currentAvg.0, currentAvg.1 + 1)
                 }
@@ -96,30 +62,46 @@ struct DiffCalculator {
             let diff = diffAndSum.0
             let avg = AvgDiff()
             avg.diff = diff.diff / Double(diffAndSum.1)
-
-            avg.swift.allocaInstructions += diff.swift.allocaInstructions / Double(diffAndSum.1)
-            avg.swift.basicBlocks += diff.swift.basicBlocks / Double(diffAndSum.1)
-            avg.swift.branches += diff.swift.branches / Double(diffAndSum.1)
-            avg.swift.callSites += diff.swift.callSites / Double(diffAndSum.1)
-            avg.swift.functions += diff.swift.functions / Double(diffAndSum.1)
-            avg.swift.getElementPtrs += diff.swift.getElementPtrs / Double(diffAndSum.1)
-            avg.swift.globalVariables += diff.swift.globalVariables / Double(diffAndSum.1)
-            avg.swift.instructions += diff.swift.instructions / Double(diffAndSum.1)
-            avg.swift.phiNodes += diff.swift.phiNodes / Double(diffAndSum.1)
-
-            avg.cpp.allocaInstructions += diff.cpp.allocaInstructions / Double(diffAndSum.1)
-            avg.cpp.basicBlocks += diff.cpp.basicBlocks / Double(diffAndSum.1)
-            avg.cpp.branches += diff.cpp.branches / Double(diffAndSum.1)
-            avg.cpp.callSites += diff.cpp.callSites / Double(diffAndSum.1)
-            avg.cpp.functions += diff.cpp.functions / Double(diffAndSum.1)
-            avg.cpp.getElementPtrs += diff.cpp.getElementPtrs / Double(diffAndSum.1)
-            avg.cpp.globalVariables += diff.cpp.globalVariables / Double(diffAndSum.1)
-            avg.cpp.instructions += diff.cpp.instructions / Double(diffAndSum.1)
-            avg.cpp.phiNodes += diff.cpp.phiNodes / Double(diffAndSum.1)
+            avg.swift = getAvg(stats: avg.swift, diffAndSum: (diffAndSum.0.swift, diffAndSum.1))
+            avg.cpp = getAvg(stats: avg.cpp, diffAndSum: (diffAndSum.0.cpp, diffAndSum.1))
             avgDiffs[idx] = avg
         }
 
         return avgDiffs
+    }
+    
+    private func getAvg(stats: AvgStats, diffAndSum: (diff: AvgStats, counter: Int)) -> AvgStats {
+        let diff = diffAndSum.diff
+        
+        stats.allocaInstructions += diff.allocaInstructions / Double(diffAndSum.1)
+        stats.basicBlocks += diff.basicBlocks / Double(diffAndSum.1)
+        stats.branches += diff.branches / Double(diffAndSum.1)
+        stats.callSites += diff.callSites / Double(diffAndSum.1)
+        stats.functions += diff.functions / Double(diffAndSum.1)
+        stats.getElementPtrs += diff.getElementPtrs / Double(diffAndSum.1)
+        stats.globalVariables += diff.globalVariables / Double(diffAndSum.1)
+        stats.instructions += diff.instructions / Double(diffAndSum.1)
+        stats.phiNodes += diff.phiNodes / Double(diffAndSum.1)
+        stats.globalConsts += diff.globalConsts / Double(diffAndSum.1)
+        stats.globalPointers += diff.globalPointers / Double(diffAndSum.1)
+        
+        return stats
+    }
+    
+    private func addToAvg(avgDiff: AvgStats, diff: PhasarStatistics)-> AvgStats {
+        avgDiff.allocaInstructions += Double(diff.allocaInstructions )
+        avgDiff.basicBlocks += Double(diff.basicBlocks)
+        avgDiff.branches += Double(diff.branches)
+        avgDiff.callSites += Double(diff.callSites)
+        avgDiff.functions += Double(diff.functions)
+        avgDiff.getElementPtrs += Double(diff.getElementPtrs)
+        avgDiff.globalVariables += Double(diff.globalVariables)
+        avgDiff.instructions += Double(diff.instructions)
+        avgDiff.phiNodes += Double(diff.phiNodes)
+        avgDiff.globalConsts += Double(diff.globalConsts)
+        avgDiff.globalPointers += Double(diff.globalPointers)
+        
+        return avgDiff
     }
 
     private func storeAvgDiff(diffs: [String: AvgDiff]) throws {
@@ -264,6 +246,8 @@ struct DiffCalculator {
         var phiNodes: Double = 0
         var basicBlocks: Double = 0
         var getElementPtrs: Double = 0
+        var globalConsts: Double = 0
+        var globalPointers: Double = 0
     }
 
     class AvgDiff: Codable {
@@ -274,7 +258,7 @@ struct DiffCalculator {
 
     struct PhasarStatistics: Codable {
         let _allocaInstructions, _callSites, _functions, _globalVariables, _instructions, _branches, _phiNodes,
-            _basicBlocks,
+            _basicBlocks, _globalConsts, _globalPointers,
             _getElementPtrs: Int?
         let moduleName: String
 
@@ -287,6 +271,8 @@ struct DiffCalculator {
         var phiNodes: Int { return _phiNodes ?? 0 }
         var basicBlocks: Int { return _basicBlocks ?? 0 }
         var getElementPtrs: Int { return _getElementPtrs ?? 0 }
+        var globalConsts: Int { return _globalConsts ?? 0 }
+        var globalPointers: Int { return _globalPointers ?? 0 }
 
         enum CodingKeys: String, CodingKey {
             case _allocaInstructions = "AllocaInstructions"
@@ -299,6 +285,8 @@ struct DiffCalculator {
             case _phiNodes = "PhiNodes"
             case _basicBlocks = "BasicBlocks"
             case _getElementPtrs = "GetElementPtrs"
+            case _globalPointers = "GlobalPointers"
+            case _globalConsts = "GlobalConsts"
         }
     }
 

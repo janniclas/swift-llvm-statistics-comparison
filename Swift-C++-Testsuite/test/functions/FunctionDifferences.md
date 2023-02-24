@@ -1,5 +1,6 @@
 # Function Differences
-
+Swift does not directly inline default parameters but inlines a function call returning the 
+default parameter (even for primitives) or containing a calculation of a more complex parameter / data structure.
 ## General Differences
 
 

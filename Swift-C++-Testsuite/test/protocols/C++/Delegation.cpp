@@ -1,5 +1,4 @@
-
- #include <math.h>
+#include <math.h>
 #include <iostream>
 #include <ctime>
 #include <optional>
