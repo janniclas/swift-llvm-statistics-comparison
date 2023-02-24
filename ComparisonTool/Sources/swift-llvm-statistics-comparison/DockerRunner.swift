@@ -7,7 +7,6 @@
 
 import Foundation
 import Logging
-import System
 
 struct DockerRunnerResult {
     let externalProgramResult: ExternalProgramResult

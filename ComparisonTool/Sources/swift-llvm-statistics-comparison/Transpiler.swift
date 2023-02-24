@@ -7,7 +7,6 @@
 
 import Foundation
 import Logging
-import System
 
 struct TranspileResult {
     let externalProgramResult: ExternalProgramResult

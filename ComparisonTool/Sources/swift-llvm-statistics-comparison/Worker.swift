@@ -57,10 +57,10 @@ struct Worker {
     private static func physicalCoresCount() -> UInt {
 
         var size: size_t = MemoryLayout<UInt>.size
-        var coresCount: UInt = 0
-
+        var coresCount: UInt = 1
+#if os(macOS)
         sysctlbyname("hw.perflevel0.physicalcpu", &coresCount, &size, nil, 0)
-
+#endif
         return coresCount
     }
 

@@ -44,7 +44,7 @@ import Logging
 #if os(Linux)
 
     enum Mode: String {
-        case diff, compile
+        case diff="diff", compile="compile", transpile="transpile"
     }
 
     enum ArgError: Error {
@@ -58,27 +58,31 @@ import Logging
 
             switch args.mode {
             case .diff:
-                let config = try loadConfig(path: args.path) as DiffConfig
-                try await startDiff(config: config)
+                //TODO: calculate average values for stuff like loc and global variables acrosse all Swift and C++ files
+                let diffAndCompileConfig = try loadConfig(path: args.path) as DiffConfig
+                try await startDiff(config: diffAndCompileConfig)
             case .compile:
-                let config = try loadConfig(path: args.path) as Config
-                try await startCompiler(config: config)
+                let diffAndCompileConfig = try loadConfig(path: args.path) as CompilerConfig
+                let _ = try await startCompiler(config: diffAndCompileConfig)
             case .transpile:
-                let config = try loadConfig(path: args.path) as TranspileModeConfig
-                try await transpile(config: config)
+                let transConfig = try loadConfig(path: args.path) as TranspileModeConfig
+                try await transpile(config: transConfig)
             }
         }
     }
 
     func getPath(args: [String]) throws -> (mode: Mode, path: String) {
-        var mode: Mode
+        var mode: Mode?
+        var p: String?
         for index in 1..<args.count {
-            let argument = args[index]
+            let argument:String = args[index]
             switch argument {
-            case .diff:
+            case "diff":
                 mode = .diff
-            case .compile:
+            case "compile":
                 mode = .compile
+            case "transpile":
+                mode = .transpile
             case "--config":
                 if index + 1 < args.count {
                     p = args[index + 1]
@@ -88,7 +92,10 @@ import Logging
                 throw ArgError.unkownArgument(arg: argument)
             }
         }
-        return (mode, p)
+        if mode != nil && p != nil {
+            return (mode!, p!)
+        }
+        throw ArgError.unkownArgument(arg: "Mode or path not initialized")
     }
 #endif
 
