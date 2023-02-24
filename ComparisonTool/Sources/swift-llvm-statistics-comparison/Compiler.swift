@@ -7,7 +7,6 @@
 
 import Foundation
 import Logging
-import System
 
 protocol Compiler {
     func compile(_ program: Program) async throws -> CompileResult

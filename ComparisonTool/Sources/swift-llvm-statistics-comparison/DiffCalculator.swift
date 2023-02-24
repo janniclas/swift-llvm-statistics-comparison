@@ -69,10 +69,10 @@ struct DiffCalculator {
 
         return avgDiffs
     }
-    
+
     private func getAvg(stats: AvgStats, diffAndSum: (diff: AvgStats, counter: Int)) -> AvgStats {
         let diff = diffAndSum.diff
-        
+
         stats.allocaInstructions += diff.allocaInstructions / Double(diffAndSum.1)
         stats.basicBlocks += diff.basicBlocks / Double(diffAndSum.1)
         stats.branches += diff.branches / Double(diffAndSum.1)
@@ -84,12 +84,12 @@ struct DiffCalculator {
         stats.phiNodes += diff.phiNodes / Double(diffAndSum.1)
         stats.globalConsts += diff.globalConsts / Double(diffAndSum.1)
         stats.globalPointers += diff.globalPointers / Double(diffAndSum.1)
-        
+
         return stats
     }
-    
-    private func addToAvg(avgDiff: AvgStats, diff: PhasarStatistics)-> AvgStats {
-        avgDiff.allocaInstructions += Double(diff.allocaInstructions )
+
+    private func addToAvg(avgDiff: AvgStats, diff: PhasarStatistics) -> AvgStats {
+        avgDiff.allocaInstructions += Double(diff.allocaInstructions)
         avgDiff.basicBlocks += Double(diff.basicBlocks)
         avgDiff.branches += Double(diff.branches)
         avgDiff.callSites += Double(diff.callSites)
@@ -100,7 +100,7 @@ struct DiffCalculator {
         avgDiff.phiNodes += Double(diff.phiNodes)
         avgDiff.globalConsts += Double(diff.globalConsts)
         avgDiff.globalPointers += Double(diff.globalPointers)
-        
+
         return avgDiff
     }
 
