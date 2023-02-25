@@ -176,9 +176,9 @@ private class FileHelper: ProcessFile {
     func appendToPath(basePath: String, components: String...) -> String {
         if var url = URL(string: basePath) {
             for component in components {
-                url = url.appendingPathExtension(component)
+                url.appendPathComponent(component)
             }
-            return url.path
+            return url.absoluteString
         }
 
         return basePath
@@ -219,20 +219,17 @@ private class FileHelper: ProcessFile {
     }
 
     func getFileName(path: String) throws -> String {
-        if let url = URL(string: path) {
-            if url.isFileURL {
-                return url.lastPathComponent
-            }
+        let url = URL(fileURLWithPath: path) 
+        if url.isFileURL {
+            return url.deletingPathExtension().lastPathComponent
         }
         throw FileHelperError.getFileNameFailed(path: path)
     }
 
     func getFileNameWithExtension(path: String) throws -> String {
-        if let url = URL(string: path) {
-            if url.isFileURL {
-                print(url)
-                return url.lastPathComponent
-            }
+        let url = URL(fileURLWithPath: path) 
+        if url.isFileURL {
+            return url.lastPathComponent
         }
         throw FileHelperError.getFileNameFailed(path: path)
     }

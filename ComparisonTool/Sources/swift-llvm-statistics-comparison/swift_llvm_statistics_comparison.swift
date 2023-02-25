@@ -86,10 +86,10 @@ import Logging
             case "--config":
                 if index + 1 < args.count {
                     p = args[index + 1]
-                    break
                 }
+                break
             default:
-                throw ArgError.unkownArgument(arg: argument)
+                print("Ignoring argument \(argument)")
             }
         }
         if mode != nil && p != nil {
