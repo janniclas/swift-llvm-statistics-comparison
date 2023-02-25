@@ -34,7 +34,7 @@ jobs:
       run: |
         echo $(which docker)
         echo $(which swiftc)
-        ./ComparisonTool/.build/release/swift-llvm-statistics-comparison diff --config /home/runner/work/swift-llvm-statistics-comparison/Swift-C++-Testsuite/Sources/comparison-github.json
+        ./ComparisonTool/.build/release/swift-llvm-statistics-comparison diff --config /home/runner/work/swift-llvm-statistics-comparison/ComparisonTool/Sources/configs/comparison-github.json
 #   analysis:
 #     needs: ir
 #     runs-on: ubuntu-latest
