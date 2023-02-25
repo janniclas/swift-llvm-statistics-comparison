@@ -44,7 +44,9 @@ import Logging
 #if os(Linux)
 
     enum Mode: String {
-        case diff="diff", compile="compile", transpile="transpile"
+        case diff = "diff"
+        case compile = "compile"
+        case transpile = "transpile"
     }
 
     enum ArgError: Error {
@@ -75,7 +77,7 @@ import Logging
         var mode: Mode?
         var p: String?
         for index in 1..<args.count {
-            let argument:String = args[index]
+            let argument: String = args[index]
             switch argument {
             case "diff":
                 mode = .diff

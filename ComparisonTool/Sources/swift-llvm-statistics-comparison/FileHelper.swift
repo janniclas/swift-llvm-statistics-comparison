@@ -219,7 +219,7 @@ private class FileHelper: ProcessFile {
     }
 
     func getFileName(path: String) throws -> String {
-        let url = URL(fileURLWithPath: path) 
+        let url = URL(fileURLWithPath: path)
         if url.isFileURL {
             return url.deletingPathExtension().lastPathComponent
         }
@@ -227,7 +227,7 @@ private class FileHelper: ProcessFile {
     }
 
     func getFileNameWithExtension(path: String) throws -> String {
-        let url = URL(fileURLWithPath: path) 
+        let url = URL(fileURLWithPath: path)
         if url.isFileURL {
             return url.lastPathComponent
         }

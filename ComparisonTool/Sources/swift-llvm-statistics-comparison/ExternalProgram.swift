@@ -8,7 +8,6 @@
 import Foundation
 import Logging
 
-
 struct ExternalProgramResult {
     let exitCode: Int32
     let output: String
