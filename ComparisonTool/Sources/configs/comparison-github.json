@@ -9,7 +9,7 @@
         "outputPath": "/tmp/res"
     },
     "secondLanguage": {
-        "compilerPath": "/Users/runner/swift/swift-5.7.1-RELEASE-ubuntu22.04/usr/bin/swiftc",
+        "compilerPath": "/opt/hostedtoolcache/swift-Ubuntu/5.7.2/x64/usr/bin/swiftc",
         "compilerSettings": ["-parse-as-library", "-emit-ir", "-Onone", "-suppress-warnings", "-Xfrontend", "-disable-llvm-optzns", "-Xfrontend", "-disable-swift-specific-llvm-optzns"],
         "compilerOutFlag": "-o",
         "languageExtension": ".swift",
