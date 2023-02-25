@@ -224,7 +224,7 @@ func startCompiler(config: CompilerConfig, logging: Bool = true) async throws ->
                 var results: [CompileResult] = []
                 while let item = await workList.next() {
                     logger.info(
-                        "Starting work on: \(item.name) with worker no \(i)"
+                        "Starting work on: \(item) with worker no \(i)"
                     )
                     do {
                         let result = try await worker.work(item)

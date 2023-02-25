@@ -43,7 +43,7 @@ struct InputOutputLanguage: Codable {
     let targetLanguage: String
 }
 
-protocol Program {
+protocol Program: CustomStringConvertible {
     var language: String { get }
 
     var name: String { get }
@@ -132,6 +132,10 @@ class BaseProgram: Program {
         self.path = path
     }
 
+    var description: String {
+        return "Program[name] = \(self.name) Program[path] = \(self.path) Program[language] = \(self.language)"
+    }
+
 }
 
 class ProgramWithCompileOutput: BaseProgram {
@@ -142,6 +146,11 @@ class ProgramWithCompileOutput: BaseProgram {
     }
 
     let outputPath: String
+
+    override var description: String {
+        let sup = super.description
+        return "\(sup) Program[outputPath] = \(self.outputPath)"
+    }
 }
 //
 //class ProgramWithStatistics: ProgramWithCompileOutput {

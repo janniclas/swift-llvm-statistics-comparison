@@ -39,7 +39,7 @@ class GeneralCompiler: ExternalProgram, Compiler {
     internal let config: CompilerConfig
 
     func compile(_ program: Program) async throws -> CompileResult {
-        self.logger.debug("compileProgram called with \(program.name)")
+        self.logger.info("compileProgram called with \(program)")
 
         let url = URL(fileURLWithPath: config.compilerPath)
         let args = try getCompileArguments(config: config, program: program)
