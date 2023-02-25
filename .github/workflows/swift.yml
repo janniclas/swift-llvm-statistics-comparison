@@ -37,14 +37,16 @@ jobs:
         echo $(which clang++)
         ./ComparisonTool/.build/release/swift-llvm-statistics-comparison diff --config /home/runner/work/swift-llvm-statistics-comparison/swift-llvm-statistics-comparison/ComparisonTool/Sources/configs/comparison-github.json
     - name: Create Result Tar
+      shell: bash
       run: |
         cd /home/runner/work/swift-llvm-statistics-comparison
+        ls
         tar -cf llvm_ir_statistics.tar results
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: llvm-ir-statistics
-        path: llvm_ir_statistics.tar
+        path: /home/runner/work/swift-llvm-statistics-comparison/llvm_ir_statistics.tar
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
