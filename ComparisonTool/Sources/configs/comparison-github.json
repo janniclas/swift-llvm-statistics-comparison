@@ -1,6 +1,6 @@
 {
     "firstLanguage": {
-        "compilerPath": "/usr/local/bin/clang++",
+        "compilerPath": "/opt/hostedtoolcache/swift-Ubuntu/5.7.2/x64/usr/bin/clang++",
         "compilerSettings": ["-std=c++20", "-S", "-emit-llvm", "-fno-discard-value-names", "-w" ],
         "compilerOutFlag": "-o",
         "languageExtension": ".cpp",
