@@ -8,11 +8,12 @@ on:
 
 jobs:
   ir:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
 
     - uses: actions/checkout@v3
+    - uses: swift-actions/setup-swift@v1
     - name: Compile Tool
       shell: bash
       run: |
@@ -20,7 +21,6 @@ jobs:
         swift build -c release
         cd ..
 
-    - uses: actions/checkout@v3
     - name: Log in to the Container registry
       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
@@ -33,6 +33,7 @@ jobs:
       shell: bash
       run: |
         echo $(which docker)
+        echo $(which swiftc)
 #   analysis:
 #     needs: ir
 #     runs-on: ubuntu-latest

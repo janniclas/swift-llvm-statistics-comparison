@@ -1,10 +1,26 @@
 {
-    "compilerPath": "/usr/bin/clang++",
-    "compilerSettings": ["-std=c++20"],
-    "outputPath": "/tmp",
-    "inputPath": "/Users/runner",
-    "compilerOutFlag": "-o",
-    "compilerOutExtension": ".ll",
-    "languageExtension": "",
-}
+    "firstLanguage": {
+        "compilerPath": "/usr/local/bin/clang++",
+        "compilerSettings": ["-std=c++20", "-S", "-emit-llvm", "-fno-discard-value-names", "-w" ],
+        "compilerOutFlag": "-o",
+        "languageExtension": ".cpp",
+        "compilerOutExtension": "_cpp.ll",
+        "inputPath": "/Users/runner/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
+        "outputPath": "/tmp/res"
+    },
+    "secondLanguage": {
+        "compilerPath": "/Users/runner/swift/swift-5.7.1-RELEASE-ubuntu22.04/usr/bin/swiftc",
+        "compilerSettings": ["-parse-as-library", "-emit-ir", "-Onone", "-suppress-warnings", "-Xfrontend", "-disable-llvm-optzns", "-Xfrontend", "-disable-swift-specific-llvm-optzns"],
+        "compilerOutFlag": "-o",
+        "languageExtension": ".swift",
+        "compilerOutExtension": "_swift.ll",
+        "inputPath": "/Users/runner/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
+        "outputPath": "/tmp/res"
+    },
+    "dockerConfig" : {
+        "dockerPath": "/usr/bin/docker",
+        "phasarImage": "ghcr.io/secure-software-engineering/phasar:development"
+    },
+    "outputBasePath": "/tmp/res"
 
+}
