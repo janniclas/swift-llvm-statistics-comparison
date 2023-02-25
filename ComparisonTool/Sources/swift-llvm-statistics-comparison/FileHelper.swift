@@ -178,7 +178,12 @@ private class FileHelper: ProcessFile {
             for component in components {
                 url.appendPathComponent(component)
             }
-            return url.absoluteString
+            var path = url.absoluteString
+            // Decode any percent-encoded characters in the path
+            if let decodedPath = path.removingPercentEncoding {
+                path = decodedPath
+            }
+            return path
         }
 
         return basePath

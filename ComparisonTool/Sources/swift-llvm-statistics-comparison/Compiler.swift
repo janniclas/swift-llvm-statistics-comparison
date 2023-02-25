@@ -43,6 +43,7 @@ class GeneralCompiler: ExternalProgram, Compiler {
 
         let url = URL(fileURLWithPath: config.compilerPath)
         let args = try getCompileArguments(config: config, program: program)
+        print("Compiler args \(args)")
         let res = try await self.run(executableURL: url, args: args)
         let p = ProgramWithCompileOutput(p: program, outputPath: try getAndCreateOutputPath(config, program))
         return CompileResult(returnCode: res.exitCode, program: p, stdOut: res.output)

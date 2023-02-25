@@ -228,16 +228,15 @@ func startCompiler(config: CompilerConfig, logging: Bool = true) async throws ->
                     )
                     do {
                         let result = try await worker.work(item)
+                        logger.info("Work finished for item \(item)")
                         results.append(result)
                         if let stdOut = result.stdOut {
                             if stdOut != "No output generated" {
                                 try FileHelperFactory.getFileHelper().storeJson(
                                     dirPath: config.outputPath, fileName: "\(item.name)-output.txt", element: stdOut)
+                                logger.info("Output saved for \(item.name) with worker no \(i)")
                             }
                         }
-                        logger.info(
-                            "Finished work on: \(item.name) with worker no \(i)"
-                        )
                     } catch {
                         logger.error("Worker failed for item \(item) failed with error \(error).")
 
