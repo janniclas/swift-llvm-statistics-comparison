@@ -7,6 +7,9 @@
 
 import Foundation
 import Logging
+#if os(Linux)
+import Glibc
+#endif
 
 struct Statistics {}
 
@@ -54,15 +57,19 @@ struct Worker {
     internal let logger = Logger(label: "com.struewer.llvm.statistics.worker")
     static let maximumNumberOfTasks: UInt = physicalCoresCount()
 
-    private static func physicalCoresCount() -> UInt {
+private static func physicalCoresCount() -> UInt {
+    var coresCount: UInt = 1
+    #if os(macOS)
+    var size: size_t = MemoryLayout<UInt>.size * 8 // convert size to bits
+    sysctlbyname("hw.physicalcpu", &coresCount, &size, nil, 0)
+    #endif
+    #if os(Linux)
+    coresCount = UInt(sysconf(Int32(_SC_NPROCESSORS_ONLN)))
+    #endif
+    return coresCount
+}
 
-        var size: size_t = MemoryLayout<UInt>.size
-        var coresCount: UInt = 1
-#if os(macOS)
-        sysctlbyname("hw.perflevel0.physicalcpu", &coresCount, &size, nil, 0)
-#endif
-        return coresCount
-    }
+
 
     let workerNumber: UInt
     let compiler: Compiler
