@@ -203,7 +203,7 @@ func startCompiler(config: CompilerConfig, logging: Bool = true) async throws ->
     // get all file paths for compilation (starting from provided base path)
     logger.info("Run LLVM Statistics Comparison for path \(config.inputPath)")
     logger.info("Config loaded \(config)")
-    logger.debug("Maximum number of parallel tasks: \(Worker.maximumNumberOfTasks)")
+    logger.info("Maximum number of parallel tasks: \(Worker.maximumNumberOfTasks)")
 
     let compiler = GeneralCompiler(config: config)
     // fill worklist

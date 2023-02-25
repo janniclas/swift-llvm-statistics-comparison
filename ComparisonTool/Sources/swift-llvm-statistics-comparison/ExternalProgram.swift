@@ -16,12 +16,12 @@ struct ExternalProgramResult {
 class ExternalProgram {
     internal let logger = Logger(label: "com.struewer.llvm.statistics.externalProgram")
     func run(executableURL: URL, args: [String]) async throws -> ExternalProgramResult {
-        self.logger.debug("External program \(executableURL.absoluteString) called with args \(args)")
+        self.logger.info("External program \(executableURL) called with args \(args)")
 
         let p = Process()
 
         p.executableURL = executableURL
-        p.arguments = args  //TODO: add output file and actual program to compile:D
+        p.arguments = args
 
         let outputPipe = Pipe()
         p.standardError = outputPipe
