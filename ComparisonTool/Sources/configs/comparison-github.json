@@ -6,7 +6,7 @@
         "languageExtension": ".cpp",
         "compilerOutExtension": "_cpp.ll",
         "inputPath": "/home/runner/work/swift-llvm-statistics-comparison/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
-        "outputPath": "/tmp/res"
+        "outputPath": "/home/runner/work/swift-llvm-statistics-comparison/results"
     },
     "secondLanguage": {
         "compilerPath": "/opt/hostedtoolcache/swift-Ubuntu/5.7.2/x64/usr/bin/swiftc",
@@ -15,12 +15,12 @@
         "languageExtension": ".swift",
         "compilerOutExtension": "_swift.ll",
         "inputPath": "/home/runner/work/swift-llvm-statistics-comparison/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
-        "outputPath": "/tmp/res"
+        "outputPath": "/home/runner/work/swift-llvm-statistics-comparison/results"
     },
     "dockerConfig" : {
         "dockerPath": "/usr/bin/docker",
         "phasarImage": "ghcr.io/secure-software-engineering/phasar:development"
     },
-    "outputBasePath": "/tmp/res"
+    "outputBasePath": "/home/runner/work/swift-llvm-statistics-comparison/results"
 
 }

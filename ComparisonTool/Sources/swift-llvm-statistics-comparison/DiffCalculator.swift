@@ -108,9 +108,14 @@ struct DiffCalculator {
         for (path, diff) in diffs {
             let outputPath = fileHelper.appendToPath(
                 basePath: self.basePath, components: path)
-            try fileHelper.storeJson(
-                dirPath: outputPath, fileName: "avg-comparison.json", element: diff)
+            do {
+                try fileHelper.storeJson(
+                    dirPath: outputPath, fileName: "avg-comparison.json", element: diff)
+            } catch {
+                logger.info("Save failed for path \(path), calculated outputPath \(outputPath) diff \(diff)")
+            }
         }
+        logger.info("Avg diffs were saved.")
     }
 
     private func storeDiffs(diffs: [Dictionary<String, Diff>.Element]) throws {
