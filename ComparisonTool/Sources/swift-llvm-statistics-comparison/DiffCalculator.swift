@@ -42,12 +42,12 @@ struct DiffCalculator {
                         diffSum[outPath] = (AvgDiff(), 0)
                     }
                     let currentAvg = diffSum[outPath]!
-                    currentAvg.0.diff += Double(diff.diff ?? 0)
+                    currentAvg.0.diff += Double(diff.diff ?? 1)
                     currentAvg.0.swift = addToAvg(avgDiff: currentAvg.0.swift, diff: diff.swift!)
                     currentAvg.0.cpp = addToAvg(avgDiff: currentAvg.0.cpp, diff: diff.cpp!)
 
                     let avg = diffSum["avg"]!
-                    avg.0.diff += Double(diff.diff ?? 0)
+                    avg.0.diff += Double(diff.diff ?? 1)
                     avg.0.swift = addToAvg(avgDiff: avg.0.swift, diff: diff.swift!)
                     avg.0.cpp = addToAvg(avgDiff: avg.0.cpp, diff: diff.cpp!)
 
@@ -112,10 +112,22 @@ struct DiffCalculator {
                 try fileHelper.storeJson(
                     dirPath: outputPath, fileName: "avg-comparison.json", element: diff)
             } catch {
-                logger.info("Save failed for path \(path), calculated outputPath \(outputPath) diff \(diff)")
+                logger.info("Save failed for path \(path), calculated outputPath \(outputPath)")
+                prettyPrintAvgDiff(diff)
             }
         }
         logger.info("Avg diffs were saved.")
+    }
+
+    private func prettyPrintAvgDiff(_ avgDiff: AvgDiff) {
+        func prettyPrintStats(_ stats: AvgStats) {
+            logger.info(
+                "Global Pointers \(stats.globalPointers) GlobalConsts \(stats.globalConsts) Globals \(stats.globalVariables) Allocas \(stats.allocaInstructions) callsites \(stats.callSites) functions \(stats.functions) branches \(stats.branches) instructions \(stats.instructions) bb \(stats.basicBlocks) phi nodes \(stats.phiNodes) gep \(stats.getElementPtrs)"
+            )
+        }
+        logger.info("Diff \(avgDiff.diff)")
+        prettyPrintStats(avgDiff.swift)
+        prettyPrintStats(avgDiff.cpp)
     }
 
     private func storeDiffs(diffs: [Dictionary<String, Diff>.Element]) throws {
