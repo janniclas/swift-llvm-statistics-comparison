@@ -5,7 +5,7 @@
         "compilerOutFlag": "-o",
         "languageExtension": ".cpp",
         "compilerOutExtension": "_cpp.ll",
-        "inputPath": "/home/runner/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
+        "inputPath": "/home/runner/work/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
         "outputPath": "/tmp/res"
     },
     "secondLanguage": {
@@ -14,7 +14,7 @@
         "compilerOutFlag": "-o",
         "languageExtension": ".swift",
         "compilerOutExtension": "_swift.ll",
-        "inputPath": "/home/runner/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
+        "inputPath": "/home/runner/work/swift-llvm-statistics-comparison/Swift-C++-Testsuite/test",
         "outputPath": "/tmp/res"
     },
     "dockerConfig" : {
