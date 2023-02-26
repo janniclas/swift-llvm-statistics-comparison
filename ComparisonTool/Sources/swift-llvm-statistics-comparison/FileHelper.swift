@@ -204,12 +204,14 @@ private class FileHelper: ProcessFile {
 
     /// Stores given element at dirPath. Creates directories if non existend.
     func storeJson(dirPath: String, fileName: String, element: Codable) throws {
+        do {
+            let fileOutput = try createOrGetOutputPath(dirPath: dirPath, fileName: fileName)
+            FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(element))
+            logger.info("File was saved to \(fileOutput)")
+        } catch {
+            logger.error("File save failed \(dirPath) \(fileName). Element \(element)")
+        }
 
-        let fileOutput = try createOrGetOutputPath(dirPath: dirPath, fileName: fileName)
-
-        FileManager.default.createFile(atPath: fileOutput, contents: try encoder.encode(element))
-
-        logger.info("File was saved to \(fileOutput)")
     }
 
     /// Creates directories or files if non existend.
