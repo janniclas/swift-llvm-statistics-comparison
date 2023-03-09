@@ -1,36 +1,21 @@
-#include "iostream"
-
-struct Drawable {
-  virtual void draw() = 0;
+struct FooBase {
+  virtual void foo(int **v, int *w) = 0;
 };
 
-struct Point : Drawable {
-  double x, y;
-
-  Point (double x, double y): x(x), y(y) {}
-
-  void draw()  override {
-    std::cout << "Drawing a point\n";
-  }
+struct Foo : FooBase {
+  void foo(int **v, int *w) override { *v = w; }
 };
 
-struct Line : Drawable {
-  double x1, y1, x2, y2;
-  
-  Line(double x1, double y1, double x2, double y2): x1(x1), x2(x2), y1(y1), y2(y2) {
-  }
-
-  void draw()  override {
-    std::cout << "Drawing a line\n";
-  }
+struct FooDerived : FooBase {
+  void foo(int **v, int *w) override {}
 };
 
-void callCB(Drawable *F) { F->draw(); }
+void callCB(FooBase *F, int **v, int *w) { F->foo(v, w); }
 
-int main() {
-  Point P{1.0, 2.0};
-  callCB(&P);
-  Line L{1.0, 2.0, 3.0, 4.0};
-  callCB(&L);
-  return 0;
+int bar() {
+  int x = 42;
+  int *y = nullptr;
+  Foo F{};
+  callCB(&F, &y, &x);
+  return *y; // should return 42
 }
