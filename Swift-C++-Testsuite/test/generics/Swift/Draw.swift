@@ -13,7 +13,7 @@ struct Line: Drawable {
     }
 }
 
-func drawACopy<T: Drawable>(local : T) {
+func drawACopy<T: Drawable>(local: T) {
     local.draw()
 }
 
