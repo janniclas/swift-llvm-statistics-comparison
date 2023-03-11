@@ -22,11 +22,12 @@ struct DiffCalculator {
 
         // moduleName -> {diff: int, cpp: PhasarStatistics, swift: PhasarStatistics}
         let diffs: [String: Diff] = calculateAllDiffs(statisticPaths: statisticPaths)
-        let onlyCompleteDiffs = diffs.filter({ $0.value.diff != nil })
+        let onlyCompleteDiffs = diffs.filter({ $0.value.diff != nil && !$0.value.diff!.isNaN })
         let sortedDiffs = onlyCompleteDiffs.sorted(by: { $0.value.diff! < $1.value.diff! })
 
         let avgDiffs: [String: AvgDiff] = getAvgDiffs(sortedDiffs.map { sd in sd.value })
         try storeDiffs(diffs: sortedDiffs)
+        print("diff stored")
         try storeAvgDiff(diffs: avgDiffs)
     }
 
@@ -42,12 +43,12 @@ struct DiffCalculator {
                         diffSum[outPath] = (AvgDiff(), 0)
                     }
                     let currentAvg = diffSum[outPath]!
-                    currentAvg.0.diff += Double(diff.diff ?? 1)
+                    currentAvg.0.diff += Double(diff.diff ?? 0)
                     currentAvg.0.swift = addToAvg(avgDiff: currentAvg.0.swift, diff: diff.swift!)
                     currentAvg.0.cpp = addToAvg(avgDiff: currentAvg.0.cpp, diff: diff.cpp!)
 
                     let avg = diffSum["avg"]!
-                    avg.0.diff += Double(diff.diff ?? 1)
+                    avg.0.diff += Double(diff.diff ?? 0)
                     avg.0.swift = addToAvg(avgDiff: avg.0.swift, diff: diff.swift!)
                     avg.0.cpp = addToAvg(avgDiff: avg.0.cpp, diff: diff.cpp!)
 
@@ -198,26 +199,50 @@ struct DiffCalculator {
         return diffs
     }
 
-    private func calculateDiff(_ first: PhasarStatistics, _ second: PhasarStatistics) -> Int {
+    private func calculateDiff(_ first: PhasarStatistics, _ second: PhasarStatistics) -> Double {
         // TODO: figure out if this makes sense
         // it could make sense to weigh the different categories
         // also this method produces a positive diff for every single value
         // maybe we should just make the sum positive and let some negative and
         // some positive values weigh each other?
-        let insDiff = singleDiff(first.instructions, second.instructions)
-        let allocaDiff = singleDiff(first.allocaInstructions, second.allocaInstructions)
-        let callSiteDiff = singleDiff(first.callSites, second.callSites)
-        let functionsDiff = singleDiff(first.functions, second.functions)
-        let globalDiff = singleDiff(first.globalVariables, second.globalVariables)
-        let getElementPtrDiff = singleDiff(first.getElementPtrs, second.getElementPtrs)
-        let basicBlockDiff = singleDiff(first.basicBlocks, second.basicBlocks)
-        let branchesDiff = singleDiff(first.branches, second.branches)
-        let phiNodesDiff = singleDiff(first.phiNodes, second.phiNodes)
-        return insDiff + allocaDiff + callSiteDiff + functionsDiff + globalDiff + getElementPtrDiff + basicBlockDiff
-            + branchesDiff + phiNodesDiff
+        var insDiff: Double
+        if first.instructions > second.instructions {
+            insDiff = Double(second.instructions) / Double(first.instructions)
+        } else {
+            insDiff = Double(first.instructions) / Double(second.instructions)
+        }
+
+        let allocaDiff = singleDiff(
+            Double(first.allocaInstructions) / Double(first.instructions),
+            Double(second.allocaInstructions) / Double(second.instructions))
+        let callSiteDiff = singleDiff(
+            Double(first.callSites) / Double(first.instructions), Double(second.callSites) / Double(second.instructions)
+        )
+        let functionsDiff = singleDiff(
+            Double(first.functions) / Double(first.instructions), Double(second.functions) / Double(second.instructions)
+        )
+        let globalDiff = singleDiff(
+            Double(first.globalVariables) / Double(first.instructions),
+            Double(second.globalVariables) / Double(second.instructions))
+        let getElementPtrDiff = singleDiff(
+            Double(first.getElementPtrs) / Double(first.instructions),
+            Double(second.getElementPtrs) / Double(second.instructions))
+        let basicBlockDiff = singleDiff(
+            Double(first.basicBlocks) / Double(first.instructions),
+            Double(second.basicBlocks) / Double(second.instructions))
+        let branchesDiff = singleDiff(
+            Double(first.branches) / Double(first.instructions), Double(second.branches) / Double(second.instructions))
+        let phiNodesDiff = singleDiff(
+            Double(first.phiNodes) / Double(first.instructions), Double(second.phiNodes) / Double(second.instructions))
+        let globalConstDiff = singleDiff(
+            Double(first.globalConsts) / Double(first.instructions),
+            Double(second.globalConsts) / Double(second.instructions))
+        return
+            (allocaDiff + callSiteDiff + functionsDiff + globalDiff + getElementPtrDiff + basicBlockDiff
+            + branchesDiff + phiNodesDiff + globalConstDiff + insDiff) * 10  // this is an abitrary number anyways so let's scale it to make it nicer to read than 1.421341244
     }
 
-    private func singleDiff(_ a: Int, _ b: Int) -> Int {
+    private func singleDiff(_ a: Double, _ b: Double) -> Double {
         var diff = a - b
         if diff < 0 {
             diff = diff * -1
@@ -248,7 +273,7 @@ struct DiffCalculator {
     }
 
     class Diff: Codable {
-        var diff: Int?
+        var diff: Double?
         var cpp: PhasarStatistics?, swift: PhasarStatistics?
         var outputPath: String?
     }
