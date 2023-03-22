@@ -1,0 +1,17 @@
+{
+  "name": "taint-config-test-comparison-tool",
+  "version": 1.0,
+  "functions": [
+    {
+      "name": "$s6SQLite10ConnectionC7prepareyAA9StatementCSS_AA7Binding_pSgdtKF",
+      "params": {
+        "sink": [
+          0
+        ]
+      }
+    },
+    {
+      "name": "$s3XXX22SQLExecutableTaintTestV11getPasswordSSyFZ",
+      "ret": "source"
+    }]
+}
