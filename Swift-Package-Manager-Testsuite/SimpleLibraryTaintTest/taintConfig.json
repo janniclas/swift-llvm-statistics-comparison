@@ -1,0 +1,17 @@
+{
+  "name": "taint-config-test-comparison-tool",
+  "version": 1.0,
+  "functions": [
+    {
+      "name": "$s3XXX16externalFunction1xS2i_tF",
+      "params": {
+        "sink": [
+          0
+        ]
+      }
+    },
+    {
+      "name": "$s3XXX17SimpleLibraryTestV7wrapperyS2iF",
+      "ret": "source"
+    }]
+}
