@@ -12,11 +12,7 @@ public struct SQLExecutableTaintTest {
 
         let db = try Connection() // in-memory database        
 
-        let queryStringName = "SELECT * FROM users WHERE name=" + 
-                                    userName + 
-                                    " AND password="
-
-        let queryString = queryStringName + password
+        let queryString = getLoginStmt(userName: userName, password: password)
 
         let stmt = try db.prepare(queryString) // sink
 
