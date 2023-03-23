@@ -6,3 +6,5 @@ swiftc -emit-ir -whole-module-optimization -Onone -module-name XXX \
 -lSQLite \
 `find . -name "*.swift" -maxdepth 2` \
 > llvm.ll
+
+This test is currently not working in PhASAR. It seems like the taint is lost during the function call?
